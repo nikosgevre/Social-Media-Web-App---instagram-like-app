@@ -1,0 +1,9 @@
+.field {
+    border: 0;
+    width: 70%;
+    height: 10px;
+    padding: 10px 20px;
+    background: rgb(245, 245, 245);
+    border-radius: 3px;
+    /* text-align: center; */
+}
