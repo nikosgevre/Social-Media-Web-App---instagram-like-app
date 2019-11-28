@@ -339,7 +339,7 @@ class Profile extends Component {
 
   render() {
 
-    console.log('typeof: ' + (this.state.userImage));
+    // console.log('typeof: ' + (this.state.userImage));
 
     // if(typeof(this.state.user.image) === 'undefined') {
     //   this.state.user.image= 'http://localhost:8080/images/prof_default.png'http://localhost:8080/images/pro_default.png;

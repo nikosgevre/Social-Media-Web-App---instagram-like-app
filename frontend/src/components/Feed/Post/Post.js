@@ -98,7 +98,7 @@ class Post extends Component {
                 <img src={this.state.userImage} alt={this.props.author} />
               </div>
               <div className="Post-user-nickname">
-                <NavLink className='Nav-link' to={'/profile/' + this.props.userId}>{this.props.author}</NavLink>
+                <NavLink className='Nav-link' to={'/profile/' + this.props.creator._id}>{this.props.author}</NavLink>
               </div>
 
               {/* <div className="dropdown" style={{float: "right"}}>
