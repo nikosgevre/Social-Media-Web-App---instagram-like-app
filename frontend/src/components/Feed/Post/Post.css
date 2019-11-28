@@ -52,6 +52,21 @@
 
 
 
+
+
+
+.Nav-link{
+  outline: none;
+  text-decoration: none;
+  display: inline-block;
+  color: black;
+}
+
+
+
+
+
+
 .post__meta {
   font-size: 1rem;
   color: #707070;

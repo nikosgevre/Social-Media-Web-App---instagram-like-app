@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import { NavLink } from 'react-router-dom';
 
 import Button from '../../Button/Button';
 import './Post.css';
@@ -11,7 +12,8 @@ class Post extends Component {
     date: '',
     image: '',
     content: '',
-    overFlowMenuActive: false
+    overFlowMenuActive: false,
+    userImage: ''
   };
 
   componentDidMount() {
@@ -33,7 +35,8 @@ class Post extends Component {
           author: resData.post.creator.name,
           image: 'http://localhost:8080/' + resData.post.imageUrl,
           date: new Date(resData.post.createdAt).toLocaleString('en-US'),
-          content: resData.post.content
+          content: resData.post.content,
+          userImage: 'http://localhost:8080/' + resData.post.creator.image
         });
       })
       .catch(err => {
@@ -92,10 +95,10 @@ class Post extends Component {
         <header className="post__header">
           <div className="Post-user">
               <div className="Post-user-avatar">
-                <img src="../../../../self.jpg" alt={this.props.author} />
+                <img src={this.state.userImage} alt={this.props.author} />
               </div>
               <div className="Post-user-nickname">
-                <span>{this.props.author}</span>
+                <NavLink className='Nav-link' to={'/profile/' + this.props.userId}>{this.props.author}</NavLink>
               </div>
 
               {/* <div className="dropdown" style={{float: "right"}}>

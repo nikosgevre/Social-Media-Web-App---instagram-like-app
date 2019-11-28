@@ -15,7 +15,8 @@ const userSchema = new Schema({
     required: true
   },
   image: {
-    type: String
+    type: String,
+    default: 'images/prof_default.png'
   },
   following: [{
     type: Schema.Types.ObjectId,

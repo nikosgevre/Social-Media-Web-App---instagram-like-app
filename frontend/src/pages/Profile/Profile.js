@@ -22,7 +22,8 @@ class Profile extends Component {
     imagePath: '',
     caller: 'profile',
     followers: [],
-    following: []
+    following: [],
+    userImage: ''
   }
 
   componentDidMount() {
@@ -54,6 +55,7 @@ class Profile extends Component {
           return imgUrl;
         }) 
         });
+        this.setState({ userImage: 'http://localhost:8080/' + resData.user.image })
       })
       .catch(this.catchError);
       this.loadPosts();
@@ -337,11 +339,11 @@ class Profile extends Component {
 
   render() {
 
-    console.log('typeof: ' + typeof(this.state.user.image));
+    console.log('typeof: ' + (this.state.userImage));
 
-    if(typeof(this.state.user.image) === 'undefined') {
-      this.state.user.image= 'http://localhost:8080/images/prof_default.png';
-    }
+    // if(typeof(this.state.user.image) === 'undefined') {
+    //   this.state.user.image= 'http://localhost:8080/images/prof_default.png'http://localhost:8080/images/pro_default.png;
+    // }
 
     // if(typeof(this.state.user.followers) !== 'undefined'){
     //   this.setState({followers: this.state.user.followers.length});
@@ -355,7 +357,7 @@ class Profile extends Component {
           <div className="row">
             <div className="left col-lg-4">
               <div className="photo-left">
-                <img className="photo" src={this.state.user.image} alt={this.state.user.name}/>
+                <img className="photo" src={this.state.userImage} alt={this.state.user.name}/>
                 <div className="active"></div>
               </div>
               <h4 className="name">{this.state.user.name}</h4>
