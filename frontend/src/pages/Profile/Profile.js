@@ -78,6 +78,13 @@ class Profile extends Component {
       this.setState({userIdNew: userId});
   }
 
+  componentDidUpdate() {
+    const userId = this.props.match.params.userId;
+    if(userId !== this.state.userIdNew) {
+      this.fetchUser();
+    }
+  }
+
   loadFollowers = user => {
     const userId = this.props.userId;
     fetch('http://localhost:8080/feed/userFollowers/' + userId, {
@@ -202,8 +209,39 @@ class Profile extends Component {
 
   };
 
-  loadProfile = user => {
-
+  fetchUser = user => {
+    const userId = this.props.match.params.userId;
+    this.setState({userIdNew: userId});
+    fetch('http://localhost:8080/feed/profile/' + userId, {
+      headers: {
+        Authorization: 'Bearer ' + this.props.token
+      }
+    })
+      .then(res => {
+        if (res.status !== 200) {
+          throw new Error('Failed to fetch user status.');
+        }
+        return res.json();
+      })
+      .then(resData => {
+        this.setState({ status: resData.status, user: resData.user });
+        console.log('prwtos: ' + this.state.user._id);
+        this.setState({
+          posts: resData.user.posts.map(post => {
+            return {
+              ...post
+            };
+          })
+        });
+        // console.log(this.state.posts[0].creator.name + "---22222222222222222----------- " + this.state.posts[0].imageUrl);
+        this.setState({ imagePath: 'http://localhost:8080/' + resData.user.posts.map(post => {
+          let imgUrl = post.imageUrl;
+          return imgUrl;
+        }) 
+        });
+        this.setState({ userImage: 'http://localhost:8080/' + resData.user.image })
+      })
+      .catch(this.catchError);
   }
 
   statusUpdateHandler = event => {
