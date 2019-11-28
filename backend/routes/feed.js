@@ -24,6 +24,10 @@ router.get('/userPosts', isAuth, feedController.getUserSpecificPosts);
 
 router.get('/profile/:userId', isAuth, feedController.getProfile);
 
+router.get('/userFollowers/:userId', isAuth, feedController.getFollowers);
+
+router.get('/userFollowing/:userId', isAuth, feedController.getFollowing);
+
 // POST /feed/post
 router.post(
   '/post',

@@ -14,6 +14,17 @@ const userSchema = new Schema({
     type: String,
     required: true
   },
+  image: {
+    type: String
+  },
+  following: [{
+    type: Schema.Types.ObjectId,
+    ref: 'User'
+  }],
+  followers: [{
+    type: Schema.Types.ObjectId,
+    ref: 'User'
+  }],
   status: {
     type: String,
     default: 'I am new!'

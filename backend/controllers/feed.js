@@ -229,10 +229,11 @@ exports.postSearch = async (req, res, next) => {
 exports.getProfile = async (req, res, next) => {
   const userId = req.params.userId;
   // console.log('HAHAHAHAHAHAHAHAHA ' + userId);
-  const user = await User.findById(userId)
-  .populate('posts');
-  // console.log('HAHAHAHAHAHAHAHAHA123');
   try {
+    const user = await User.findById(userId)
+    .populate('posts');
+    // console.log('HAHAHAHAHAHAHAHAHA123');
+  
     if (!user) {
       const error = new Error('Could not find user profile.');
       error.statusCode = 404;
@@ -245,6 +246,34 @@ exports.getProfile = async (req, res, next) => {
     }
     next(err);
   }
+};
+
+exports.getFollowers = async (req, res, next) => {
+  const userId = req.params.userId;
+  try {
+    const user = await User.findById(userId)
+    .populate('followers');
+    res.status(200).json({ message: 'User followers fetched.', user: user });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  } 
+};
+
+exports.getFollowing = async (req, res, next) => {
+  const userId = req.params.userId;
+  try {
+    const user = await User.findById(userId)
+    .populate('following');
+    res.status(200).json({ message: 'User following fetched.', user: user });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  } 
 };
 
 const clearImage = filePath => {

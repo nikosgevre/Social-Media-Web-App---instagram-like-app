@@ -20,7 +20,9 @@ class Profile extends Component {
     user: {},
     posts: [],
     imagePath: '',
-    caller: 'profile'
+    caller: 'profile',
+    followers: [],
+    following: []
   }
 
   componentDidMount() {
@@ -55,6 +57,8 @@ class Profile extends Component {
       })
       .catch(this.catchError);
       this.loadPosts();
+      this.loadFollowers();
+      this.loadFollowing();
       const socket = openSocket('http://localhost:8080');
       socket.on('posts', data => {
         if (data.action === 'create') {
@@ -66,6 +70,58 @@ class Profile extends Component {
         }
       });
   }
+
+  loadFollowers = user => {
+    const userId = this.props.userId;
+    fetch('http://localhost:8080/feed/userFollowers/' + userId, {
+      headers: {
+        Authorization: 'Bearer ' + this.props.token
+      }
+    })
+      .then(res => {
+        if (res.status !== 200) {
+          throw new Error('Failed to fetch posts.');
+        }
+        return res.json();
+      })
+      .then(resData => {
+        
+        this.setState({
+          followers: resData.user.followers.map(follower => {
+            return {
+              ...follower
+            }
+          })
+        });
+
+      })
+      .catch(this.catchError);
+  };
+
+  loadFollowing = user => {
+    const userId = this.props.userId;
+    fetch('http://localhost:8080/feed/userFollowing/' + userId, {
+      headers: {
+        Authorization: 'Bearer ' + this.props.token
+      }
+    })
+      .then(res => {
+        if (res.status !== 200) {
+          throw new Error('Failed to fetch posts.');
+        }
+        return res.json();
+      })
+      .then(resData => {
+        this.setState({
+          following: resData.user.following.map(following => {
+            return {
+              ...following
+            }
+          })
+        });
+      })
+      .catch(this.catchError);
+  };
 
   addPost = post => {
     this.setState(prevState => {
@@ -287,6 +343,13 @@ class Profile extends Component {
       this.state.user.image= 'http://localhost:8080/images/prof_default.png';
     }
 
+    // if(typeof(this.state.user.followers) !== 'undefined'){
+    //   this.setState({followers: this.state.user.followers.length});
+    // }
+    // if(typeof(this.state.user.following) !== 'undefined'){
+    //   this.setState({following: this.state.user.following.length});
+    // }
+
     return (
       <Fragment>
           <div className="row">
@@ -299,11 +362,11 @@ class Profile extends Component {
               <p className="info">{this.state.user.email}</p>
               <div className="stats row">
                 <div className="stat col-xs-4" style={{paddingRight: "300px"}}>
-                  <p className="number-stat">{this.state.user.followers}1</p>
+                  <p className="number-stat">{this.state.followers.length}</p>
                   <p className="desc-stat">Followers</p>
                 </div>
                 <div className="stat col-xs-4">
-                  <p className="number-stat">{this.state.user.following}1</p>
+                  <p className="number-stat">{this.state.following.length}</p>
                   <p className="desc-stat">Following</p>
                 </div>
                 <div className="stat col-xs-4" style={{paddingLeft: "300px"}}>
