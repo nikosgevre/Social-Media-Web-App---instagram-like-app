@@ -23,12 +23,15 @@ class Profile extends Component {
     caller: 'profile',
     followers: [],
     following: [],
-    userImage: ''
+    userImage: '',
+    userIdNew: ''
   }
 
   componentDidMount() {
     // console.log('-------------------- ' + this.props.userId);
-    const userId = this.props.userId;
+    const userId = this.props.match.params.userId;
+    this.setState({userIdNew: userId});
+    console.log('-------------------- ' + userId);
     fetch('http://localhost:8080/feed/profile/' + userId, {
       headers: {
         Authorization: 'Bearer ' + this.props.token
@@ -42,6 +45,7 @@ class Profile extends Component {
       })
       .then(resData => {
         this.setState({ status: resData.status, user: resData.user });
+        console.log('prwtos: ' + this.state.user._id);
         this.setState({
           posts: resData.user.posts.map(post => {
             return {
@@ -71,6 +75,7 @@ class Profile extends Component {
           this.loadPosts();
         }
       });
+      this.setState({userIdNew: userId});
   }
 
   loadFollowers = user => {
@@ -197,29 +202,33 @@ class Profile extends Component {
 
   };
 
-  // statusUpdateHandler = event => {
-  //   event.preventDefault();
-  //   fetch('http://localhost:8080/auth/status', {
-  //     method: 'PATCH',
-  //     headers: {
-  //       Authorization: 'Bearer ' + this.props.token,
-  //       'Content-Type': 'application/json'
-  //     },
-  //     body: JSON.stringify({
-  //       status: this.state.status
-  //     })
-  //   })
-  //     .then(res => {
-  //       if (res.status !== 200 && res.status !== 201) {
-  //         throw new Error("Can't update status!");
-  //       }
-  //       return res.json();
-  //     })
-  //     .then(resData => {
-  //       console.log(resData);
-  //     })
-  //     .catch(this.catchError);
-  // };
+  loadProfile = user => {
+
+  }
+
+  statusUpdateHandler = event => {
+    event.preventDefault();
+    fetch('http://localhost:8080/auth/status', {
+      method: 'PATCH',
+      headers: {
+        Authorization: 'Bearer ' + this.props.token,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        status: this.state.status
+      })
+    })
+      .then(res => {
+        if (res.status !== 200 && res.status !== 201) {
+          throw new Error("Can't update status!");
+        }
+        return res.json();
+      })
+      .then(resData => {
+        console.log(resData);
+      })
+      .catch(this.catchError);
+  };
 
   newPostHandler = () => {
     this.setState({ isEditing: true , newPost: true});
@@ -339,7 +348,7 @@ class Profile extends Component {
 
   render() {
 
-    // console.log('typeof: ' + (this.state.userImage));
+    console.log('typeof: ' + (this.state.user._id));
 
     // if(typeof(this.state.user.image) === 'undefined') {
     //   this.state.user.image= 'http://localhost:8080/images/prof_default.png'http://localhost:8080/images/pro_default.png;
@@ -351,6 +360,11 @@ class Profile extends Component {
     // if(typeof(this.state.user.following) !== 'undefined'){
     //   this.setState({following: this.state.user.following.length});
     // }
+
+    // let fButton = (<span className="follow" style={{float: "center"}}>Follow</span>);
+    // if (this.state.user in this.state.user.followers) {
+    //   let fButton = (<span className="follow" style={{float: "center"}}>Unfollow</span>)
+    // } 
 
     return (
       <Fragment>
@@ -407,6 +421,7 @@ class Profile extends Component {
                   image={post.imageUrl}
                   content={post.content}
                   caller={this.state.caller}
+                  profile={true}
                   onStartEdit={this.startEditPostHandler.bind(this, post._id)}
                   onDelete={this.deletePostHandler.bind(this, post._id)}
                 />

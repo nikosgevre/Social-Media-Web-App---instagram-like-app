@@ -71,6 +71,7 @@ class Post extends Component {
     // console.log('---------------- ' + this.props.id);
     // console.log('user id: ' + localStorage.getItem("userId"));
     // console.log('creator id: ' + this.props.creator._id);
+
     if(this.props.creator._id === localStorage.getItem("userId")) {
       // console.log(this.props.creator);
       buttons = (
@@ -78,8 +79,21 @@ class Post extends Component {
           <Button mode="flat" link={`${this.props.id}`}>
             View
           </Button>
-          <Button mode="flat" image={this.state.image} onClick={this.props.onStartEdit}>
+          {/* <Button mode="flat" image={this.state.image} onClick={this.props.onStartEdit}>
             Edit
+          </Button> */}
+          <Button mode="flat" design="danger" onClick={this.props.onDelete}>
+            Delete
+          </Button>
+        </div>
+      )
+    }
+
+    if(this.props.profile) {
+      buttons = (
+        <div className="post__actions">
+          <Button mode="flat" link={`${this.props.id}`}>
+            View
           </Button>
           <Button mode="flat" design="danger" onClick={this.props.onDelete}>
             Delete
@@ -98,7 +112,7 @@ class Post extends Component {
                 <img src={this.state.userImage} alt={this.props.author} />
               </div>
               <div className="Post-user-nickname">
-                <NavLink className='Nav-link' to={'/profile/' + this.props.creator._id} userId={this.props.creator._id}>{this.props.author}</NavLink>
+                <NavLink className='Nav-link' to={'/profile/' + this.props.creator._id} user={this.props.creator}>{this.props.author}</NavLink>
               </div>
 
               {/* <div className="dropdown" style={{float: "right"}}>
