@@ -372,7 +372,7 @@ class Profile extends Component {
                   <p className="desc-stat">Following</p>
                 </div>
                 <div className="stat col-xs-4" style={{paddingLeft: "300px"}}>
-                  <p className="number-stat">No. Posts</p>
+                  <p className="number-stat">{this.state.posts.length}</p>
                   <p className="desc-stat">Posts</p>
                 </div>
               </div>
