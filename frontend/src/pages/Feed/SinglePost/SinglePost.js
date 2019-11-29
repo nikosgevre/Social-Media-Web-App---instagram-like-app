@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import { withRouter } from 'react-router';
 import openSocket from 'socket.io-client';
+import { NavLink } from 'react-router-dom';
 
 import Image from '../../../components/Image/Image';
 import Button from '../../../components/Button/Button';
@@ -18,7 +19,9 @@ class SinglePost extends Component {
     isEditing: false,
     editPost: null,
     editLoading: false,
-    status: ''
+    status: '',
+    comments: [],
+    likes: []
   };
 
   componentDidMount() {
@@ -187,15 +190,20 @@ class SinglePost extends Component {
 
   render() {
 
-    // console.log(this.state.post);
+    let buttons = (
+      <div className="post__actions">
+        <Button mode="flat" image={this.state.image} onClick={this.startEditPostHandler.bind(this, this.state.post._id)}>
+          Comment
+        </Button>
+      </div>
+    );
 
-    let buttons;
-    // console.log('user id: ' + localStorage.getItem("userId"));
-    // console.log('creator id: ' + this.state.creator._id);
     if(this.state.creator._id === localStorage.getItem("userId")) {
-      // console.log('MPIKA');
       buttons = (
         <div className="post__actions">
+          <Button mode="flat" image={this.state.image} onClick={this.startEditPostHandler.bind(this, this.state.post._id)}>
+            Comment
+          </Button>
           <Button mode="flat" image={this.state.image} onClick={this.startEditPostHandler.bind(this, this.state.post._id)}>
             Edit
           </Button>
@@ -205,6 +213,14 @@ class SinglePost extends Component {
         </div>
       )
     }
+
+    let likesAndComments = (
+        <div className="Post-caption">
+          <div className="P-border" >Like | <strong>{this.state.likes.length}</strong> | 
+            {/* <strong> comments</strong> {(this.state.comments.length === 0) ? '' : this.state.comments.length} */}
+          </div>
+        </div>
+    );
 
     return (
       <Fragment>
@@ -223,7 +239,10 @@ class SinglePost extends Component {
           <div className="single-post__image">
             <Image contain imageUrl={this.state.image} />
           </div>
+          {likesAndComments}
           <p>{this.state.content}</p>
+          <span className='Nav-link'><strong>  comments({this.state.comments.length})</strong></span>
+          <p>{this.state.comments}</p>
           {buttons}
         </section>
       </Fragment>

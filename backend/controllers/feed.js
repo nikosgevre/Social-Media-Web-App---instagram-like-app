@@ -37,6 +37,8 @@ exports.getUserSpecificPosts = async (req, res, next) => {
   const perPage = Number.MAX_SAFE_INTEGER; //Add number for pagination
   const userId = req.query.userId;
 
+  // console.log('yoyoyoyoyyoyoyyoyoyo ' + userId);
+
   try {
     const totalItems = await Post.find( { creator: userId } ).countDocuments();
     const posts = await Post.find( { creator: userId } )

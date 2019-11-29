@@ -128,9 +128,9 @@ main {
 }
 
 .follow {
-    /* position: absolute; */
+    position: absolute;
     /* right: 8%; */
-    float: right;
+    /* float: right; */
     /* top: 10%; */
     font-size: 11pt;
     background-color: #42b1fa;

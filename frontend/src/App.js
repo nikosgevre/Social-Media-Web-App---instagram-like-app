@@ -82,7 +82,7 @@ class App extends Component {
         return res.json();
       })
       .then(resData => {
-        console.log(resData);
+        // console.log(resData);
         this.setState({
           isAuth: true,
           token: resData.token,
@@ -210,6 +210,7 @@ class App extends Component {
           /> */}
           <Route
             path="/profile/:userId"
+            // exact
             render={props => (
               <ProfilePage 
                 {...props} 

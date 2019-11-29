@@ -60,6 +60,17 @@
   text-decoration: none;
   display: inline-block;
   color: black;
+  font-family: 'PT Sans', sans-serif;
+  font-weight: bold;
+}
+
+
+
+.P-border{
+  padding-bottom: 25px;
+  padding-top: 25px;
+  border-bottom: 1px solid #ededed;
+  border-top: 1px solid #ededed;
 }
 
 

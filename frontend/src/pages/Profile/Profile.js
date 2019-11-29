@@ -4,6 +4,7 @@ import openSocket from 'socket.io-client';
 import Post from '../../components/Feed/Post/Post';
 
 import './Profile.css'; 
+// import 'bootstrap/dist/css/bootstrap.min.css';
 
 const paginationNumber = Number.MAX_SAFE_INTEGER;
 
@@ -28,41 +29,9 @@ class Profile extends Component {
   }
 
   componentDidMount() {
-    // console.log('-------------------- ' + this.props.userId);
     const userId = this.props.match.params.userId;
     this.setState({userIdNew: userId});
-    console.log('-------------------- ' + userId);
-    fetch('http://localhost:8080/feed/profile/' + userId, {
-      headers: {
-        Authorization: 'Bearer ' + this.props.token
-      }
-    })
-      .then(res => {
-        if (res.status !== 200) {
-          throw new Error('Failed to fetch user status.');
-        }
-        return res.json();
-      })
-      .then(resData => {
-        this.setState({ status: resData.status, user: resData.user });
-        console.log('prwtos: ' + this.state.user._id);
-        this.setState({
-          posts: resData.user.posts.map(post => {
-            return {
-              ...post
-            };
-          })
-        });
-        // console.log(this.state.posts[0].creator.name + "---22222222222222222----------- " + this.state.posts[0].imageUrl);
-        this.setState({ imagePath: 'http://localhost:8080/' + resData.user.posts.map(post => {
-          let imgUrl = post.imageUrl;
-          return imgUrl;
-        }) 
-        });
-        this.setState({ userImage: 'http://localhost:8080/' + resData.user.image })
-      })
-      .catch(this.catchError);
-      this.loadPosts();
+      this.fetchUser();
       this.loadFollowers();
       this.loadFollowing();
       const socket = openSocket('http://localhost:8080');
@@ -137,21 +106,21 @@ class Profile extends Component {
       .catch(this.catchError);
   };
 
-  addPost = post => {
-    this.setState(prevState => {
-      const updatedPosts = [...prevState.posts];
-      if (prevState.postPage === 1) {
-        if (prevState.posts.length >= paginationNumber) {
-          updatedPosts.pop();
-        }
-        updatedPosts.unshift(post);
-      }
-      return {
-        posts: updatedPosts,
-        totalPosts: prevState.totalPosts + 1
-      };
-    });
-  };
+  // addPost = post => {
+  //   this.setState(prevState => {
+  //     const updatedPosts = [...prevState.posts];
+  //     if (prevState.postPage === 1) {
+  //       if (prevState.posts.length >= paginationNumber) {
+  //         updatedPosts.pop();
+  //       }
+  //       updatedPosts.unshift(post);
+  //     }
+  //     return {
+  //       posts: updatedPosts,
+  //       totalPosts: prevState.totalPosts + 1
+  //     };
+  //   });
+  // };
 
   updatePost = post => {
     this.setState(prevState => {
@@ -179,6 +148,7 @@ class Profile extends Component {
       page--;
       this.setState({ postPage: page });
     }
+    console.log('---123123123: ' + this.state.user.name);
     fetch('http://localhost:8080/feed/userPosts?page=' + page + '&userId=' + this.state.user._id, {
       headers: {
         Authorization: 'Bearer ' + this.props.token
@@ -209,7 +179,7 @@ class Profile extends Component {
 
   };
 
-  fetchUser = user => {
+  fetchUser = () => {
     const userId = this.props.match.params.userId;
     this.setState({userIdNew: userId});
     fetch('http://localhost:8080/feed/profile/' + userId, {
@@ -225,7 +195,7 @@ class Profile extends Component {
       })
       .then(resData => {
         this.setState({ status: resData.status, user: resData.user });
-        console.log('prwtos: ' + this.state.user._id);
+        // console.log('prwtos: ' + this.state.user._id);
         this.setState({
           posts: resData.user.posts.map(post => {
             return {
@@ -240,113 +210,114 @@ class Profile extends Component {
         }) 
         });
         this.setState({ userImage: 'http://localhost:8080/' + resData.user.image })
+        // this.setState({user: resData.user});
       })
       .catch(this.catchError);
   }
 
-  statusUpdateHandler = event => {
-    event.preventDefault();
-    fetch('http://localhost:8080/auth/status', {
-      method: 'PATCH',
-      headers: {
-        Authorization: 'Bearer ' + this.props.token,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        status: this.state.status
-      })
-    })
-      .then(res => {
-        if (res.status !== 200 && res.status !== 201) {
-          throw new Error("Can't update status!");
-        }
-        return res.json();
-      })
-      .then(resData => {
-        console.log(resData);
-      })
-      .catch(this.catchError);
-  };
+  // statusUpdateHandler = event => {
+  //   event.preventDefault();
+  //   fetch('http://localhost:8080/auth/status', {
+  //     method: 'PATCH',
+  //     headers: {
+  //       Authorization: 'Bearer ' + this.props.token,
+  //       'Content-Type': 'application/json'
+  //     },
+  //     body: JSON.stringify({
+  //       status: this.state.status
+  //     })
+  //   })
+  //     .then(res => {
+  //       if (res.status !== 200 && res.status !== 201) {
+  //         throw new Error("Can't update status!");
+  //       }
+  //       return res.json();
+  //     })
+  //     .then(resData => {
+  //       console.log(resData);
+  //     })
+  //     .catch(this.catchError);
+  // };
 
-  newPostHandler = () => {
-    this.setState({ isEditing: true , newPost: true});
-  };
+  // newPostHandler = () => {
+  //   this.setState({ isEditing: true , newPost: true});
+  // };
 
-  startEditPostHandler = postId => {
-    this.setState(prevState => {
-      const loadedPost = { ...prevState.posts.find(p => p._id === postId) };
+  // startEditPostHandler = postId => {
+  //   this.setState(prevState => {
+  //     const loadedPost = { ...prevState.posts.find(p => p._id === postId) };
 
-      return {
-        isEditing: true,
-        editPost: loadedPost,
-        newPost: false
-      };
-    });
-  };
+  //     return {
+  //       isEditing: true,
+  //       editPost: loadedPost,
+  //       newPost: false
+  //     };
+  //   });
+  // };
 
-  cancelEditHandler = () => {
-    this.setState({ isEditing: false, editPost: null });
-  };
+  // cancelEditHandler = () => {
+  //   this.setState({ isEditing: false, editPost: null });
+  // };
 
-  finishEditHandler = postData => {
-    this.setState({
-      editLoading: true
-    });
-    const formData = new FormData();
-    formData.append('title', postData.title);
-    formData.append('content', postData.content);
-    formData.append('image', postData.image);
-    let url = 'http://localhost:8080/feed/post';
-    let method = 'POST';
-    if (this.state.editPost) {
-      url = 'http://localhost:8080/feed/post/' + this.state.editPost._id;
-      method = 'PUT';
-    }
+  // finishEditHandler = postData => {
+  //   this.setState({
+  //     editLoading: true
+  //   });
+  //   const formData = new FormData();
+  //   formData.append('title', postData.title);
+  //   formData.append('content', postData.content);
+  //   formData.append('image', postData.image);
+  //   let url = 'http://localhost:8080/feed/post';
+  //   let method = 'POST';
+  //   if (this.state.editPost) {
+  //     url = 'http://localhost:8080/feed/post/' + this.state.editPost._id;
+  //     method = 'PUT';
+  //   }
 
-    fetch(url, {
-      method: method,
-      body: formData,
-      headers: {
-        Authorization: 'Bearer ' + this.props.token
-      }
-    })
-      .then(res => {
-        if (res.status !== 200 && res.status !== 201) {
-          throw new Error('Creating or editing a post failed!');
-        }
-        return res.json();
-      })
-      .then(resData => {
-        console.log(resData);
-        const post = {
-          _id: resData.post._id,
-          title: resData.post.title,
-          content: resData.post.content,
-          creator: resData.post.creator,
-          createdAt: resData.post.createdAt
-        };
-        this.setState(prevState => {
-          return {
-            isEditing: false,
-            editPost: null,
-            editLoading: false
-          };
-        });
-      })
-      .catch(err => {
-        console.log(err);
-        this.setState({
-          isEditing: false,
-          editPost: null,
-          editLoading: false,
-          error: err
-        });
-      });
-  };
+  //   fetch(url, {
+  //     method: method,
+  //     body: formData,
+  //     headers: {
+  //       Authorization: 'Bearer ' + this.props.token
+  //     }
+  //   })
+  //     .then(res => {
+  //       if (res.status !== 200 && res.status !== 201) {
+  //         throw new Error('Creating or editing a post failed!');
+  //       }
+  //       return res.json();
+  //     })
+  //     .then(resData => {
+  //       console.log(resData);
+  //       const post = {
+  //         _id: resData.post._id,
+  //         title: resData.post.title,
+  //         content: resData.post.content,
+  //         creator: resData.post.creator,
+  //         createdAt: resData.post.createdAt
+  //       };
+  //       this.setState(prevState => {
+  //         return {
+  //           isEditing: false,
+  //           editPost: null,
+  //           editLoading: false
+  //         };
+  //       });
+  //     })
+  //     .catch(err => {
+  //       console.log(err);
+  //       this.setState({
+  //         isEditing: false,
+  //         editPost: null,
+  //         editLoading: false,
+  //         error: err
+  //       });
+  //     });
+  // };
 
-  statusInputChangeHandler = (input, value) => {
-    this.setState({ status: value });
-  };
+  // statusInputChangeHandler = (input, value) => {
+  //   this.setState({ status: value });
+  // };
 
   deletePostHandler = postId => {
     this.setState({ postsLoading: true });
@@ -382,11 +353,12 @@ class Profile extends Component {
 
   catchError = error => {
     this.setState({ error: error });
+    console.log(error);
   };
 
   render() {
 
-    console.log('typeof: ' + (this.state.user._id));
+    // console.log('typeof: ' + (this.state.user._id));
 
     // if(typeof(this.state.user.image) === 'undefined') {
     //   this.state.user.image= 'http://localhost:8080/images/prof_default.png'http://localhost:8080/images/pro_default.png;
@@ -441,11 +413,6 @@ class Profile extends Component {
               <span className="follow" style={{float: "right"}}>Follow</span>
             </div> */}
             <div className="row gallery">
-              {/* {this.state.posts.map(post => (
-                  <div key={post._id} style={{width: "150px", height: "150px"}} className="col-md-4">
-                    <img src={`http://localhost:8080/${post.imageUrl}`} alt={post.content} />
-                  </div>
-              ))} */}
 
               {this.state.posts.map(post => (
                 <Post
@@ -460,7 +427,7 @@ class Profile extends Component {
                   content={post.content}
                   caller={this.state.caller}
                   profile={true}
-                  onStartEdit={this.startEditPostHandler.bind(this, post._id)}
+                  // onStartEdit={this.startEditPostHandler.bind(this, post._id)}
                   onDelete={this.deletePostHandler.bind(this, post._id)}
                 />
               ))}

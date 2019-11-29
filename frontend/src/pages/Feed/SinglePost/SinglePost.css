@@ -18,6 +18,42 @@
   margin: 1rem auto;
 }
 
+
+
+
+
+
+.Post-caption {
+  /* padding: 16px 16px; */
+}
+.Post-caption strong {
+  font-family: 'PT Sans', sans-serif;
+  font-weight: bold;
+}
+
+
+.Nav-link{
+  outline: none;
+  text-decoration: none;
+  display: inline-block;
+  color: black;
+  font-family: 'PT Sans', sans-serif;
+  font-weight: bold;
+}
+
+
+
+.P-border{
+  /* padding-bottom: 25px; */
+  /* padding-top: 25px; */
+  /* border-bottom: 1px solid #ededed; */
+  border-top: 1px solid #ededed;
+}
+
+
+
+
+
 @media (min-width: 768px) {
   .single-post {
     width: 40rem;
