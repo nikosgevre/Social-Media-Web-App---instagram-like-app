@@ -1,6 +1,6 @@
 # thesis
 
-# Social network web application for uploading and sharing photos and videos.
+# Social network web application for uploading and sharing photos and videos. (Instagram like application)
 
 ## Summary
 Each user has his own profile page. The user can upload images and videos and also update his status. Users can see the posts and status of the other users they follow. Users can like and comment on posts.
