@@ -343,10 +343,14 @@ exports.postLike = async (req, res, next) => {
         post: result
       });
     } else {
-      console.log('Post already liked!');
+      post.likes = post.likes.filter(el => {
+        return el.name != user.name;
+      });
+      console.log('Disliked a post');
+      const result = await post.save();
       res.status(200).json({
-        message: 'Post already liked!',
-        post: post
+        message: 'Post disliked!',
+        post: result
       });
     }
 

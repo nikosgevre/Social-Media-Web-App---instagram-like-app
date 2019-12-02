@@ -165,7 +165,7 @@ class Post extends Component {
         <div className="Post-caption">
           {/* <p className="P-border" >Like | <strong>{this.state.likes.length}</strong> |  */}
             {/* <strong> comments</strong> {(this.state.comments.length === 0) ? '' : this.state.comments.length} */}
-            <Button design="danger" onClick={this.dislikeHandler}>Dislike</Button> <strong> {this.state.likes.length} | </strong>
+            <Button design="danger" onClick={this.likeHandler}>Dislike</Button> <strong> {this.state.likes.length} | </strong>
             <NavLink className='Nav-link' to={`${this.props.id}`} user={this.props.creator}><strong>  comments</strong> {(this.state.comments.length === 0) ? '' : this.state.comments.length}</NavLink>
           {/* </p> */}
         </div>
