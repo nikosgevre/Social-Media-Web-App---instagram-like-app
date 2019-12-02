@@ -1,6 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import { withRouter } from 'react-router';
-import openSocket from 'socket.io-client';
+// import openSocket from 'socket.io-client';
 import { NavLink } from 'react-router-dom';
 
 import Image from '../../../components/Image/Image';
@@ -21,6 +21,7 @@ class SinglePost extends Component {
     editLoading: false,
     status: '',
     comments: [],
+    trueUserId: localStorage.getItem('userId'),
     likes: []
   };
 
@@ -46,6 +47,9 @@ class SinglePost extends Component {
           date: new Date(resData.post.createdAt).toLocaleString('en-US'),
           content: resData.post.content
         });
+        this.setState({ likes: resData.post.likes.map(like => {
+          return{...like};
+        })});
       })
       .catch(err => {
         console.log(err);
@@ -180,6 +184,37 @@ class SinglePost extends Component {
     this.setState({ status: value });
   };
 
+  likeHandler = event => {
+    event.preventDefault();
+    const postId = this.state.post._id;
+    const userId = localStorage.getItem('userId');
+    // console.log('postId: ' + postId);
+    // console.log('userId: ' + userId);
+    // backend for like
+    // if already like then dislike
+    fetch('http://localhost:8080/feed/postLike?postId=' + postId + '&userId=' + userId, {
+      method: 'POST',
+      headers: {
+        Authorization: 'Bearer ' + this.props.token
+      }
+    })
+    .then(res => {
+      if (res.status !== 200 && res.status !== 201) {
+        throw new Error("Can't like post!");
+      }
+      return res.json();
+    })
+    .then(resData => {
+      // egine to like. sto like handler kaneis like
+      this.setState({gotLike: true})
+      this.setState({ likes: resData.post.likes.map(like => {
+        return{...like};
+      })});
+    })
+    .catch(this.catchError);
+    // console.log('Liikee!!!');
+  };
+
   errorHandler = () => {
     this.setState({ error: null });
   };
@@ -215,12 +250,22 @@ class SinglePost extends Component {
     }
 
     let likesAndComments = (
+      <div>
         <div className="Post-caption">
-          <div className="P-border" >Like | <strong>{this.state.likes.length}</strong> | 
-            {/* <strong> comments</strong> {(this.state.comments.length === 0) ? '' : this.state.comments.length} */}
-          </div>
+          <Button onClick={this.likeHandler}>Like</Button> <strong> {this.state.likes.length} </strong>
         </div>
+      </div>
     );
+
+    if (this.state.likes.some(like => like._id.toString() === this.state.trueUserId)){
+      likesAndComments = (
+      <div>
+        <div className="Post-caption">
+            <Button design="danger" onClick={this.likeHandler}>Dislike</Button> <strong> {this.state.likes.length} </strong>
+        </div>
+      </div>
+      );
+    }
 
     return (
       <Fragment>
@@ -234,13 +279,14 @@ class SinglePost extends Component {
         <section className="single-post">
           {/* <h1>{this.state.title}</h1> */}
           <h2>
-            Created by {this.state.creator.name} on {this.state.date}
+            Created by <NavLink className='Nav-link' to={'/profile/' + this.state.creator._id} user={this.state.creator}>{this.state.creator.name}</NavLink> on {this.state.date}
+            
           </h2>
           <div className="single-post__image">
             <Image contain imageUrl={this.state.image} />
           </div>
           {likesAndComments}
-          <p>{this.state.content}</p>
+          <h2 className="single-post">{this.state.content}</h2>
           <span className='Nav-link'><strong>  comments({this.state.comments.length})</strong></span>
           <p>{this.state.comments}</p>
           {buttons}

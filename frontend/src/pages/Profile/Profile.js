@@ -148,7 +148,7 @@ class Profile extends Component {
       page--;
       this.setState({ postPage: page });
     }
-    console.log('---123123123: ' + this.state.user.name);
+    // console.log('---123123123: ' + this.state.user.name);
     fetch('http://localhost:8080/feed/userPosts?page=' + page + '&userId=' + this.state.user._id, {
       headers: {
         Authorization: 'Bearer ' + this.props.token

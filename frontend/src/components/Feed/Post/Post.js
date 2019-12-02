@@ -61,8 +61,8 @@ class Post extends Component {
     event.preventDefault();
     const postId = this.props.id;
     const userId = localStorage.getItem('userId');
-    console.log('postId: ' + postId);
-    console.log('userId: ' + userId);
+    // console.log('postId: ' + postId);
+    // console.log('userId: ' + userId);
     // backend for like
     // if already like then dislike
     fetch('http://localhost:8080/feed/postLike?postId=' + postId + '&userId=' + userId, {
