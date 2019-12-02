@@ -14,6 +14,8 @@ router.get('/posts', isAuth, feedController.getPosts);
 // GET /feed/userPosts
 router.get('/userPosts', isAuth, feedController.getUserSpecificPosts);
 
+router.post('/postLike', isAuth, feedController.postLike);
+
 // POST Search
 // router.post('/search',
 //   [

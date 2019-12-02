@@ -257,6 +257,41 @@ class Feed extends Component {
       });
   };
 
+  // likeHandler = postId => {
+  //   postId
+  //   const postId = this.props.id;
+  //   const userId = localStorage.getItem('userId');
+  //   console.log('postId: ' + postId);
+  //   console.log('userId: ' + userId);
+  //   // backend for like
+  //   // if already like then dislike
+  //   fetch('http://localhost:8080/feed/postLike?postId=' + postId + '&userId=' + userId, {
+  //     method: 'POST',
+  //     headers: {
+  //       Authorization: 'Bearer ' + this.props.token
+  //     }
+  //   })
+  //   .then(res => {
+  //     if (res.status !== 200 && res.status !== 201) {
+  //       throw new Error("Can't like post!");
+  //     }
+  //     return res.json();
+  //   })
+  //   .then(resData => {
+  //     // // egine to like. sto like handler kaneis like
+  //     // this.setState({gotLike: true})
+  //     // this.setState({ likes: resData.post.likes.map(like => {
+  //     //   return{...like};
+  //     // })});
+  //     this.setState({
+  //       editLoading: true
+  //     });
+      
+  //   })
+  //   .catch(this.catchError);
+  //   console.log('Liikee!!!');
+  // };
+
   errorHandler = () => {
     this.setState({ error: null });
   };
@@ -319,13 +354,14 @@ class Feed extends Component {
                   token={this.props.token}
                   author={post.creator.name}
                   creator={post.creator}
-                  date={new Date(post.createdAt).toLocaleString('en-US')}
+                  date={new Date(post.createdAt).toLocaleString()}
                   title={post.title}
                   image={post.imageUrl}
                   content={post.content}
                   caller={this.state.caller}
                   onStartEdit={this.startEditPostHandler.bind(this, post._id)}
                   onDelete={this.deletePostHandler.bind(this, post._id)}
+                  // onLike={this.likeHandler.bind(this, post._id)}
                 />
               ))}
             </Paginator>

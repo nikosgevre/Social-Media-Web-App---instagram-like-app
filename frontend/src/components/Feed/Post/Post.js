@@ -17,7 +17,9 @@ class Post extends Component {
     userImage: '',
     comments: [],
     likes: [],
-    gotLike: false
+    gotLike: false,
+    userId: '',
+    post: {}
   };
 
   componentDidMount() {
@@ -35,14 +37,20 @@ class Post extends Component {
       })
       .then(resData => {
         this.setState({
+          userId: resData.post.creator._id,
           title: resData.post.title,
           author: resData.post.creator.name,
           image: 'http://localhost:8080/' + resData.post.imageUrl,
-          date: new Date(resData.post.createdAt).toLocaleString('en-US'),
+          date: new Date(resData.post.createdAt).toLocaleString(),
           content: resData.post.content,
           // comments: 'resData.post.comments', //map gia ola ta comments / isws kai state gia to post olokliro
-          userImage: 'http://localhost:8080/' + resData.post.creator.image
+          userImage: 'http://localhost:8080/' + resData.post.creator.image,
+          likes: resData.post.likes.map(like => {
+            return{...like};
+          }),
+          post: resData.post
         });
+        // console.log(this.state.userId);
       })
       .catch(err => {
         console.log(err);
@@ -51,30 +59,63 @@ class Post extends Component {
 
   likeHandler = event => {
     event.preventDefault();
+    const postId = this.props.id;
+    const userId = localStorage.getItem('userId');
+    console.log('postId: ' + postId);
+    console.log('userId: ' + userId);
     // backend for like
     // if already like then dislike
-    fetch('http://localhost:8080/feed/like/' + this.props.id, {
-      method: 'PATCH',
+    fetch('http://localhost:8080/feed/postLike?postId=' + postId + '&userId=' + userId, {
+      method: 'POST',
       headers: {
-        Authorization: 'Bearer ' + this.props.token,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        status: this.state.status
-      })
+        Authorization: 'Bearer ' + this.props.token
+      }
     })
     .then(res => {
       if (res.status !== 200 && res.status !== 201) {
-        throw new Error("Can't update status!");
+        throw new Error("Can't like post!");
       }
       return res.json();
     })
     .then(resData => {
       // egine to like. sto like handler kaneis like
       this.setState({gotLike: true})
+      this.setState({ likes: resData.post.likes.map(like => {
+        return{...like};
+      })});
     })
     .catch(this.catchError);
     console.log('Liikee!!!');
+  };
+
+  dislikeHandler = event => {
+    event.preventDefault();
+    const postId = this.props.id;
+    const userId = localStorage.getItem('userId');
+    console.log('postId: ' + postId);
+    // backend for like
+    // if already like then dislike
+    fetch('http://localhost:8080/feed/postLike?postId=' + postId + '&userId=' + userId, {
+      method: 'POST',
+      headers: {
+        Authorization: 'Bearer ' + this.props.token
+      }
+    })
+    .then(res => {
+      if (res.status !== 200 && res.status !== 201) {
+        throw new Error("Can't like post!");
+      }
+      return res.json();
+    })
+    .then(resData => {
+      // egine to like. sto like handler kaneis like
+      this.setState({gotLike: true})
+      this.setState({ likes: resData.post.likes.map(like => {
+        return{...like};
+      })});
+    })
+    .catch(this.catchError);
+    // console.log('Liikee!!!');
   };
 
   // showDropdown = () => {
@@ -93,7 +134,7 @@ class Post extends Component {
   render () {
 
     let postUser = (<header className="post__header"></header>);
-    let likesAndComments = (<div></div>);
+    // let likesAndComments = (<div></div>);
     let buttons = (
       <div className="post__actions">
         <Button mode="flat" link={`${this.props.id}`}>
@@ -101,6 +142,39 @@ class Post extends Component {
         </Button>
       </div>
     );
+    let likesAndComments = (
+      <div>
+        <div className="Post-caption">
+          {/* <p className="P-border" >Like | <strong>{this.state.likes.length}</strong> |  */}
+            {/* <strong> comments</strong> {(this.state.comments.length === 0) ? '' : this.state.comments.length} */}
+            <button className="P-border" onClick={this.likeHandler}>Like</button> <strong> {this.state.likes.length} | </strong>
+            <NavLink className='Nav-link' to={`${this.props.id}`} user={this.props.creator}><strong>  comments</strong> {(this.state.comments.length === 0) ? '' : this.state.comments.length}</NavLink>
+          {/* </p> */}
+        </div>
+        <div className="Post-caption">
+          <NavLink className='Nav-link' to={'/profile/' + this.props.creator._id} user={this.props.creator}>{this.props.author}</NavLink> {this.props.content}
+        </div>
+      </div>
+    );
+
+    console.log(this.state.likes.indexOf(this.state.userId));
+    if (this.state.likes.indexOf(this.state.userId) !== -1){
+      console.log('o xristis exei kanei idi like sto post: ' + this.state.post._id);
+      likesAndComments = (
+      <div>
+        <div className="Post-caption">
+          {/* <p className="P-border" >Like | <strong>{this.state.likes.length}</strong> |  */}
+            {/* <strong> comments</strong> {(this.state.comments.length === 0) ? '' : this.state.comments.length} */}
+            <button className="P-border" onClick={this.dislikeHandler}>Dislike</button> <strong> {this.state.likes.length} | </strong>
+            <NavLink className='Nav-link' to={`${this.props.id}`} user={this.props.creator}><strong>  comments</strong> {(this.state.comments.length === 0) ? '' : this.state.comments.length}</NavLink>
+          {/* </p> */}
+        </div>
+        <div className="Post-caption">
+          <NavLink className='Nav-link' to={'/profile/' + this.props.creator._id} user={this.props.creator}>{this.props.author}</NavLink> {this.props.content}
+        </div>
+      </div>
+      );
+    }
 
     if(this.props.creator._id === localStorage.getItem("userId")) {
       buttons = (
@@ -156,20 +230,7 @@ class Post extends Component {
           </div>
         </header>
       );
-
-      likesAndComments = (
-        <div>
-          <div className="Post-caption">
-            <p className="P-border" >Like | <strong>{this.state.likes.length}</strong> | 
-              {/* <strong> comments</strong> {(this.state.comments.length === 0) ? '' : this.state.comments.length} */}
-              <NavLink className='Nav-link' to={`${this.props.id}`} user={this.props.creator}><strong>  comments</strong> {(this.state.comments.length === 0) ? '' : this.state.comments.length}</NavLink>
-            </p>
-          </div>
-          <div className="Post-caption">
-            <NavLink className='Nav-link' to={'/profile/' + this.props.creator._id} user={this.props.creator}>{this.props.author}</NavLink> {this.props.content}
-          </div>
-        </div>
-      );
+      
     }
     else if(this.props.caller === 'profile'){
       postUser = (

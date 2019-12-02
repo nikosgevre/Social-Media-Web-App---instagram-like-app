@@ -278,6 +278,39 @@ exports.getFollowing = async (req, res, next) => {
   } 
 };
 
+exports.postLike = async (req, res, next) => {
+  const postId = req.query.postId;
+  const userId = req.query.userId;
+  
+  console.log('userId: ' + userId);
+
+  try{
+    const post = await Post.findById(postId).populate('creator').populate('likes');
+    const user = await User.findById(userId);
+    console.log('asdasd ' + (user._id));
+    console.log('post likes: ' + post.likes);
+    // console.log('true or false: ' + post.likes.some(liker => liker._id.valueOf() === user._id.valueOf()));
+    console.log('true or false: ' + post.likes.includes(user._id));
+    if (!post.likes.some(post => post._id.valueOf() === user._id.valueOf())){
+      // console.log('user pou kanei like: ' + user);
+      post.likes.push(user);
+      console.log('liked a post');
+      const result = await post.save();
+      res.status(200).json({ message: 'Post liked!', post: result });
+    } else {
+      console.log('Post already liked!');
+      res.status(200).json({ message: 'Post already liked!', post: post });
+    }
+    
+  }catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+
+};
+
 const clearImage = filePath => {
   filePath = path.join(__dirname, '..', filePath);
   fs.unlink(filePath, err => console.log(err));
