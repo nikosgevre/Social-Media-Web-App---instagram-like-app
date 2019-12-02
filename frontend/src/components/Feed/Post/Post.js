@@ -145,11 +145,8 @@ class Post extends Component {
     let likesAndComments = (
       <div>
         <div className="Post-caption">
-          {/* <p className="P-border" >Like | <strong>{this.state.likes.length}</strong> |  */}
-            {/* <strong> comments</strong> {(this.state.comments.length === 0) ? '' : this.state.comments.length} */}
             <Button onClick={this.likeHandler}>Like</Button> <strong> {this.state.likes.length} | </strong>
             <NavLink className='Nav-link' to={`${this.props.id}`} user={this.props.creator}><strong>  comments</strong> {(this.state.comments.length === 0) ? '' : this.state.comments.length}</NavLink>
-          {/* </p> */}
         </div>
         <div className="Post-caption">
           <NavLink className='Nav-link' to={'/profile/' + this.props.creator._id} user={this.props.creator}>{this.props.author}</NavLink> {this.props.content}
@@ -157,17 +154,12 @@ class Post extends Component {
       </div>
     );
 
-    // console.log('--- ' + this.state.likes.some(like => like._id.toString() === this.state.trueUserId));
     if (this.state.likes.some(like => like._id.toString() === this.state.trueUserId)){
-      // console.log('o xristis exei kanei idi like sto post: ' + this.state.post._id);
       likesAndComments = (
       <div>
         <div className="Post-caption">
-          {/* <p className="P-border" >Like | <strong>{this.state.likes.length}</strong> |  */}
-            {/* <strong> comments</strong> {(this.state.comments.length === 0) ? '' : this.state.comments.length} */}
             <Button design="danger" onClick={this.likeHandler}>Dislike</Button> <strong> {this.state.likes.length} | </strong>
             <NavLink className='Nav-link' to={`${this.props.id}`} user={this.props.creator}><strong>  comments</strong> {(this.state.comments.length === 0) ? '' : this.state.comments.length}</NavLink>
-          {/* </p> */}
         </div>
         <div className="Post-caption">
           <NavLink className='Nav-link' to={'/profile/' + this.props.creator._id} user={this.props.creator}>{this.props.author}</NavLink> {this.props.content}
@@ -253,7 +245,6 @@ class Post extends Component {
         {likesAndComments}
 
         <div className="Post-caption">
-          {/* <h3 className="post__meta">{this.state.date}</h3> */}
           <TimeAgo date={this.state.date} minPeriod="50"  />
         </div>
 
