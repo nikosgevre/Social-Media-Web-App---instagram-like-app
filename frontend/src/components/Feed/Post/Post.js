@@ -18,7 +18,7 @@ class Post extends Component {
     comments: [],
     likes: [],
     gotLike: false,
-    userId: '',
+    trueUserId: localStorage.getItem('userId'),
     post: {}
   };
 
@@ -37,7 +37,7 @@ class Post extends Component {
       })
       .then(resData => {
         this.setState({
-          userId: resData.post.creator._id,
+          // trueUserId: localStorage.getItem('userId'),
           title: resData.post.title,
           author: resData.post.creator.name,
           image: 'http://localhost:8080/' + resData.post.imageUrl,
@@ -85,7 +85,7 @@ class Post extends Component {
       })});
     })
     .catch(this.catchError);
-    console.log('Liikee!!!');
+    // console.log('Liikee!!!');
   };
 
   dislikeHandler = event => {
@@ -95,7 +95,7 @@ class Post extends Component {
     console.log('postId: ' + postId);
     // backend for like
     // if already like then dislike
-    fetch('http://localhost:8080/feed/postLike?postId=' + postId + '&userId=' + userId, {
+    fetch('http://localhost:8080/feed/postDislike?postId=' + postId + '&userId=' + userId, {
       method: 'POST',
       headers: {
         Authorization: 'Bearer ' + this.props.token
@@ -109,13 +109,13 @@ class Post extends Component {
     })
     .then(resData => {
       // egine to like. sto like handler kaneis like
-      this.setState({gotLike: true})
+      this.setState({gotLike: false})
       this.setState({ likes: resData.post.likes.map(like => {
         return{...like};
       })});
     })
     .catch(this.catchError);
-    // console.log('Liikee!!!');
+    console.log('disssLiikee!!!');
   };
 
   // showDropdown = () => {
@@ -157,15 +157,15 @@ class Post extends Component {
       </div>
     );
 
-    console.log(this.state.likes.indexOf(this.state.userId));
-    if (this.state.likes.indexOf(this.state.userId) !== -1){
-      console.log('o xristis exei kanei idi like sto post: ' + this.state.post._id);
+    // console.log('--- ' + this.state.likes.some(like => like._id.toString() === this.state.trueUserId));
+    if (this.state.likes.some(like => like._id.toString() === this.state.trueUserId)){
+      // console.log('o xristis exei kanei idi like sto post: ' + this.state.post._id);
       likesAndComments = (
       <div>
         <div className="Post-caption">
           {/* <p className="P-border" >Like | <strong>{this.state.likes.length}</strong> |  */}
             {/* <strong> comments</strong> {(this.state.comments.length === 0) ? '' : this.state.comments.length} */}
-            <button className="P-border" onClick={this.dislikeHandler}>Dislike</button> <strong> {this.state.likes.length} | </strong>
+            <Button design="danger" onClick={this.dislikeHandler}>Dislike</Button> <strong> {this.state.likes.length} | </strong>
             <NavLink className='Nav-link' to={`${this.props.id}`} user={this.props.creator}><strong>  comments</strong> {(this.state.comments.length === 0) ? '' : this.state.comments.length}</NavLink>
           {/* </p> */}
         </div>

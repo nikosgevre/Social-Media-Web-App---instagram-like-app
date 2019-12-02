@@ -16,6 +16,8 @@ router.get('/userPosts', isAuth, feedController.getUserSpecificPosts);
 
 router.post('/postLike', isAuth, feedController.postLike);
 
+router.post('/postDislike', isAuth, feedController.postDislike);
+
 // POST Search
 // router.post('/search',
 //   [

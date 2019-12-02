@@ -1,7 +1,9 @@
 const fs = require('fs');
 const path = require('path');
 
-const { validationResult } = require('express-validator/check');
+const {
+  validationResult
+} = require('express-validator/check');
 
 const io = require('../socket');
 const Post = require('../models/post');
@@ -15,7 +17,10 @@ exports.getPosts = async (req, res, next) => {
     const totalItems = await Post.find().countDocuments();
     const posts = await Post.find()
       .populate('creator')
-      .sort({ createdAt: -1 })
+      .populate('likes')
+      .sort({
+        createdAt: -1
+      })
       .skip((currentPage - 1) * perPage)
       .limit(perPage);
 
@@ -40,10 +45,17 @@ exports.getUserSpecificPosts = async (req, res, next) => {
   // console.log('yoyoyoyoyyoyoyyoyoyo ' + userId);
 
   try {
-    const totalItems = await Post.find( { creator: userId } ).countDocuments();
-    const posts = await Post.find( { creator: userId } )
+    const totalItems = await Post.find({
+      creator: userId
+    }).countDocuments();
+    const posts = await Post.find({
+        creator: userId
+      })
       .populate('creator')
-      .sort({ createdAt: -1 })
+      .populate('likes')
+      .sort({
+        createdAt: -1
+      })
       .skip((currentPage - 1) * perPage)
       .limit(perPage);
 
@@ -88,12 +100,21 @@ exports.createPost = async (req, res, next) => {
     await user.save();
     io.getIO().emit('posts', {
       action: 'create',
-      post: { ...post._doc, creator: { _id: req.userId, name: user.name } }
+      post: {
+        ...post._doc,
+        creator: {
+          _id: req.userId,
+          name: user.name
+        }
+      }
     });
     res.status(201).json({
       message: 'Post created successfully!',
       post: post,
-      creator: { _id: user._id, name: user.name }
+      creator: {
+        _id: user._id,
+        name: user.name
+      }
     });
   } catch (err) {
     if (!err.statusCode) {
@@ -107,14 +128,18 @@ exports.getPost = async (req, res, next) => {
   // console.log("**************************");
   const postId = req.params.postId;
   const post = await Post.findById(postId)
-  .populate('creator');
+    .populate('creator')
+    .populate('likes');
   try {
     if (!post) {
       const error = new Error('Could not find post.');
       error.statusCode = 404;
       throw error;
     }
-    res.status(200).json({ message: 'Post fetched.', post: post });
+    res.status(200).json({
+      message: 'Post fetched.',
+      post: post
+    });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
@@ -161,8 +186,14 @@ exports.updatePost = async (req, res, next) => {
     post.imageUrl = imageUrl;
     post.content = content;
     const result = await post.save();
-    io.getIO().emit('posts', { action: 'update', post: result });
-    res.status(200).json({ message: 'Post updated!', post: result });
+    io.getIO().emit('posts', {
+      action: 'update',
+      post: result
+    });
+    res.status(200).json({
+      message: 'Post updated!',
+      post: result
+    });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
@@ -193,8 +224,13 @@ exports.deletePost = async (req, res, next) => {
     const user = await User.findById(req.userId);
     user.posts.pull(postId);
     await user.save();
-    io.getIO().emit('posts', { action: 'delete', post: postId });
-    res.status(200).json({ message: 'Deleted post.' });
+    io.getIO().emit('posts', {
+      action: 'delete',
+      post: postId
+    });
+    res.status(200).json({
+      message: 'Deleted post.'
+    });
     // res.redirect(200, '/');
     // res.json({ message: 'Deleted post.' });
   } catch (err) {
@@ -218,9 +254,12 @@ exports.postSearch = async (req, res, next) => {
           searchResults.push(name);
         }
       }
-      res.status(200).json({ message: 'Search results fetched.', searchResult: searchResult });
+      res.status(200).json({
+        message: 'Search results fetched.',
+        searchResult: searchResult
+      });
     })
-    .catch (err => {
+    .catch(err => {
       if (!err.statusCode) {
         err.statusCode = 500;
       }
@@ -230,18 +269,19 @@ exports.postSearch = async (req, res, next) => {
 
 exports.getProfile = async (req, res, next) => {
   const userId = req.params.userId;
-  // console.log('HAHAHAHAHAHAHAHAHA ' + userId);
   try {
     const user = await User.findById(userId)
-    .populate('posts');
-    // console.log('HAHAHAHAHAHAHAHAHA123');
-  
+      .populate('posts');
+
     if (!user) {
       const error = new Error('Could not find user profile.');
       error.statusCode = 404;
       throw error;
     }
-    res.status(200).json({ message: 'User profile fetched.', user: user });
+    res.status(200).json({
+      message: 'User profile fetched.',
+      user: user
+    });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
@@ -254,55 +294,108 @@ exports.getFollowers = async (req, res, next) => {
   const userId = req.params.userId;
   try {
     const user = await User.findById(userId)
-    .populate('followers');
-    res.status(200).json({ message: 'User followers fetched.', user: user });
+      .populate('followers');
+    res.status(200).json({
+      message: 'User followers fetched.',
+      user: user
+    });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
     }
     next(err);
-  } 
+  }
 };
 
 exports.getFollowing = async (req, res, next) => {
   const userId = req.params.userId;
   try {
     const user = await User.findById(userId)
-    .populate('following');
-    res.status(200).json({ message: 'User following fetched.', user: user });
+      .populate('following');
+    res.status(200).json({
+      message: 'User following fetched.',
+      user: user
+    });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
     }
     next(err);
-  } 
+  }
 };
 
 exports.postLike = async (req, res, next) => {
   const postId = req.query.postId;
   const userId = req.query.userId;
-  
-  console.log('userId: ' + userId);
 
-  try{
+  // console.log('userId: ' + userId);
+
+  try {
     const post = await Post.findById(postId).populate('creator').populate('likes');
     const user = await User.findById(userId);
-    console.log('asdasd ' + (user._id));
-    console.log('post likes: ' + post.likes);
-    // console.log('true or false: ' + post.likes.some(liker => liker._id.valueOf() === user._id.valueOf()));
-    console.log('true or false: ' + post.likes.includes(user._id));
-    if (!post.likes.some(post => post._id.valueOf() === user._id.valueOf())){
-      // console.log('user pou kanei like: ' + user);
+
+    if (!post.likes.some(like => like._id.toString() === userId)) {
       post.likes.push(user);
       console.log('liked a post');
       const result = await post.save();
-      res.status(200).json({ message: 'Post liked!', post: result });
+      res.status(200).json({
+        message: 'Post liked!',
+        post: result
+      });
     } else {
       console.log('Post already liked!');
-      res.status(200).json({ message: 'Post already liked!', post: post });
+      res.status(200).json({
+        message: 'Post already liked!',
+        post: post
+      });
     }
-    
-  }catch (err) {
+
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+
+};
+
+exports.postDislike = async (req, res, next) => {
+  const postId = req.query.postId;
+  const userId = req.query.userId;
+
+  console.log('userId: ' + userId);
+
+  try {
+    const post = await Post.findById(postId).populate('creator').populate('likes');
+    const user = await User.findById(userId);
+    // console.log('asdasd ' + (user._id));
+    // console.log('post likes: ' + post.likes);
+    // console.log('true or false: ' + post.likes.some(liker => liker._id.valueOf() === user._id.valueOf()));
+    // console.log('true or false: ' + post.likes.some(like => like._id.toString() === req.query.userId));
+    if (post.likes.some(like => like._id.toString() === userId)) {
+      // console.log('user pou kanei like: ' + user);
+      // post.likes.push(user);
+      // let array=post.likes;
+      // console.log('___' + post.likes);
+      post.likes = post.likes.filter(el => {
+        return el.name != user.name;
+      });
+      // console.log('--- ' + post.likes);
+      console.log('Disliked a post');
+      const result = await post.save();
+      res.status(200).json({
+        message: 'Post disliked!',
+        post: result
+      });
+    } else {
+      console.log('Post already disliked!');
+      res.status(200).json({
+        message: 'Post already disliked!',
+        post: post
+      });
+    }
+
+  } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
     }
