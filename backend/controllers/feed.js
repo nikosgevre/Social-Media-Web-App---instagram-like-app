@@ -372,19 +372,11 @@ exports.postDislike = async (req, res, next) => {
   try {
     const post = await Post.findById(postId).populate('creator').populate('likes');
     const user = await User.findById(userId);
-    // console.log('asdasd ' + (user._id));
-    // console.log('post likes: ' + post.likes);
-    // console.log('true or false: ' + post.likes.some(liker => liker._id.valueOf() === user._id.valueOf()));
-    // console.log('true or false: ' + post.likes.some(like => like._id.toString() === req.query.userId));
+
     if (post.likes.some(like => like._id.toString() === userId)) {
-      // console.log('user pou kanei like: ' + user);
-      // post.likes.push(user);
-      // let array=post.likes;
-      // console.log('___' + post.likes);
       post.likes = post.likes.filter(el => {
         return el.name != user.name;
       });
-      // console.log('--- ' + post.likes);
       console.log('Disliked a post');
       const result = await post.save();
       res.status(200).json({
