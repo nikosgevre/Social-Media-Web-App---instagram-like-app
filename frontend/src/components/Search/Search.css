@@ -1,26 +1,20 @@
-.field {
-    border: 0;
-    width: 70%;
-    height: 10px;
-    padding: 10px 20px;
-    background: rgb(245, 245, 245);
-    border-radius: 3px;
-}
+
 
 .search {
     /* padding: 10px 20px; */
-    padding-top: 25px;
+    /* padding-top: 11px; */
     /* padding-bottom: 15px; */
     /* margin-top: 5px */
+    position: absolute;
 }
 
 #myInput {
     /* background-image: url('../../../public/searchicon.png'); Add a search icon to input */
-    background-position: 10px 12px; /* Position the search icon */
-    background-repeat: no-repeat; /* Do not repeat the icon image */
+    /* background-position: 10px 12px; Position the search icon */
+    /* background-repeat: no-repeat; Do not repeat the icon image */
     /* width: 100%; Full-width */
     font-size: 16px; /* Increase font-size */
-    padding: 12px 20px 12px 40px; /* Add some padding */
+    padding: 12px 10px 12px 10px; /* Add some padding */
     border: 1px solid #ddd; /* Add a grey border */
     margin-bottom: 12px; /* Add some space below the input */
   }

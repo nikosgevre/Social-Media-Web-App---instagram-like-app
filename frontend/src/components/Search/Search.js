@@ -1,4 +1,4 @@
-import React, { Component } from 'react'
+import React, { Component, Fragment } from 'react'
 import Suggestions from './Suggestions/Suggestions'
 
 import './Search.css';
@@ -49,16 +49,20 @@ class Search extends Component {
 
   render() {
     return (
-      <form className="search">
-        <input
-          id="myInput"
-          type="text"
-          placeholder="Search..."
-          ref={input => this.search = input}
-          onChange={this.handleInputChange}
-        />
+      <Fragment>
+        <form className="search">
+          <input
+            id="myInput"
+            type="text"
+            placeholder="Search..."
+            ref={input => this.search = input}
+            onChange={this.handleInputChange}
+          />
+          {/* <p></p> */}
+          
+        </form>
         <Suggestions results={this.state.results} />
-      </form>
+      </Fragment>
     )
   }
 }
