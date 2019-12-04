@@ -14,17 +14,14 @@ router.get('/posts', isAuth, feedController.getPosts);
 // GET /feed/userPosts
 router.get('/userPosts', isAuth, feedController.getUserSpecificPosts);
 
+// GET like handler backend
 router.post('/postLike', isAuth, feedController.postLike);
 
+// to be deleted
 router.post('/postDislike', isAuth, feedController.postDislike);
 
 // POST Search
-// router.post('/search',
-//   [
-//     body('username')
-//     .isString()
-//   ],
-//   isAuth, feedController.postSearch);
+router.get('/search', isAuth, feedController.getSearch);
 
 router.get('/profile/:userId', isAuth, feedController.getProfile);
 

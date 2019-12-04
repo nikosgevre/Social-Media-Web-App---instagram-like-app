@@ -222,7 +222,6 @@ class Post extends Component {
           </div>
         </header>
       );
-      
     }
     else if(this.props.caller === 'profile'){
       postUser = (

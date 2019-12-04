@@ -8,7 +8,8 @@ class Search extends Component {
     author: '',
     date: '',
     image: '',
-    content: ''
+    content: '',
+    searchResults: []
   };
 
   componentDidMount() {
@@ -25,11 +26,14 @@ class Search extends Component {
       })
       .then(resData => {
         this.setState({
-          username: resData.searchResults.name
+          // username: resData.searchResults.name
           // author: resData.post.creator.name,
           // image: 'http://localhost:8080/' + resData.post.imageUrl,
           // date: new Date(resData.post.createdAt).toLocaleDateString('en-US'),
           // content: resData.post.content
+          searchResults: resData.users.map(user => {
+            return{...user};
+          })
         });
       })
       .catch(err => {
@@ -40,7 +44,7 @@ class Search extends Component {
   render() {
     return (
       <section className="single-post">
-        <h1>{this.state.username}</h1>
+        <h1>{this.state.searchResults}</h1>
         
       </section>
     );

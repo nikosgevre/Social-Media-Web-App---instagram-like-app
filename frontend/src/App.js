@@ -11,7 +11,7 @@ import FeedPage from './pages/Feed/Feed';
 import SinglePostPage from './pages/Feed/SinglePost/SinglePost';
 import LoginPage from './pages/Auth/Login';
 import SignupPage from './pages/Auth/Signup';
-// import SearchPage from './pages/Search/Search.js';
+import SearchPage from './pages/Search/Search.js';
 import ProfilePage from './pages/Profile/Profile.js';
 import './App.css';
 
@@ -197,7 +197,7 @@ class App extends Component {
               <FeedPage userId={this.state.userId} token={this.state.token} />
             )}
           />
-          {/* <Route
+          <Route
             path="/search"
             exact
             render={props => (
@@ -207,7 +207,7 @@ class App extends Component {
                 token={this.state.token} 
               />
             )}
-          /> */}
+          />
           <Route
             path="/profile/:userId"
             // exact
@@ -248,6 +248,7 @@ class App extends Component {
                 onLogout={this.logoutHandler}
                 isAuth={this.state.isAuth}
                 userId={this.state.userId}
+                token={this.state.token}
               />
             </Toolbar>
           }

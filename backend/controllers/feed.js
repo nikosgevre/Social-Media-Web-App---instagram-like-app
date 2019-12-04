@@ -241,30 +241,37 @@ exports.deletePost = async (req, res, next) => {
   }
 };
 
-exports.postSearch = async (req, res, next) => {
-  const searchName = req.body.username;
+exports.getSearch = async (req, res, next) => {
+  const searchName = req.query.username;
+  const limit = req.query.limit;
+  let counter = 0;
   let searchResults = [];
-  User.find({
-      userId: req.user._id
-    })
-    .then(usernames => {
-      for (let name of usernames) {
-        console.log('orin: ' + name.name + '  ---  incl: ' + searchName);
-        if (usernames.name.toString().includes(searchName)) {
-          searchResults.push(name);
-        }
+  console.log(searchName);
+  console.log(limit);
+  try {
+    const users = await User.find();
+    console.log(users);
+    for (let user of users) {
+      // console.log('user: ' + user);
+      // let namae = user.name.toString();
+      // console.log('user to string: ' + namae);
+      if ( (user.name.toString().includes(searchName)) && (counter<limit) ) {
+        console.log('vrika: ' + user.name);
+        searchResults.push(user);
+        counter++;
       }
-      res.status(200).json({
-        message: 'Search results fetched.',
-        searchResult: searchResult
-      });
-    })
-    .catch(err => {
-      if (!err.statusCode) {
-        err.statusCode = 500;
-      }
-      next(err);
+    }
+    console.log('searchResults: ' + searchResults);
+    res.status(200).json({
+      message: 'Fetched users successfully.',
+      users: searchResults
     });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
 };
 
 exports.getProfile = async (req, res, next) => {
@@ -363,6 +370,7 @@ exports.postLike = async (req, res, next) => {
 
 };
 
+// to be deleted
 exports.postDislike = async (req, res, next) => {
   const postId = req.query.postId;
   const userId = req.query.userId;

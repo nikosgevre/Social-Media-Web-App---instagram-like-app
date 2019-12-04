@@ -1,51 +1,67 @@
-import React, { Component } from 'react';
-import SearchField from "react-search-field";
+import React, { Component } from 'react'
+import Suggestions from './Suggestions/Suggestions'
 
-// import classes from './Search.css';
+import './Search.css';
 
 class Search extends Component {
+  state = {
+    query: '',
+    results: []
+  }
 
-    searchHandler = () => {
-        fetch('http://localhost:8080/feed/search', {
-            headers: {
-                Authorization: 'Bearer ' + this.props.token
-            }
-        })
-        .then(res => {
-            if (res.status !== 200) {
-                throw new Error('Failed to fetch status');
-            }
-            return res.json();
-        })
-        .then(resData => {
-            this.setState({
-            username: resData.searchResults.name
-            // author: resData.post.creator.name,
-            // image: 'http://localhost:8080/' + resData.post.imageUrl,
-            // date: new Date(resData.post.createdAt).toLocaleDateString('en-US'),
-            // content: resData.post.content
-            });
-        })
-        .catch(err => {
-            console.log(err);
+  getInfo = () => {
+      console.log(this.state.query);
+    fetch('http://localhost:8080/feed/search?username=' + this.state.query.toString() + '&limit=7', {
+      headers: {
+        Authorization: 'Bearer ' + this.props.token
+      }
+    })
+      .then(res => {
+        if (res.status !== 200) {
+          throw new Error('Failed to fetch status');
+        }
+        return res.json();
+      })
+      .then(resData => {
+        this.setState({
+          results: resData.users.map(user => {
+            return{...user};
+          })
         });
-    }
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
 
-    render () {
-        return (
+  handleInputChange = () => {
+    this.setState({
+      query: this.search.value
+    }, () => {
+      if (this.state.query && this.state.query.length > 1) {
+        if (this.state.query.length % 2 === 0) {
+          this.getInfo()
+        }
+      } else if (!this.state.query) {
+      }
+    })
+  }
 
-            this.props.isAuth && (
-                <SearchField
-                    placeholder="Search..."
-                    onChange={this.searchHandler}
-                    // searchText="Search"
-                    classNames="test-class"
-                />
-            )  
-
-        );
-    }
+  render() {
+    return (
+      <form className="search">
+        <input
+          id="myInput"
+          type="text"
+          placeholder="Search..."
+          ref={input => this.search = input}
+          onChange={this.handleInputChange}
+        />
+        <Suggestions results={this.state.results} />
+      </form>
+    )
+  }
 }
 
+export default Search
 
-export default Search;
