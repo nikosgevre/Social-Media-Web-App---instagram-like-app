@@ -186,16 +186,28 @@ class Post extends Component {
     }
 
     if(this.props.profile) {
-      buttons = (
-        <div className="post__actions">
-          <Button mode="flat" link={`${this.props.id}`}>
-            View
-          </Button>
-          <Button mode="flat" design="danger" onClick={this.props.onDelete}>
-            Delete
-          </Button>
-        </div>
-      )
+      if(this.props.creator._id === this.props.trueUserId){
+        buttons = (
+          <div className="post__actions">
+            <Button mode="flat" link={`${this.props.id}`}>
+              View
+            </Button>
+            <Button mode="flat" design="danger" onClick={this.props.onDelete}>
+              Delete
+            </Button>
+          </div>
+        );
+      }
+      // buttons = (
+      //   <div className="post__actions">
+      //     <Button mode="flat" link={`${this.props.id}`}>
+      //       View
+      //     </Button>
+      //     <Button mode="flat" design="danger" onClick={this.props.onDelete}>
+      //       Delete
+      //     </Button>
+      //   </div>
+      // )
     }
 
     if(this.props.caller === 'feed') {

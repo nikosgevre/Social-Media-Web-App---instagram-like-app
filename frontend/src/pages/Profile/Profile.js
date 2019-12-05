@@ -51,13 +51,16 @@ class Profile extends Component {
 
   componentDidUpdate() {
     const userId = this.props.match.params.userId;
+    // this.setState({followers: [], following: []})
     if(userId !== this.state.userIdNew) {
       this.fetchUser();
     }
   };
 
   loadFollowers = user => {
-    const userId = this.props.userId;
+    // const userId = this.props.userId;
+    const userId = this.props.match.params.userId;
+    console.log('loadFollowers userId: ' + userId);
     fetch('http://localhost:8080/feed/userFollowers/' + userId, {
       headers: {
         Authorization: 'Bearer ' + this.props.token
@@ -84,7 +87,9 @@ class Profile extends Component {
   };
 
   loadFollowing = user => {
-    const userId = this.props.userId;
+    // const userId = this.props.userId;
+    const userId = this.props.match.params.userId;
+    console.log('loadFollowing userId: ' + userId);
     fetch('http://localhost:8080/feed/userFollowing/' + userId, {
       headers: {
         Authorization: 'Bearer ' + this.props.token
@@ -196,29 +201,43 @@ class Profile extends Component {
         return res.json();
       })
       .then(resData => {
-        this.setState({ status: resData.status, user: resData.user });
-        // console.log('prwtos: ' + this.state.user._id);
+        // this.setState({ status: resData.status, user: resData.user });
+        // this.setState({
+        //   posts: resData.user.posts.map(post => {
+        //     return {
+        //       ...post
+        //     };
+        //   })
+        // });
+        // this.setState({ imagePath: 'http://localhost:8080/' + resData.user.posts.map(post => {
+        //   let imgUrl = post.imageUrl;
+        //   return imgUrl;
+        // }) 
+        // });
+        // this.setState({ userImage: 'http://localhost:8080/' + resData.user.image });
+        // this.setState({ followers: resData.user.followers.map(follower => {
+        //   return{...follower};
+        // })});
+        // this.setState({ following: resData.user.following.map(follow => {
+        //   return{...follow};
+        // })});
+
         this.setState({
+          status: resData.status,
+          user: resData.user,
           posts: resData.user.posts.map(post => {
             return {
               ...post
             };
-          })
+          }),
+          imagePath: 'http://localhost:8080/' + resData.user.posts.map(post => {
+            let imgUrl = post.imageUrl;
+            return imgUrl;
+          }),
+          userImage: 'http://localhost:8080/' + resData.user.image
         });
-        // console.log(this.state.posts[0].creator.name + "---22222222222222222----------- " + this.state.posts[0].imageUrl);
-        this.setState({ imagePath: 'http://localhost:8080/' + resData.user.posts.map(post => {
-          let imgUrl = post.imageUrl;
-          return imgUrl;
-        }) 
-        });
-        this.setState({ userImage: 'http://localhost:8080/' + resData.user.image });
-        this.setState({ followers: resData.user.followers.map(follower => {
-          return{...follower};
-        })});
-        this.setState({ following: resData.user.following.map(follow => {
-          return{...follow};
-        })});
-        // this.setState({user: resData.user});
+        this.loadFollowers();
+        this.loadFollowing();
       })
       .catch(this.catchError);
   };
@@ -474,6 +493,7 @@ class Profile extends Component {
                   token={this.props.token}
                   author={this.state.user.name}
                   creator={this.state.user}
+                  trueUser={this.state.trueUserId}
                   date={new Date(post.createdAt).toLocaleString('en-US')}
                   title={post.title}
                   image={post.imageUrl}
