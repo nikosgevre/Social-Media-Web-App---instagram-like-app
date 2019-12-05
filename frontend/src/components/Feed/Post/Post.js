@@ -88,6 +88,7 @@ class Post extends Component {
     // console.log('Liikee!!!');
   };
 
+  // to be deleted
   dislikeHandler = event => {
     event.preventDefault();
     const postId = this.props.id;
@@ -244,7 +245,7 @@ class Post extends Component {
         {likesAndComments}
 
         <div className="Post-caption">
-          <TimeAgo date={this.state.date} minPeriod="50"  />
+          <TimeAgo date={this.state.date} minPeriod="30"  />
         </div>
 
         {buttons}

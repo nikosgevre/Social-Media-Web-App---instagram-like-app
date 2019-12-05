@@ -2,6 +2,7 @@ import React, { Component, Fragment } from 'react';
 import openSocket from 'socket.io-client';
 
 import Post from '../../components/Feed/Post/Post';
+import Button from '../../components/Button/Button';
 
 import './Profile.css'; 
 // import 'bootstrap/dist/css/bootstrap.min.css';
@@ -25,8 +26,9 @@ class Profile extends Component {
     followers: [],
     following: [],
     userImage: '',
-    userIdNew: ''
-  }
+    userIdNew: '',
+    trueUserId: localStorage.getItem('userId')
+  };
 
   componentDidMount() {
     const userId = this.props.match.params.userId;
@@ -45,14 +47,14 @@ class Profile extends Component {
         }
       });
       this.setState({userIdNew: userId});
-  }
+  };
 
   componentDidUpdate() {
     const userId = this.props.match.params.userId;
     if(userId !== this.state.userIdNew) {
       this.fetchUser();
     }
-  }
+  };
 
   loadFollowers = user => {
     const userId = this.props.userId;
@@ -209,11 +211,17 @@ class Profile extends Component {
           return imgUrl;
         }) 
         });
-        this.setState({ userImage: 'http://localhost:8080/' + resData.user.image })
+        this.setState({ userImage: 'http://localhost:8080/' + resData.user.image });
+        this.setState({ followers: resData.user.followers.map(follower => {
+          return{...follower};
+        })});
+        this.setState({ following: resData.user.following.map(follow => {
+          return{...follow};
+        })});
         // this.setState({user: resData.user});
       })
       .catch(this.catchError);
-  }
+  };
 
   // statusUpdateHandler = event => {
   //   event.preventDefault();
@@ -347,6 +355,40 @@ class Profile extends Component {
       });
   };
 
+  followHandler = () => {
+    // event.preventDefault();
+    // console.log('ekana follow/unfollow');
+    // const postId = this.props.id;
+    const meId = localStorage.getItem('userId');
+    const userId = this.state.userIdNew;
+    console.log('meId: ' + meId);
+    console.log('userId: ' + userId);
+    fetch('http://localhost:8080/feed/userFollow?userId=' + userId + '&meId=' + meId, {
+      method: 'POST',
+      headers: {
+        Authorization: 'Bearer ' + this.props.token
+      }
+    })
+    .then(res => {
+      if (res.status !== 200 && res.status !== 201) {
+        throw new Error("Can't follow user!");
+      }
+      return res.json();
+    })
+    .then(resData => {
+      // egine to like. sto like handler kaneis like
+      // this.setState({: true})
+      this.setState({ followers: resData.user.followers.map(follower => {
+        return{...follower};
+      })});
+      this.setState({ following: resData.user.following.map(follow => {
+        return{...follow};
+      })});
+    })
+    .catch(this.catchError);
+    // console.log('Liikee!!!');
+  };
+
   errorHandler = () => {
     this.setState({ error: null });
   };
@@ -376,6 +418,17 @@ class Profile extends Component {
     //   let fButton = (<span className="follow" style={{float: "center"}}>Unfollow</span>)
     // } 
 
+    let followButton = (<Button  design="follow" onClick={this.followHandler}>Follow</Button>);
+
+    // console.log(this.state.followers);
+    if (this.state.followers.some(follower => follower._id.toString() === this.state.trueUserId)){
+      followButton = (<Button  design="follow" onClick={this.followHandler}>Unfollow</Button>);
+    }
+
+    if(this.state.user._id === this.state.trueUserId) {
+      followButton = (<div></div>);
+    }
+
     return (
       <Fragment>
           <div className="row">
@@ -402,7 +455,7 @@ class Profile extends Component {
               </div>
               <p className="desc">{this.state.user.status}</p>
             </div>
-            <span className="follow" style={{float: "center"}}>Follow</span>
+            {followButton}
             {/* <div className="right col-lg-8" >
               <ul className="nav" style={{float: "left"}}>
                 <li>Posts</li>

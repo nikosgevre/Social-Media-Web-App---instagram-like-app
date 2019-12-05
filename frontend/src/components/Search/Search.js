@@ -1,5 +1,6 @@
-import React, { Component, Fragment } from 'react'
-import Suggestions from './Suggestions/Suggestions'
+import React, { Component, Fragment } from 'react';
+import Suggestions from './Suggestions/Suggestions';
+// import SearchBar from 'react-native-dynamic-search-bar';
 
 import './Search.css';
 
@@ -50,18 +51,24 @@ class Search extends Component {
   render() {
     return (
       <Fragment>
-        <form className="search">
-          <input
-            id="myInput"
-            type="text"
-            placeholder="Search..."
-            ref={input => this.search = input}
-            onChange={this.handleInputChange}
-          />
-          {/* <p></p> */}
+
+        {this.props.isAuth && (
+          <Fragment>
           
-        </form>
-        <Suggestions results={this.state.results} />
+            <form className="search">
+            <input
+              id="myInput"
+              type="text"
+              placeholder="Search..."
+              ref={input => this.search = input}
+              onChange={this.handleInputChange}
+            />
+            
+            </form>
+            <Suggestions results={this.state.results} />
+          </Fragment>
+        )}
+        
       </Fragment>
     )
   }

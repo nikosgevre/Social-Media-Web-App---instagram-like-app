@@ -278,7 +278,9 @@ exports.getProfile = async (req, res, next) => {
   const userId = req.params.userId;
   try {
     const user = await User.findById(userId)
-      .populate('posts');
+      .populate('posts')
+      .populate('followers')
+      .populate('following');
 
     if (!user) {
       const error = new Error('Could not find user profile.');
@@ -396,6 +398,54 @@ exports.postDislike = async (req, res, next) => {
       res.status(200).json({
         message: 'Post already disliked!',
         post: post
+      });
+    }
+
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+
+};
+
+exports.userFollow = async (req, res, next) => {
+  const meId = req.query.meId;
+  const userId = req.query.userId;
+
+  // console.log('userId: ' + userId);
+
+  try {
+    // const post = await Post.findById(postId).populate('creator').populate('likes');
+    const user = await User.findById(userId).populate('followers').populate('following');
+    const me = await User.findById(meId).populate('followers').populate('following');
+
+    if (!me.following.some(follow => follow._id.toString() === userId)) {
+      me.following.push(user);
+      user.followers.push(me);
+      console.log('followed a user');
+      const resultMe = await me.save();
+      const resultUser = await user.save();
+      res.status(200).json({
+        message: 'User followed!',
+        user: resultUser,
+        me: resultMe
+      });
+    } else {
+      me.following = me.following.filter(el => {
+        return el.name != user.name;
+      });
+      user.followers = user.followers.filter(el => {
+        return el.name != me.name;
+      });
+      console.log('Unfollowed a user');
+      const resultMe = await me.save();
+      const resultUser = await user.save();
+      res.status(200).json({
+        message: 'User unfollowed!',
+        user: resultUser,
+        me: resultMe
       });
     }
 

@@ -109,6 +109,48 @@
   background: #c00000;
 }
 
+
+
+
+
+
+
+.button.button--follow {
+  border-color: #0034a3;
+  color: #0034a3;
+}
+
+.button--follow:hover,
+.button--follow:active {
+  background: #0034a3;
+  color: white;
+}
+
+.button--flat.button--follow:hover,
+.button--flat.button--follow:active {
+  background: rgba(0, 52, 163, 0.3);
+  color: #0034a3;
+}
+
+.button.button--follow.button--raised {
+  background: #0034a3;
+  color: white;
+}
+
+.button--raised.button--follow:hover,
+.button--raised.button--follow:active {
+  background: #0034a3;
+}
+
+
+
+
+
+
+
+
+
+
 .button.button--success {
   border-color: #00b359;
   color: #00b359;

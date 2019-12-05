@@ -14,11 +14,14 @@ router.get('/posts', isAuth, feedController.getPosts);
 // GET /feed/userPosts
 router.get('/userPosts', isAuth, feedController.getUserSpecificPosts);
 
-// GET like handler backend
+// POST like handler backend
 router.post('/postLike', isAuth, feedController.postLike);
 
 // to be deleted
 router.post('/postDislike', isAuth, feedController.postDislike);
+
+// POST follow handler backend
+router.post('/userFollow', isAuth, feedController.userFollow);
 
 // POST Search
 router.get('/search', isAuth, feedController.getSearch);
