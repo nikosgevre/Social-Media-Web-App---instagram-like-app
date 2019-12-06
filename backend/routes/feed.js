@@ -15,23 +15,17 @@ router.get('/userPosts', isAuth, feedController.getUserSpecificPosts);
 // POST like handler backend
 router.post('/postLike', isAuth, feedController.postLike);
 
-// to be deleted
-router.post('/postDislike', isAuth, feedController.postDislike);
-
+// to be moved in user routes
 // POST follow handler backend
 router.post('/userFollow', isAuth, feedController.userFollow);
 
+// to be moved in user routes
 // POST Search
 router.get('/search', isAuth, feedController.getSearch);
 
+// to be moved in user routes
 // GET user profile
 router.get('/profile/:userId', isAuth, feedController.getProfile);
-
-// to be deleted
-router.get('/userFollowers/:userId', isAuth, feedController.getFollowers);
-
-// to be deleted
-router.get('/userFollowing/:userId', isAuth, feedController.getFollowing);
 
 // POST /feed/post
 router.post(

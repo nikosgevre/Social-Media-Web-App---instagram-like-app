@@ -16,7 +16,7 @@ exports.getPosts = async (req, res, next) => {
   // let myPosts = [];
   // let followingPosts = [];
   // let totalItems = 0;
-  console.log('--- ' + userId);
+  // console.log('--- ' + userId);
 
   try {
 
@@ -59,8 +59,6 @@ exports.getUserSpecificPosts = async (req, res, next) => {
   const currentPage = req.query.page || 1;
   const perPage = Number.MAX_SAFE_INTEGER; //Add number for pagination
   const userId = req.query.userId;
-
-  // console.log('yoyoyoyoyyoyoyyoyoyo ' + userId);
 
   try {
     const totalItems = await Post.find({
@@ -143,7 +141,6 @@ exports.createPost = async (req, res, next) => {
 };
 
 exports.getPost = async (req, res, next) => {
-  // console.log("**************************");
   const postId = req.params.postId;
   const post = await Post.findById(postId)
     .populate('creator')
@@ -249,8 +246,6 @@ exports.deletePost = async (req, res, next) => {
     res.status(200).json({
       message: 'Deleted post.'
     });
-    // res.redirect(200, '/');
-    // res.json({ message: 'Deleted post.' });
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
@@ -317,42 +312,6 @@ exports.getProfile = async (req, res, next) => {
   }
 };
 
-// to be deleted
-exports.getFollowers = async (req, res, next) => {
-  const userId = req.params.userId;
-  try {
-    const user = await User.findById(userId)
-      .populate('followers');
-    res.status(200).json({
-      message: 'User followers fetched.',
-      user: user
-    });
-  } catch (err) {
-    if (!err.statusCode) {
-      err.statusCode = 500;
-    }
-    next(err);
-  }
-};
-
-// to be deleted
-exports.getFollowing = async (req, res, next) => {
-  const userId = req.params.userId;
-  try {
-    const user = await User.findById(userId)
-      .populate('following');
-    res.status(200).json({
-      message: 'User following fetched.',
-      user: user
-    });
-  } catch (err) {
-    if (!err.statusCode) {
-      err.statusCode = 500;
-    }
-    next(err);
-  }
-};
-
 exports.postLike = async (req, res, next) => {
   const postId = req.query.postId;
   const userId = req.query.userId;
@@ -363,7 +322,7 @@ exports.postLike = async (req, res, next) => {
 
     if (!post.likes.some(like => like._id.toString() === userId)) {
       post.likes.push(user);
-      console.log('liked a post');
+      // console.log('liked a post');
       const result = await post.save();
       res.status(200).json({
         message: 'Post liked!',
@@ -373,49 +332,11 @@ exports.postLike = async (req, res, next) => {
       post.likes = post.likes.filter(el => {
         return el.name != user.name;
       });
-      console.log('Disliked a post');
+      // console.log('Disliked a post');
       const result = await post.save();
       res.status(200).json({
         message: 'Post disliked!',
         post: result
-      });
-    }
-
-  } catch (err) {
-    if (!err.statusCode) {
-      err.statusCode = 500;
-    }
-    next(err);
-  }
-
-};
-
-// to be deleted
-exports.postDislike = async (req, res, next) => {
-  const postId = req.query.postId;
-  const userId = req.query.userId;
-
-  console.log('userId: ' + userId);
-
-  try {
-    const post = await Post.findById(postId).populate('creator').populate('likes');
-    const user = await User.findById(userId);
-
-    if (post.likes.some(like => like._id.toString() === userId)) {
-      post.likes = post.likes.filter(el => {
-        return el.name != user.name;
-      });
-      console.log('Disliked a post');
-      const result = await post.save();
-      res.status(200).json({
-        message: 'Post disliked!',
-        post: result
-      });
-    } else {
-      console.log('Post already disliked!');
-      res.status(200).json({
-        message: 'Post already disliked!',
-        post: post
       });
     }
 
@@ -432,17 +353,13 @@ exports.userFollow = async (req, res, next) => {
   const meId = req.query.meId;
   const userId = req.query.userId;
 
-  // console.log('userId: ' + userId);
-
   try {
-    // const post = await Post.findById(postId).populate('creator').populate('likes');
     const user = await User.findById(userId).populate('followers').populate('following');
     const me = await User.findById(meId).populate('followers').populate('following');
 
     if (!me.following.some(follow => follow._id.toString() === userId)) {
       me.following.push(user);
       user.followers.push(me);
-      // console.log('followed a user');
       const resultMe = await me.save();
       const resultUser = await user.save();
       res.status(200).json({
@@ -457,7 +374,6 @@ exports.userFollow = async (req, res, next) => {
       user.followers = user.followers.filter(el => {
         return el.name != me.name;
       });
-      // console.log('Unfollowed a user');
       const resultMe = await me.save();
       const resultUser = await user.save();
       res.status(200).json({
