@@ -12,19 +12,26 @@ const User = require('../models/user');
 exports.getPosts = async (req, res, next) => {
   const currentPage = req.query.page || 1;
   const perPage = Number.MAX_SAFE_INTEGER; //Add number for pagination
-  // const userId = req.query.userId;
-  // let userFollowing = [];
-  // console.log('--- ' + userId);
+  const userId = req.query.userId;
+  // let myPosts = [];
+  // let followingPosts = [];
+  // let totalItems = 0;
+  console.log('--- ' + userId);
 
   try {
+
     // const user = await User.findById(userId).populate('following');
-    // userFollowing = user.following.map(follow => {
-    //   return{...follow};
-    // });
-    // console.log(userFollowing);
-    // for (let follower of userFollowing) {
-    //   console.log(follower.posts);
+    // totalItems += await Posts.find({creator: userId}).countDocuments();
+    // myPosts = await Posts.find({
+    //   creator: userId
+    // }).populate('creator').populate('likes');
+
+    // console.log(user.following);
+    // for (let follower of user.following) {
+    //   console.log(follower.name);
+    //   followingPosts.push(follower.posts)
     // }
+    
     const totalItems = await Post.find().countDocuments();
     const posts = await Post.find()
       .populate('creator')
@@ -266,7 +273,7 @@ exports.getSearch = async (req, res, next) => {
       // console.log('user: ' + user);
       // let namae = user.name.toString();
       // console.log('user to string: ' + namae);
-      if ( (user.name.toString().includes(searchName)) && (counter<limit) ) {
+      if ((user.name.toString().includes(searchName)) && (counter < limit)) {
         // console.log('vrika: ' + user.name);
         searchResults.push(user);
         counter++;
@@ -310,6 +317,7 @@ exports.getProfile = async (req, res, next) => {
   }
 };
 
+// to be deleted
 exports.getFollowers = async (req, res, next) => {
   const userId = req.params.userId;
   try {
@@ -327,6 +335,7 @@ exports.getFollowers = async (req, res, next) => {
   }
 };
 
+// to be deleted
 exports.getFollowing = async (req, res, next) => {
   const userId = req.params.userId;
   try {
@@ -347,8 +356,6 @@ exports.getFollowing = async (req, res, next) => {
 exports.postLike = async (req, res, next) => {
   const postId = req.query.postId;
   const userId = req.query.userId;
-
-  // console.log('userId: ' + userId);
 
   try {
     const post = await Post.findById(postId).populate('creator').populate('likes');
@@ -435,7 +442,7 @@ exports.userFollow = async (req, res, next) => {
     if (!me.following.some(follow => follow._id.toString() === userId)) {
       me.following.push(user);
       user.followers.push(me);
-      console.log('followed a user');
+      // console.log('followed a user');
       const resultMe = await me.save();
       const resultUser = await user.save();
       res.status(200).json({
@@ -450,7 +457,7 @@ exports.userFollow = async (req, res, next) => {
       user.followers = user.followers.filter(el => {
         return el.name != me.name;
       });
-      console.log('Unfollowed a user');
+      // console.log('Unfollowed a user');
       const resultMe = await me.save();
       const resultUser = await user.save();
       res.status(200).json({

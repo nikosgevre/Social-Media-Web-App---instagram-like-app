@@ -6,8 +6,6 @@ const isAuth = require('../middleware/is-auth');
 
 const router = express.Router();
 
-
-
 // GET /feed/posts
 router.get('/posts', isAuth, feedController.getPosts);
 
@@ -26,10 +24,13 @@ router.post('/userFollow', isAuth, feedController.userFollow);
 // POST Search
 router.get('/search', isAuth, feedController.getSearch);
 
+// GET user profile
 router.get('/profile/:userId', isAuth, feedController.getProfile);
 
+// to be deleted
 router.get('/userFollowers/:userId', isAuth, feedController.getFollowers);
 
+// to be deleted
 router.get('/userFollowing/:userId', isAuth, feedController.getFollowing);
 
 // POST /feed/post
@@ -47,8 +48,10 @@ router.post(
   feedController.createPost
 );
 
+// GET view post details
 router.get('/post/:postId', isAuth, feedController.getPost);
 
+// PUT update post after edit
 router.put(
   '/post/:postId',
   isAuth,
@@ -63,6 +66,7 @@ router.put(
   feedController.updatePost
 );
 
+// DELETE delete post
 router.delete('/post/:postId', isAuth, feedController.deletePost);
 
 module.exports = router;

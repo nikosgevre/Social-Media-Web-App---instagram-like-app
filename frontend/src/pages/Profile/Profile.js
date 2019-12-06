@@ -1,5 +1,5 @@
 import React, { Component, Fragment } from 'react';
-// import openSocket from 'socket.io-client';
+import openSocket from 'socket.io-client';
 
 import Post from '../../components/Feed/Post/Post';
 import Button from '../../components/Button/Button';
@@ -8,21 +8,17 @@ import Loader from '../../components/Loader/Loader';
 import './Profile.css'; 
 // import 'bootstrap/dist/css/bootstrap.min.css';
 
-const paginationNumber = Number.MAX_SAFE_INTEGER;
-
 class Profile extends Component {
 
   state = {
     isEditing: false,
     totalPosts: 0,
     editPost: null,
-    status: '',
     postPage: 1,
     postsLoading: true,
     editLoading: false,
     user: {},
     posts: [],
-    imagePath: '',
     caller: 'profile',
     followers: [],
     following: [],
@@ -33,21 +29,21 @@ class Profile extends Component {
 
   componentDidMount() {
     const userId = this.props.match.params.userId;
+    // this.setState({userIdNew: userId});
+    this.fetchUser();
+    // this.loadFollowers();
+    // this.loadFollowing();
+    const socket = openSocket('http://localhost:8080');
+    socket.on('posts', data => {
+      if (data.action === 'create') {
+        // this.addPost(data.post);
+      } else if (data.action === 'update') {
+        // this.updatePost(data.post);
+      } else if (data.action === 'delete') {
+        this.loadPosts();
+      }
+    });
     this.setState({userIdNew: userId});
-      this.fetchUser();
-      // this.loadFollowers();
-      // this.loadFollowing();
-      // const socket = openSocket('http://localhost:8080');
-      // socket.on('posts', data => {
-      //   if (data.action === 'create') {
-      //     this.addPost(data.post);
-      //   } else if (data.action === 'update') {
-      //     this.updatePost(data.post);
-      //   } else if (data.action === 'delete') {
-      //     this.loadPosts();
-      //   }
-      // });
-      this.setState({userIdNew: userId});
   };
 
   componentDidUpdate() {
@@ -56,80 +52,6 @@ class Profile extends Component {
     if(userId !== this.state.userIdNew) {
       this.fetchUser();
     }
-  };
-
-  // to be deleted
-  // loadFollowers = user => {
-  //   // const userId = this.props.userId;
-  //   const userId = this.props.match.params.userId;
-  //   console.log('loadFollowers userId: ' + userId);
-  //   fetch('http://localhost:8080/feed/userFollowers/' + userId, {
-  //     headers: {
-  //       Authorization: 'Bearer ' + this.props.token
-  //     }
-  //   })
-  //     .then(res => {
-  //       if (res.status !== 200) {
-  //         throw new Error('Failed to fetch posts.');
-  //       }
-  //       return res.json();
-  //     })
-  //     .then(resData => {
-        
-  //       this.setState({
-  //         followers: resData.user.followers.map(follower => {
-  //           return {
-  //             ...follower
-  //           }
-  //         })
-  //       });
-
-  //     })
-  //     .catch(this.catchError);
-  // };
-
-  // to be deleted
-  // loadFollowing = user => {
-  //   // const userId = this.props.userId;
-  //   const userId = this.props.match.params.userId;
-  //   console.log('loadFollowing userId: ' + userId);
-  //   fetch('http://localhost:8080/feed/userFollowing/' + userId, {
-  //     headers: {
-  //       Authorization: 'Bearer ' + this.props.token
-  //     }
-  //   })
-  //     .then(res => {
-  //       if (res.status !== 200) {
-  //         throw new Error('Failed to fetch posts.');
-  //       }
-  //       return res.json();
-  //     })
-  //     .then(resData => {
-  //       this.setState({
-  //         following: resData.user.following.map(following => {
-  //           return {
-  //             ...following
-  //           }
-  //         })
-  //       });
-  //     })
-  //     .catch(this.catchError);
-  // };
-
-  addPost = post => {
-    this.setState(prevState => {
-      const updatedPosts = [...prevState.posts];
-      if (prevState.postPage === 1) {
-        if (prevState.posts.length >= paginationNumber) {
-          updatedPosts.pop();
-        }
-        updatedPosts.unshift(post);
-      }
-      return {
-        posts: updatedPosts,
-        totalPosts: prevState.totalPosts + 1
-      };
-    });
   };
 
   updatePost = post => {
@@ -145,49 +67,45 @@ class Profile extends Component {
     });
   };
 
-  // loadPosts = direction => {
-  //   if (direction) {
-  //     this.setState({ postsLoading: true, posts: [] });
-  //   }
-  //   let page = this.state.postPage;
-  //   if (direction === 'next') {
-  //     page++;
-  //     this.setState({ postPage: page });
-  //   }
-  //   if (direction === 'previous') {
-  //     page--;
-  //     this.setState({ postPage: page });
-  //   }
-  //   // console.log('---123123123: ' + this.state.user.name);
-  //   fetch('http://localhost:8080/feed/userPosts?page=' + page + '&userId=' + this.state.user._id, {
-  //     headers: {
-  //       Authorization: 'Bearer ' + this.props.token
-  //     }
-  //   })
-  //     .then(res => {
-  //       if (res.status !== 200) {
-  //         throw new Error('Failed to fetch posts.');
-  //       }
-  //       return res.json();
-  //     })
-  //     .then(resData => {
-  //       this.setState({
-  //         posts: resData.posts.map(post => {
-  //           return {
-  //             ...post,
-  //             imagePath: post.imageUrl
-  //           };
-  //         }),
-  //         totalPosts: resData.totalItems,
-  //         postsLoading: false
-  //       });
-  //       // console.log(this.state.posts[0].creator.name + "---111111111111111----------- " + this.state.posts[1].imageUrl);
-  //     })
-  //     .catch(this.catchError);
-
-
-
-  // };
+  loadPosts = direction => {
+    if (direction) {
+      this.setState({ postsLoading: true, posts: [] });
+    }
+    let page = this.state.postPage;
+    if (direction === 'next') {
+      page++;
+      this.setState({ postPage: page });
+    }
+    if (direction === 'previous') {
+      page--;
+      this.setState({ postPage: page });
+    }
+    // console.log('---123123123: ' + this.state.user.name);
+    fetch('http://localhost:8080/feed/userPosts?page=' + page + '&userId=' + this.state.user._id, {
+      headers: {
+        Authorization: 'Bearer ' + this.props.token
+      }
+    })
+    .then(res => {
+      if (res.status !== 200) {
+        throw new Error('Failed to fetch posts.');
+      }
+      return res.json();
+    })
+    .then(resData => {
+      this.setState({
+        posts: resData.posts.map(post => {
+          return {
+            ...post,
+            imagePath: post.imageUrl
+          };
+        }),
+        totalPosts: resData.totalItems,
+        postsLoading: false
+      });
+    })
+    .catch(this.catchError);
+  };
 
   fetchUser = (direction) => {
     if (direction) {
@@ -200,169 +118,37 @@ class Profile extends Component {
         Authorization: 'Bearer ' + this.props.token
       }
     })
-      .then(res => {
-        if (res.status !== 200) {
-          throw new Error('Failed to fetch user status.');
-        }
-        return res.json();
-      })
-      .then(resData => {
-        // this.setState({ status: resData.status, user: resData.user });
-        // this.setState({
-        //   posts: resData.user.posts.map(post => {
-        //     return {
-        //       ...post
-        //     };
-        //   })
-        // });
-        // this.setState({ imagePath: 'http://localhost:8080/' + resData.user.posts.map(post => {
-        //   let imgUrl = post.imageUrl;
-        //   return imgUrl;
-        // }) 
-        // });
-        // this.setState({ userImage: 'http://localhost:8080/' + resData.user.image });
-        // this.setState({ followers: resData.user.followers.map(follower => {
-        //   return{...follower};
-        // })});
-        // this.setState({ following: resData.user.following.map(follow => {
-        //   return{...follow};
-        // })});
+    .then(res => {
+      if (res.status !== 200) {
+        throw new Error('Failed to fetch user status.');
+      }
+      return res.json();
+    })
+    .then(resData => {
 
-        this.setState({
-          status: resData.status,
-          user: resData.user,
-          posts: resData.user.posts.map(post => {
-            return {
-              ...post
-            };
-          }),
-          imagePath: 'http://localhost:8080/' + resData.user.posts.map(post => {
-            let imgUrl = post.imageUrl;
-            return imgUrl;
-          }),
-          userImage: 'http://localhost:8080/' + resData.user.image,
-          followers: resData.user.followers.map(follower => {
-            return {
-              ...follower
-            }
-          }),
-          following: resData.user.following.map(following => {
-            return {
-              ...following
-            }
-          }),
-          postsLoading: false
-        });
-        // this.loadFollowers();
-        // this.loadFollowing();
-        // this.loadPosts();
-      })
-      .catch(this.catchError);
+      this.setState({
+        user: resData.user,
+        posts: resData.user.posts.map(post => {
+          return {
+            ...post
+          };
+        }),
+        userImage: 'http://localhost:8080/' + resData.user.image,
+        followers: resData.user.followers.map(follower => {
+          return {
+            ...follower
+          }
+        }),
+        following: resData.user.following.map(following => {
+          return {
+            ...following
+          }
+        }),
+        postsLoading: false
+      });
+    })
+    .catch(this.catchError);
   };
-
-  // statusUpdateHandler = event => {
-  //   event.preventDefault();
-  //   fetch('http://localhost:8080/auth/status', {
-  //     method: 'PATCH',
-  //     headers: {
-  //       Authorization: 'Bearer ' + this.props.token,
-  //       'Content-Type': 'application/json'
-  //     },
-  //     body: JSON.stringify({
-  //       status: this.state.status
-  //     })
-  //   })
-  //     .then(res => {
-  //       if (res.status !== 200 && res.status !== 201) {
-  //         throw new Error("Can't update status!");
-  //       }
-  //       return res.json();
-  //     })
-  //     .then(resData => {
-  //       console.log(resData);
-  //     })
-  //     .catch(this.catchError);
-  // };
-
-  // newPostHandler = () => {
-  //   this.setState({ isEditing: true , newPost: true});
-  // };
-
-  // startEditPostHandler = postId => {
-  //   this.setState(prevState => {
-  //     const loadedPost = { ...prevState.posts.find(p => p._id === postId) };
-
-  //     return {
-  //       isEditing: true,
-  //       editPost: loadedPost,
-  //       newPost: false
-  //     };
-  //   });
-  // };
-
-  // cancelEditHandler = () => {
-  //   this.setState({ isEditing: false, editPost: null });
-  // };
-
-  // finishEditHandler = postData => {
-  //   this.setState({
-  //     editLoading: true
-  //   });
-  //   const formData = new FormData();
-  //   formData.append('title', postData.title);
-  //   formData.append('content', postData.content);
-  //   formData.append('image', postData.image);
-  //   let url = 'http://localhost:8080/feed/post';
-  //   let method = 'POST';
-  //   if (this.state.editPost) {
-  //     url = 'http://localhost:8080/feed/post/' + this.state.editPost._id;
-  //     method = 'PUT';
-  //   }
-
-  //   fetch(url, {
-  //     method: method,
-  //     body: formData,
-  //     headers: {
-  //       Authorization: 'Bearer ' + this.props.token
-  //     }
-  //   })
-  //     .then(res => {
-  //       if (res.status !== 200 && res.status !== 201) {
-  //         throw new Error('Creating or editing a post failed!');
-  //       }
-  //       return res.json();
-  //     })
-  //     .then(resData => {
-  //       console.log(resData);
-  //       const post = {
-  //         _id: resData.post._id,
-  //         title: resData.post.title,
-  //         content: resData.post.content,
-  //         creator: resData.post.creator,
-  //         createdAt: resData.post.createdAt
-  //       };
-  //       this.setState(prevState => {
-  //         return {
-  //           isEditing: false,
-  //           editPost: null,
-  //           editLoading: false
-  //         };
-  //       });
-  //     })
-  //     .catch(err => {
-  //       console.log(err);
-  //       this.setState({
-  //         isEditing: false,
-  //         editPost: null,
-  //         editLoading: false,
-  //         error: err
-  //       });
-  //     });
-  // };
-
-  // statusInputChangeHandler = (input, value) => {
-  //   this.setState({ status: value });
-  // };
 
   deletePostHandler = postId => {
     this.setState({ postsLoading: true });
@@ -372,30 +158,23 @@ class Profile extends Component {
         Authorization: 'Bearer ' + this.props.token
       }
     })
-      .then(res => {
-        if (res.status !== 200 && res.status !== 201) {
-          throw new Error('Deleting a post failed!');
-        }
-        return res.json();
-      })
-      .then(resData => {
-        console.log(resData);
-        this.loadPosts();
-        // this.setState(prevState => {
-        //   const updatedPosts = prevState.posts.filter(p => p._id !== postId);
-        //   return { posts: updatedPosts, postsLoading: false };
-        // });
-      })
-      .catch(err => {
-        console.log(err);
-        this.setState({ postsLoading: false });
-      });
+    .then(res => {
+      if (res.status !== 200 && res.status !== 201) {
+        throw new Error('Deleting a post failed!');
+      }
+      return res.json();
+    })
+    .then(resData => {
+      console.log(resData);
+      this.loadPosts();
+    })
+    .catch(err => {
+      console.log(err);
+      this.setState({ postsLoading: false });
+    });
   };
 
   followHandler = () => {
-    // event.preventDefault();
-    // console.log('ekana follow/unfollow');
-    // const postId = this.props.id;
     const meId = localStorage.getItem('userId');
     const userId = this.state.userIdNew;
     // console.log('meId: ' + meId);
@@ -413,8 +192,6 @@ class Profile extends Component {
       return res.json();
     })
     .then(resData => {
-      // egine to like. sto like handler kaneis like
-      // this.setState({: true})
       this.setState({ followers: resData.user.followers.map(follower => {
         return{...follower};
       })});
