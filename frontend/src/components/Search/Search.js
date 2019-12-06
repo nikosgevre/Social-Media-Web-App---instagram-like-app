@@ -12,7 +12,7 @@ class Search extends Component {
 
   getInfo = () => {
       console.log(this.state.query);
-    fetch('http://localhost:8080/feed/search?username=' + this.state.query.toString() + '&limit=7', {
+    fetch('http://localhost:8080/user/search?username=' + this.state.query.toString() + '&limit=7', {
       headers: {
         Authorization: 'Bearer ' + this.props.token
       }

@@ -29,10 +29,8 @@ class Profile extends Component {
 
   componentDidMount() {
     const userId = this.props.match.params.userId;
-    // this.setState({userIdNew: userId});
+    this.setState({userIdNew: userId});
     this.fetchUser();
-    // this.loadFollowers();
-    // this.loadFollowing();
     const socket = openSocket('http://localhost:8080');
     socket.on('posts', data => {
       if (data.action === 'create') {
@@ -48,23 +46,9 @@ class Profile extends Component {
 
   componentDidUpdate() {
     const userId = this.props.match.params.userId;
-    // this.setState({followers: [], following: []})
     if(userId !== this.state.userIdNew) {
       this.fetchUser();
     }
-  };
-
-  updatePost = post => {
-    this.setState(prevState => {
-      const updatedPosts = [...prevState.posts];
-      const updatedPostIndex = updatedPosts.findIndex(p => p._id === post._id);
-      if (updatedPostIndex > -1) {
-        updatedPosts[updatedPostIndex] = post;
-      }
-      return {
-        posts: updatedPosts
-      };
-    });
   };
 
   loadPosts = direction => {
@@ -80,7 +64,6 @@ class Profile extends Component {
       page--;
       this.setState({ postPage: page });
     }
-    // console.log('---123123123: ' + this.state.user.name);
     fetch('http://localhost:8080/feed/userPosts?page=' + page + '&userId=' + this.state.user._id, {
       headers: {
         Authorization: 'Bearer ' + this.props.token
@@ -113,7 +96,7 @@ class Profile extends Component {
     }
     const userId = this.props.match.params.userId;
     this.setState({userIdNew: userId});
-    fetch('http://localhost:8080/feed/profile/' + userId, {
+    fetch('http://localhost:8080/user/profile/' + userId, {
       headers: {
         Authorization: 'Bearer ' + this.props.token
       }
@@ -177,9 +160,7 @@ class Profile extends Component {
   followHandler = () => {
     const meId = localStorage.getItem('userId');
     const userId = this.state.userIdNew;
-    // console.log('meId: ' + meId);
-    // console.log('userId: ' + userId);
-    fetch('http://localhost:8080/feed/userFollow?userId=' + userId + '&meId=' + meId, {
+    fetch('http://localhost:8080/user/userFollow?userId=' + userId + '&meId=' + meId, {
       method: 'POST',
       headers: {
         Authorization: 'Bearer ' + this.props.token
@@ -200,7 +181,6 @@ class Profile extends Component {
       })});
     })
     .catch(this.catchError);
-    // console.log('Liikee!!!');
   };
 
   errorHandler = () => {

@@ -17,15 +17,15 @@ router.post('/postLike', isAuth, feedController.postLike);
 
 // to be moved in user routes
 // POST follow handler backend
-router.post('/userFollow', isAuth, feedController.userFollow);
+// router.post('/userFollow', isAuth, feedController.userFollow);
 
 // to be moved in user routes
 // POST Search
-router.get('/search', isAuth, feedController.getSearch);
+// router.get('/search', isAuth, feedController.getSearch);
 
 // to be moved in user routes
 // GET user profile
-router.get('/profile/:userId', isAuth, feedController.getProfile);
+// router.get('/profile/:userId', isAuth, feedController.getProfile);
 
 // POST /feed/post
 router.post(
