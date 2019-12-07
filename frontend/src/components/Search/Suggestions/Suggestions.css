@@ -1,5 +1,6 @@
 #myUL {
     /* Remove default list styling */
+    position: absolute;
     list-style-type: none;
     padding: 0;
     margin: 0;

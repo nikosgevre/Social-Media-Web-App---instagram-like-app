@@ -11,13 +11,13 @@ import './MainNavigation.css';
 const mainNavigation = props => (
   <nav className="main-nav">
     <MobileToggle onOpen={props.onOpenMobileNav} />
-    <div className="main-nav__logo">
+    <div className="main-nav__logo" >
       <NavLink to="/">
         <Logo />
       </NavLink>
     </div>
     <div className="spacer" />
-    <div className="main-nav__logo">
+    <div className="main-nav__logo" >
         <Search isAuth={props.isAuth} token={props.token} />
     </div>
     <div className="spacer" />

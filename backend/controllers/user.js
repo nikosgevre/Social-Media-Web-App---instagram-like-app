@@ -5,22 +5,15 @@ exports.getSearch = async (req, res, next) => {
     const limit = req.query.limit;
     let counter = 0;
     let searchResults = [];
-    // console.log(searchName);
-    // console.log(limit);
     try {
         const users = await User.find();
-        // console.log(users);
         for (let user of users) {
-            // console.log('user: ' + user);
-            // let namae = user.name.toString();
-            // console.log('user to string: ' + namae);
-            if ((user.name.toString().includes(searchName)) && (counter < limit)) {
-                // console.log('vrika: ' + user.name);
+            // case insensitive search
+            if ((user.name.toString().toLowerCase().includes(searchName.toLowerCase())) && (counter < limit)) {
                 searchResults.push(user);
                 counter++;
             }
         }
-        // console.log('searchResults: ' + searchResults);
         res.status(200).json({
             message: 'Fetched users successfully.',
             users: searchResults
