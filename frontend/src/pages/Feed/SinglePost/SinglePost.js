@@ -6,6 +6,7 @@ import { NavLink } from 'react-router-dom';
 import Image from '../../../components/Image/Image';
 import Button from '../../../components/Button/Button';
 import FeedEdit from '../../../components/Feed/FeedEdit/FeedEdit';
+import PostComment from '../../../components/Feed/Post/PostComment/PostComment';
 
 import './SinglePost.css';
 
@@ -16,9 +17,12 @@ class SinglePost extends Component {
     date: '',
     image: '',
     content: '',
+    isCommenting: false,
+    commentPost: null,
     isEditing: false,
     editPost: null,
     editLoading: false,
+    commentLoading: false,
     status: '',
     comments: [],
     trueUserId: localStorage.getItem('userId'),
@@ -45,11 +49,18 @@ class SinglePost extends Component {
           creator: resData.post.creator,
           image: 'http://localhost:8080/' + resData.post.imageUrl,
           date: new Date(resData.post.createdAt).toLocaleString('en-US'),
-          content: resData.post.content
+          content: resData.post.content,
+          likes: resData.post.likes.map(like => {
+            return{...like};
+          }),
+          comments: resData.post.comments.map(comment => {
+            return{...comment};
+          })
         });
-        this.setState({ likes: resData.post.likes.map(like => {
-          return{...like};
-        })});
+        console.log(this.state.comments);
+        // this.setState({ likes: resData.post.likes.map(like => {
+        //   return{...like};
+        // })});
       })
       .catch(err => {
         console.log(err);
@@ -105,7 +116,69 @@ class SinglePost extends Component {
       this.props.history.push('/');
   };
 
+  startCommentHandler = postId => {
+    // console.log('yoyoyo start');
+    this.setState(prevState => {
+      const loadedPost = this.state.post;
+
+      return {
+        isCommenting: true,
+        commentPost: loadedPost
+      };
+    });
+  };
+
+  cancelCommentHandler = () => {
+    this.setState({ isCommenting: false, commentPost: null });
+  };
+
+  finishCommentHandler = postData => {
+    console.log('yoyoyo finish');
+    this.setState({
+      commentLoading: true
+    });
+    const formData = new FormData();
+    formData.append('comment', postData.comment);
+    let url = 'http://localhost:8080/feed/postComment/' + this.state.commentPost._id;
+    let method = 'POST';
+
+    fetch(url, {
+      method: method,
+      body: formData,
+      headers: {
+        Authorization: 'Bearer ' + this.props.token
+      }
+    })
+      .then(res => {
+        if (res.status !== 200 && res.status !== 201) {
+          throw new Error('Creating or editing a post failed!');
+        }
+        return res.json();
+      })
+      .then(resData => {
+        console.log(resData);
+        this.setState(prevState => {
+          return {
+            isEditing: false,
+            editPost: null,
+            editLoading: false
+          };
+        });
+        window.location.reload();
+      })
+      .catch(err => {
+        console.log(err);
+        this.setState({
+          isEditing: false,
+          editPost: null,
+          editLoading: false,
+          error: err
+        });
+      });
+  };
+
   startEditPostHandler = postId => {
+    // console.log('asdasdasd');
     this.setState(prevState => {
       const loadedPost = this.state.post;
 
@@ -164,7 +237,6 @@ class SinglePost extends Component {
             editLoading: false
           };
         });
-        // console.log('----------- ' + this.props.history.push('/' + this.state.post.id));
         window.location.reload();
       })
       .catch(err => {
@@ -176,8 +248,6 @@ class SinglePost extends Component {
           error: err
         });
       });
-    // console.log('-----------HHH ' + '/' + this.state.post._id);
-    // this.props.history.push('http://localhost:8080/feed/post/' + this.state.post._id);
   };
 
   statusInputChangeHandler = (input, value) => {
@@ -188,10 +258,6 @@ class SinglePost extends Component {
     event.preventDefault();
     const postId = this.state.post._id;
     const userId = localStorage.getItem('userId');
-    // console.log('postId: ' + postId);
-    // console.log('userId: ' + userId);
-    // backend for like
-    // if already like then dislike
     fetch('http://localhost:8080/feed/postLike?postId=' + postId + '&userId=' + userId, {
       method: 'POST',
       headers: {
@@ -205,14 +271,12 @@ class SinglePost extends Component {
       return res.json();
     })
     .then(resData => {
-      // egine to like. sto like handler kaneis like
       this.setState({gotLike: true})
       this.setState({ likes: resData.post.likes.map(like => {
         return{...like};
       })});
     })
     .catch(this.catchError);
-    // console.log('Liikee!!!');
   };
 
   errorHandler = () => {
@@ -227,7 +291,7 @@ class SinglePost extends Component {
 
     let buttons = (
       <div className="post__actions">
-        <Button mode="flat" image={this.state.image} onClick={this.startEditPostHandler.bind(this, this.state.post._id)}>
+        <Button mode="flat"  onClick={this.startCommentHandler.bind(this, this.state.post._id)}>
           Comment
         </Button>
       </div>
@@ -236,7 +300,7 @@ class SinglePost extends Component {
     if(this.state.creator._id === localStorage.getItem("userId")) {
       buttons = (
         <div className="post__actions">
-          <Button mode="flat" image={this.state.image} onClick={this.startEditPostHandler.bind(this, this.state.post._id)}>
+          <Button mode="flat"  onClick={this.startCommentHandler.bind(this, this.state.post._id)}>
             Comment
           </Button>
           <Button mode="flat" image={this.state.image} onClick={this.startEditPostHandler.bind(this, this.state.post._id)}>
@@ -269,6 +333,13 @@ class SinglePost extends Component {
 
     return (
       <Fragment>
+        <PostComment
+          editing={this.state.isCommenting}
+          selectedPost={this.state.commentPost}
+          loading={this.state.commentLoading}
+          onCancelEdit={this.cancelCommentHandler}
+          onFinishEdit={this.finishCommentHandler}
+        />
         <FeedEdit
           editing={this.state.isEditing}
           selectedPost={this.state.editPost}
@@ -276,6 +347,7 @@ class SinglePost extends Component {
           onCancelEdit={this.cancelEditHandler}
           onFinishEdit={this.finishEditHandler}
         />
+        
         <section className="single-post">
           {/* <h1>{this.state.title}</h1> */}
           <h2>
@@ -288,7 +360,26 @@ class SinglePost extends Component {
           {likesAndComments}
           <h2 className="single-post">{this.state.content}</h2>
           <span className='Nav-link'><strong>  comments({this.state.comments.length})</strong></span>
-          <p>{this.state.comments}</p>
+          {/* <p>{this.state.comments}</p> */}
+          {/* <p>
+            {this.state.posts.map(post => (
+              <Comment
+                key={post._id}
+                id={post._id}
+                token={this.props.token}
+                author={post.creator.name}
+                creator={post.creator}
+                date={new Date(post.createdAt).toLocaleString()}
+                title={post.title}
+                image={post.imageUrl}
+                content={post.content}
+                caller={this.state.caller}
+                onStartEdit={this.startEditPostHandler.bind(this, post._id)}
+                onDelete={this.deletePostHandler.bind(this, post._id)}
+                // onLike={this.likeHandler.bind(this, post._id)}
+              />
+            ))}
+          </p> */}
           {buttons}
         </section>
       </Fragment>

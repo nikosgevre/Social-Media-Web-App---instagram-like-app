@@ -30,6 +30,18 @@ router.post(
   feedController.createPost
 );
 
+// POST /feed/postComment
+router.post(
+  '/postComment/:postId',
+  isAuth,
+  [
+    body('comment')
+      .trim()
+      .isLength({ min: 0 })
+  ],
+  feedController.postComment
+);
+
 // GET view post details
 router.get('/post/:postId', isAuth, feedController.getPost);
 
