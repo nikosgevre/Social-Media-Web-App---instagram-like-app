@@ -302,24 +302,12 @@ exports.postComment = async (req, res, next) => {
     error.statusCode = 422;
     throw error;
   }
-  // const title = req.body.title;
   const comment = req.body.comment;
   const newComment = new Comment({
-    // title: title,
     comment: comment,
-    // imageUrl: imageUrl,
     creator: req.userId,
     post: postId
   });
-  // let imageUrl = req.body.image;
-  // if (req.file) {
-  //   imageUrl = req.file.path;
-  // }
-  // if (!imageUrl) {
-  //   const error = new Error('No file picked.');
-  //   error.statusCode = 422;
-  //   throw error;
-  // }
   try {
     await newComment.save();
     const user = await User.findById(req.userId);
@@ -328,16 +316,6 @@ exports.postComment = async (req, res, next) => {
     const post = await Post.findById(postId);
     post.comments.push(newComment);
     await post.save();
-    // io.getIO().emit('posts', {
-    //   action: 'create',
-    //   post: {
-    //     ...post._doc,
-    //     creator: {
-    //       _id: req.userId,
-    //       name: user.name
-    //     }
-    //   }
-    // });
     res.status(201).json({
       message: 'Post created successfully!',
       comment: comment,
@@ -349,7 +327,33 @@ exports.postComment = async (req, res, next) => {
     }
     next(err);
   }
+};
 
+exports.getComments = async (req, res, next) => {
+  const postId = req.params.postId;
+  console.log('comments');
+  try {
+    // const post = await Post.findById(postId)
+    // .populate('creator')
+    // .populate('likes')
+    // .populate('comments');
+    const comments = await Comment.find({ post: postId})
+    .populate('creator');
+    // if (!post) {
+    //   const error = new Error('Could not find post.');
+    //   error.statusCode = 404;
+    //   throw error;
+    // }
+    res.status(200).json({
+      message: 'Post fetched.',
+      comments: comments
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
 };
 
 const clearImage = filePath => {

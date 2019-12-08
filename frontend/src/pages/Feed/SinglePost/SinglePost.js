@@ -11,6 +11,7 @@ import PostComment from '../../../components/Feed/Post/PostComment/PostComment';
 import './SinglePost.css';
 
 class SinglePost extends Component {
+  
   state = {
     post: {},
     creator: '',
@@ -52,15 +53,9 @@ class SinglePost extends Component {
           content: resData.post.content,
           likes: resData.post.likes.map(like => {
             return{...like};
-          }),
-          comments: resData.post.comments.map(comment => {
-            return{...comment};
           })
         });
-        console.log(this.state.comments);
-        // this.setState({ likes: resData.post.likes.map(like => {
-        //   return{...like};
-        // })});
+        this.loadComments();
       })
       .catch(err => {
         console.log(err);
@@ -279,6 +274,31 @@ class SinglePost extends Component {
     .catch(this.catchError);
   };
 
+  loadComments = () => {
+    console.log('asdasdsa');
+    fetch('http://localhost:8080/feed/getComments/' + this.state.post._id, {
+      headers: {
+        Authorization: 'Bearer ' + this.props.token
+      }
+    })
+    .then(res => {
+      if (res.status !== 200) {
+        throw new Error('Failed to fetch comments.');
+      }
+      return res.json();
+    })
+    .then(resData => {
+      this.setState({
+        comments: resData.comments.map(comment => {
+          return {
+            ...comment
+          };
+        })
+      });
+    })
+    .catch(this.catchError);
+  }
+
   errorHandler = () => {
     this.setState({ error: null });
   };
@@ -361,25 +381,10 @@ class SinglePost extends Component {
           <h2 className="single-post">{this.state.content}</h2>
           <span className='Nav-link'><strong>  comments({this.state.comments.length})</strong></span>
           {/* <p>{this.state.comments}</p> */}
-          {/* <p>
-            {this.state.posts.map(post => (
-              <Comment
-                key={post._id}
-                id={post._id}
-                token={this.props.token}
-                author={post.creator.name}
-                creator={post.creator}
-                date={new Date(post.createdAt).toLocaleString()}
-                title={post.title}
-                image={post.imageUrl}
-                content={post.content}
-                caller={this.state.caller}
-                onStartEdit={this.startEditPostHandler.bind(this, post._id)}
-                onDelete={this.deletePostHandler.bind(this, post._id)}
-                // onLike={this.likeHandler.bind(this, post._id)}
-              />
-            ))}
-          </p> */}
+          {this.state.comments.map(comment => (
+            // key=comment._id,
+            <p>{comment.creator.name} -- {comment.comment}</p>
+          ))}
           {buttons}
         </section>
       </Fragment>

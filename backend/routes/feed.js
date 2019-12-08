@@ -12,6 +12,9 @@ router.get('/posts', isAuth, feedController.getPosts);
 // GET /feed/userPosts
 router.get('/userPosts', isAuth, feedController.getUserSpecificPosts);
 
+// GET /feed/userPosts
+router.get('/getComments/:postId', isAuth, feedController.getComments);
+
 // POST like handler backend
 router.post('/postLike', isAuth, feedController.postLike);
 

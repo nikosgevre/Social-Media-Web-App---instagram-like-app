@@ -184,7 +184,7 @@ class App extends Component {
             />
           )}
         />
-        <Redirect to="/" />
+        {/* <Redirect to="/" /> */}
       </Switch>
     );
     if (this.state.isAuth) {
@@ -199,7 +199,7 @@ class App extends Component {
           />
           <Route
             path="/search"
-            exact
+            // exact
             render={props => (
               <SearchPage 
                 {...props} 
@@ -221,6 +221,7 @@ class App extends Component {
           />
           <Route
             path="/:postId"
+            // exact
             render={props => (
               <SinglePostPage
                 {...props}
@@ -229,7 +230,7 @@ class App extends Component {
               />
             )}
           />
-          <Redirect to="/" />
+          {/* <Redirect to="/" /> */}
         </Switch>
       );
     }
@@ -249,6 +250,7 @@ class App extends Component {
                 isAuth={this.state.isAuth}
                 userId={this.state.userId}
                 token={this.state.token}
+                history={this.props.history}
               />
             </Toolbar>
           }

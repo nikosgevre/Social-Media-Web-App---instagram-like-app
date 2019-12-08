@@ -1,19 +1,15 @@
 import React, { Component } from 'react';
+import { NavLink } from 'react-router-dom';
 
 import './Search.css';
 
 class Search extends Component {
   state = {
-    username: '',
-    author: '',
-    date: '',
-    image: '',
-    content: '',
     searchResults: []
   };
 
   componentDidMount() {
-    fetch('http://localhost:8080/feed/search', {
+    fetch('http://localhost:8080/user/search?username=' + this.props.match.params.username, {
       headers: {
         Authorization: 'Bearer ' + this.props.token
       }
@@ -26,11 +22,6 @@ class Search extends Component {
       })
       .then(resData => {
         this.setState({
-          // username: resData.searchResults.name
-          // author: resData.post.creator.name,
-          // image: 'http://localhost:8080/' + resData.post.imageUrl,
-          // date: new Date(resData.post.createdAt).toLocaleDateString('en-US'),
-          // content: resData.post.content
           searchResults: resData.users.map(user => {
             return{...user};
           })
@@ -44,8 +35,12 @@ class Search extends Component {
   render() {
     return (
       <section className="single-post">
-        <h1>{this.state.searchResults}</h1>
-        
+        {this.state.searchResults.map(user => (
+            <article> 
+              <NavLink to={'/profile/' + user._id}>{user.name}</NavLink>
+            </article>
+          ))}
+        {/* <h1>{this.state.searchResults}</h1> */}
       </section>
     );
   }

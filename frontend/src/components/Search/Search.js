@@ -10,8 +10,8 @@ class Search extends Component {
     results: []
   }
 
-  getInfo = () => {
-      console.log(this.state.query);
+  fetchSearchResults = () => {
+    console.log(this.state.query);
     fetch('http://localhost:8080/user/search?username=' + this.state.query.toString() + '&limit=7', {
       headers: {
         Authorization: 'Bearer ' + this.props.token
@@ -41,11 +41,16 @@ class Search extends Component {
     }, () => {
       if (this.state.query && this.state.query.length > 1) {
         if (this.state.query.length % 2 === 0) {
-          this.getInfo()
+          this.fetchSearchResults();
         }
       } else if (!this.state.query) {
       }
     })
+  }
+
+  submitHandler = () => {
+    // if(this.state.results)
+    // this.props.history.push('/search?username=' + this.state.query.toString());
   }
 
   render() {
@@ -55,14 +60,15 @@ class Search extends Component {
         {this.props.isAuth && (
           <Fragment>
           
-            <form className="search">
-            <input
-              id="myInput"
-              type="text"
-              placeholder="Search..."
-              ref={input => this.search = input}
-              onChange={this.handleInputChange}
-            />
+            <form className="search" onSubmit={this.submitHandler()}>
+              <input
+                id="myInput"
+                type="text"
+                placeholder="Search..."
+                ref={input => this.search = input}
+                onChange={this.handleInputChange}
+                
+              />
             
             </form>
             <Suggestions results={this.state.results} />
