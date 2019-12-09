@@ -1,12 +1,13 @@
 import React, { Component, Fragment } from 'react';
 import { withRouter } from 'react-router';
-// import openSocket from 'socket.io-client';
+import openSocket from 'socket.io-client';
 import { NavLink } from 'react-router-dom';
 
 import Image from '../../../components/Image/Image';
 import Button from '../../../components/Button/Button';
 import FeedEdit from '../../../components/Feed/FeedEdit/FeedEdit';
 import PostComment from '../../../components/Feed/Post/PostComment/PostComment';
+import Comment from '../../../components/Feed/Post/Comment/Comment';
 
 import './SinglePost.css';
 
@@ -37,6 +38,50 @@ class SinglePost extends Component {
         Authorization: 'Bearer ' + this.props.token
       }
     })
+    .then(res => {
+      if (res.status !== 200) {
+        throw new Error('Failed to fetch post');
+      }
+      return res.json();
+    })
+    .then(resData => {
+      // console.log('resData: ' + resData.post.creator.name);
+      this.setState({
+        post: resData.post,
+        creator: resData.post.creator,
+        image: 'http://localhost:8080/' + resData.post.imageUrl,
+        date: new Date(resData.post.createdAt).toLocaleString('en-US'),
+        content: resData.post.content,
+        likes: resData.post.likes.map(like => {
+          return{...like};
+        })
+      });
+      this.loadComments();
+    })
+    .catch(err => {
+      console.log(err);
+    });
+    const socket = openSocket('http://localhost:8080');
+    socket.on('singlePost', data => {
+      if (data.action === 'createComment') {
+        this.loadComments();
+      } else if (data.action === 'postLike') {
+        this.loadPost();
+      } else if (data.action === 'deleteComment') {
+        this.loadComments();
+      } else if (data.action === 'editPost') {
+        this.loadPost();
+      }
+    });
+  }
+
+  loadPost = () => {
+    const postId = this.props.match.params.postId;
+    fetch('http://localhost:8080/feed/post/' + postId, {
+      headers: {
+        Authorization: 'Bearer ' + this.props.token
+      }
+    })
       .then(res => {
         if (res.status !== 200) {
           throw new Error('Failed to fetch post');
@@ -60,12 +105,6 @@ class SinglePost extends Component {
       .catch(err => {
         console.log(err);
       });
-    // const socket = openSocket('http://localhost:8080');
-    // socket.on('posts', data => {
-    //   if (data.action === 'update') {
-    //     this.updatePost(data.post);
-    //   }
-    // });
   }
 
   // updatePost = post => {
@@ -97,18 +136,38 @@ class SinglePost extends Component {
       })
       .then(resData => {
         console.log(resData);
-        // this.loadPosts();
-        
-        // this.setState(prevState => {
-        //   const updatedPosts = prevState.posts.filter(p => p._id !== postId);
-        //   return { posts: updatedPosts, postsLoading: false };
-        // });
       })
       .catch(err => {
         console.log(err);
         this.setState({ postsLoading: false });
       });
       this.props.history.push('/');
+  };
+
+  deleteCommentHandler = commentId => {
+    console.log('yoyoyo');
+    this.setState({ postsLoading: true });
+    fetch('http://localhost:8080/feed/comment?commentId=' + commentId + '&postId=' + this.state.post._id, {
+      method: 'DELETE',
+      headers: {
+        Authorization: 'Bearer ' + this.props.token
+      }
+    })
+      .then(res => {
+        if (res.status !== 200 && res.status !== 201) {
+          throw new Error('Deleting a post failed!');
+        }
+        return res.json();
+      })
+      .then(resData => {
+        console.log(resData);
+      })
+      .catch(err => {
+        console.log(err);
+        this.setState({ postsLoading: false });
+      });
+      // this.props.history.push('/');
+      // window.location.reload();
   };
 
   startCommentHandler = postId => {
@@ -275,7 +334,7 @@ class SinglePost extends Component {
   };
 
   loadComments = () => {
-    console.log('asdasdsa');
+    // console.log('asdasdsa');
     fetch('http://localhost:8080/feed/getComments/' + this.state.post._id, {
       headers: {
         Authorization: 'Bearer ' + this.props.token
@@ -297,7 +356,7 @@ class SinglePost extends Component {
       });
     })
     .catch(this.catchError);
-  }
+  };
 
   errorHandler = () => {
     this.setState({ error: null });
@@ -379,11 +438,21 @@ class SinglePost extends Component {
           </div>
           {likesAndComments}
           <h2 className="single-post">{this.state.content}</h2>
-          <span className='Nav-link'><strong>  comments({this.state.comments.length})</strong></span>
+          <span className='Nav-link' style={{paddingTop:"15px"}}><strong>  comments({this.state.comments.length})</strong></span>
           {/* <p>{this.state.comments}</p> */}
           {this.state.comments.map(comment => (
-            // key=comment._id,
-            <p>{comment.creator.name} -- {comment.comment}</p>
+            <Comment
+              key={comment._id}
+              id={comment._id}
+              token={this.props.token}
+              postId={this.state.post._id}
+              author={comment.creator.name}
+              creator={comment.creator}
+              date={new Date(comment.createdAt).toLocaleString()}
+              content={comment.comment}
+              // onStartEdit={this.startEditPostHandler.bind(this, post._id)}
+              onDelete={this.deleteCommentHandler.bind(this, comment._id)}
+            />
           ))}
           {buttons}
         </section>

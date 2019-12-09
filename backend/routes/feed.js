@@ -66,4 +66,7 @@ router.put(
 // DELETE delete post
 router.delete('/post/:postId', isAuth, feedController.deletePost);
 
+// DELETE delete comment
+router.delete('/comment', isAuth, feedController.deleteComment);
+
 module.exports = router;

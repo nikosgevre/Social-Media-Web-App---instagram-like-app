@@ -207,6 +207,10 @@ exports.updatePost = async (req, res, next) => {
       action: 'update',
       post: result
     });
+    io.getIO().emit('singlePost', {
+      action: 'editPost',
+      post: result
+    });
     res.status(200).json({
       message: 'Post updated!',
       post: result
@@ -256,6 +260,52 @@ exports.deletePost = async (req, res, next) => {
   }
 };
 
+exports.deleteComment = async (req, res, next) => {
+  const commentId = req.query.commentId;
+  const postId = req.query.postId;
+  
+  try {
+    const comment = await Comment.findById(commentId).populate('post');
+    // console.log(comment.post._id);
+    // console.log('cmid: ' + commentId);
+    // console.log('pstid ' + postId);
+    if (!comment) {
+      const error = new Error('Could not find comment.');
+      error.statusCode = 404;
+      throw error;
+    }
+    if (comment.creator.toString() !== req.userId) {
+      const error = new Error('Not authorized!');
+      error.statusCode = 403;
+      throw error;
+    }
+    // Check logged in user
+    // clearImage(post.imageUrl);
+
+    await Comment.findByIdAndRemove(commentId);
+
+    const user = await User.findById(req.userId);
+    user.comments.pull(commentId);
+    await user.save();
+    const post = await Post.findById(postId).populate('comments');
+    post.comments.pull(commentId);
+    await post.save();
+
+    io.getIO().emit('singlePost', {
+      action: 'deleteComment',
+      post: postId
+    });
+    res.status(200).json({
+      message: 'Deleted comment.'
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
 exports.postLike = async (req, res, next) => {
   const postId = req.query.postId;
   const userId = req.query.userId;
@@ -268,6 +318,10 @@ exports.postLike = async (req, res, next) => {
       post.likes.push(user);
       // console.log('liked a post');
       const result = await post.save();
+      io.getIO().emit('singlePost', {
+        action: 'postLike',
+        post: postId
+      });
       res.status(200).json({
         message: 'Post liked!',
         post: result
@@ -278,6 +332,10 @@ exports.postLike = async (req, res, next) => {
       });
       // console.log('Disliked a post');
       const result = await post.save();
+      io.getIO().emit('singlePost', {
+        action: 'postLike',
+        post: postId
+      });
       res.status(200).json({
         message: 'Post disliked!',
         post: result
@@ -294,7 +352,7 @@ exports.postLike = async (req, res, next) => {
 };
 
 exports.postComment = async (req, res, next) => {
-  console.log('yoyoyo');
+  // console.log('yoyoyo');
   const postId = req.params.postId;
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -316,6 +374,10 @@ exports.postComment = async (req, res, next) => {
     const post = await Post.findById(postId);
     post.comments.push(newComment);
     await post.save();
+    io.getIO().emit('singlePost', {
+      action: 'createComment',
+      post: postId
+    });
     res.status(201).json({
       message: 'Post created successfully!',
       comment: comment,
@@ -331,7 +393,7 @@ exports.postComment = async (req, res, next) => {
 
 exports.getComments = async (req, res, next) => {
   const postId = req.params.postId;
-  console.log('comments');
+  // console.log('comments');
   try {
     // const post = await Post.findById(postId)
     // .populate('creator')
