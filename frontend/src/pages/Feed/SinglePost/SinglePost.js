@@ -71,7 +71,6 @@ class SinglePost extends Component {
         this.loadComments();
       } else if (data.action === 'editPost') {
         this.loadPost();
-        
       }
     });
   }
