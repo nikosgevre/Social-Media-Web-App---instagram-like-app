@@ -56,6 +56,7 @@ class App extends Component {
     localStorage.removeItem('token');
     localStorage.removeItem('expiryDate');
     localStorage.removeItem('userId');
+    this.props.history.replace('/');
   };
 
   loginHandler = (event, authData) => {
@@ -153,6 +154,7 @@ class App extends Component {
     setTimeout(() => {
       this.logoutHandler();
     }, milliseconds);
+    // this.props.history.replace('/');
   };
 
   errorHandler = () => {

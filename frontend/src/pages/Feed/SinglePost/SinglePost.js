@@ -7,6 +7,7 @@ import Image from '../../../components/Image/Image';
 import Button from '../../../components/Button/Button';
 import FeedEdit from '../../../components/Feed/FeedEdit/FeedEdit';
 import PostComment from '../../../components/Feed/Post/PostComment/PostComment';
+import CommentEdit from '../../../components/Feed/Post/PostComment/PostComment';
 import Comment from '../../../components/Feed/Post/Comment/Comment';
 
 import './SinglePost.css';
@@ -28,7 +29,9 @@ class SinglePost extends Component {
     status: '',
     comments: [],
     trueUserId: localStorage.getItem('userId'),
-    likes: []
+    likes: [],
+    editComment: null,
+    isEditingComment: false
   };
 
   componentDidMount() {
@@ -71,6 +74,8 @@ class SinglePost extends Component {
         this.loadComments();
       } else if (data.action === 'editPost') {
         this.loadPost();
+      } else if (data.action === 'editComment') {
+        this.loadComments();
       }
     });
   }
@@ -358,6 +363,71 @@ class SinglePost extends Component {
     .catch(this.catchError);
   };
 
+  startEditCommentHandler = comment => {
+    console.log('asdasdasd');
+    this.setState(prevState => {
+      const loadedComment = comment;
+
+      return {
+        isEditingComment: true,
+        editComment: loadedComment
+      };
+    });
+  };
+
+  cancelEditCommentHandler = () => {
+    this.setState({ isEditingComment: false, editComment: null });
+  };
+
+  finishEditCommentHandler = postData => {
+    console.log('yoyoyo finish edit comment');
+    this.setState({
+      editLoading: true
+    });
+    const formData = new FormData();
+    formData.append('comment', postData.comment);
+    let url = 'http://localhost:8080/feed/postComment/' + this.state.post._id;
+    let method = 'POST';
+    if (this.state.editComment) {
+      url = 'http://localhost:8080/feed/editComment?commentId=' + this.state.editComment._id + '&postId=' + this.state.post._id;
+      method = 'PUT';
+    }
+
+    fetch(url, {
+      method: method,
+      body: formData,
+      headers: {
+        Authorization: 'Bearer ' + this.props.token
+      }
+    })
+      .then(res => {
+        if (res.status !== 200 && res.status !== 201) {
+          throw new Error('Creating or editing a post failed!');
+        }
+        return res.json();
+      })
+      .then(resData => {
+        console.log(resData);
+        this.setState(prevState => {
+          return {
+            isEditingComment: false,
+            editComment: null,
+            editLoading: false
+          };
+        });
+        // window.location.reload();
+      })
+      .catch(err => {
+        console.log(err);
+        this.setState({
+          isEditing: false,
+          editPost: null,
+          editLoading: false,
+          error: err
+        });
+      });
+  };
+
   errorHandler = () => {
     this.setState({ error: null });
   };
@@ -419,6 +489,13 @@ class SinglePost extends Component {
           onCancelEdit={this.cancelCommentHandler}
           onFinishEdit={this.finishCommentHandler}
         />
+        <CommentEdit
+          editing={this.state.isEditingComment}
+          selectedPost={this.state.editComment}
+          loading={this.state.editLoading}
+          onCancelEdit={this.cancelEditCommentHandler}
+          onFinishEdit={this.finishEditCommentHandler}
+        />
         <FeedEdit
           editing={this.state.isEditing}
           selectedPost={this.state.editPost}
@@ -450,7 +527,7 @@ class SinglePost extends Component {
               creator={comment.creator}
               date={new Date(comment.createdAt).toLocaleString()}
               content={comment.comment}
-              // onStartEdit={this.startEditPostHandler.bind(this, post._id)}
+              onStartEdit={this.startEditCommentHandler.bind(this, comment)}
               onDelete={this.deleteCommentHandler.bind(this, comment._id)}
             />
           ))}

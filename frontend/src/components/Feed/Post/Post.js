@@ -46,7 +46,12 @@ class Post extends Component {
         likes: resData.post.likes.map(like => {
           return{...like};
         }),
-        post: resData.post
+        post: resData.post,
+        comments: resData.post.comments.map(comment => {
+          return {
+            ...comment
+          };
+        })
       });
     })
     .catch(err => {
@@ -105,7 +110,7 @@ class Post extends Component {
       <div>
         <div className="Post-caption">
             <Button onClick={this.likeHandler}>Like</Button> <strong> {this.state.likes.length} | </strong>
-            <NavLink className='Nav-link' to={`${this.props.id}`} user={this.props.creator}><strong>  comments</strong> {(this.state.comments.length === 0) ? '' : this.state.comments.length}</NavLink>
+            <NavLink className='Nav-link' to={`${this.props.id}`} user={this.props.creator}><strong>  comments</strong> ({(this.state.comments.length === 0) ? '' : this.state.comments.length})</NavLink>
         </div>
         <div className="Post-caption">
           <NavLink className='Nav-link' to={'/profile/' + this.props.creator._id} user={this.props.creator}>{this.props.author}</NavLink> {this.props.content}
@@ -118,7 +123,7 @@ class Post extends Component {
       <div>
         <div className="Post-caption">
             <Button design="danger" onClick={this.likeHandler}>Dislike</Button> <strong> {this.state.likes.length} | </strong>
-            <NavLink className='Nav-link' to={`${this.props.id}`} user={this.props.creator}><strong>  comments</strong> {(this.state.comments.length === 0) ? '' : this.state.comments.length}</NavLink>
+            <NavLink className='Nav-link' to={`${this.props.id}`} user={this.props.creator}><strong>  comments</strong> ({(this.state.comments.length === 0) ? '' : this.state.comments.length})</NavLink>
         </div>
         <div className="Post-caption">
           <NavLink className='Nav-link' to={'/profile/' + this.props.creator._id} user={this.props.creator}>{this.props.author}</NavLink> {this.props.content}

@@ -28,7 +28,7 @@ router.post(
       .isLength({ min: 5 }),
     body('content')
       .trim()
-      .isLength({ min: 5 })
+      .isLength({ min: 0 })
   ],
   feedController.createPost
 );
@@ -43,6 +43,18 @@ router.post(
       .isLength({ min: 0 })
   ],
   feedController.postComment
+);
+
+// PUT update comment
+router.put(
+  '/editComment',
+  isAuth,
+  [
+    body('comment')
+      .trim()
+      .isLength({ min: 0 })
+  ],
+  feedController.updateComment
 );
 
 // GET view post details

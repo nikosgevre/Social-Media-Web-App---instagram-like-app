@@ -226,7 +226,8 @@ exports.updatePost = async (req, res, next) => {
 exports.deletePost = async (req, res, next) => {
   const postId = req.params.postId;
   try {
-    const post = await Post.findById(postId);
+    // to post pou prepei na kanw delete
+    const post = await Post.findById(postId).populate('comments');
 
     if (!post) {
       const error = new Error('Could not find post.');
@@ -238,13 +239,31 @@ exports.deletePost = async (req, res, next) => {
       error.statusCode = 403;
       throw error;
     }
-    // Check logged in user
-    clearImage(post.imageUrl);
-    await Post.findByIdAndRemove(postId);
 
+    // delete image
+    clearImage(post.imageUrl);
+
+    // posts' comments
+    let comments = await Comment.find({ post : post._id}).populate('creator');
+
+    // for each comment find the user that made the comment and delete it from his comments reference
+    for (let cmc of comments) {
+      let userA = await User.findById(cmc.creator._id);
+      userA.comments.pull(cmc._id);
+      await userA.save();
+    }
+
+    // delete the comments of the post
+    comments = await Comment.deleteMany({ post: post._id});
+
+    // delete the post
+    await Post.findByIdAndDelete(postId);
+
+    // delete the post from its user reference
     const user = await User.findById(req.userId);
     user.posts.pull(postId);
     await user.save();
+
     io.getIO().emit('posts', {
       action: 'delete',
       post: postId
@@ -409,6 +428,50 @@ exports.getComments = async (req, res, next) => {
     res.status(200).json({
       message: 'Post fetched.',
       comments: comments
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
+exports.updateComment = async (req, res, next) => {
+  const commentId = req.query.commentId;
+  const postId = req.query.postId;
+  const errors = validationResult(req);
+  // console.log(commentId);
+  // console.log(postId);
+  if (!errors.isEmpty()) {
+    const error = new Error('Validation failed, entered data is incorrect.');
+    error.statusCode = 422;
+    throw error;
+  }
+  const content = req.body.comment;
+  try {
+    const comment = await Comment.findById(commentId).populate('creator');
+    if (!comment) {
+      const error = new Error('Could not find comment.');
+      error.statusCode = 404;
+      throw error;
+    }
+    if (comment.creator._id.toString() !== req.userId) {
+      const error = new Error('Not authorized!');
+      error.statusCode = 403;
+      throw error;
+    }
+    comment.comment = content;
+    const resultComment = await comment.save();
+    const post = await Post.findById(postId);
+    // result = await post.save();
+    io.getIO().emit('singlePost', {
+      action: 'editComment',
+      post: post
+    });
+    res.status(200).json({
+      message: 'Post updated!',
+      post: post
     });
   } catch (err) {
     if (!err.statusCode) {
