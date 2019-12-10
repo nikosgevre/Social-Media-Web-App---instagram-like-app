@@ -364,7 +364,7 @@ class SinglePost extends Component {
   };
 
   startEditCommentHandler = comment => {
-    console.log('asdasdasd');
+    // console.log('asdasdasd');
     this.setState(prevState => {
       const loadedComment = comment;
 
@@ -380,7 +380,7 @@ class SinglePost extends Component {
   };
 
   finishEditCommentHandler = postData => {
-    console.log('yoyoyo finish edit comment');
+    // console.log('yoyoyo finish edit comment');
     this.setState({
       editLoading: true
     });
@@ -515,7 +515,7 @@ class SinglePost extends Component {
           </div>
           {likesAndComments}
           <h2 className="single-post">{this.state.content}</h2>
-          <span className='Nav-link' style={{paddingTop:"15px"}}><strong>  comments({this.state.comments.length})</strong></span>
+          <span className='Nav-link' style={{paddingTop:"15px", paddingBottom:"15px"}}><strong>  comments({this.state.comments.length})</strong></span>
           {/* <p>{this.state.comments}</p> */}
           {this.state.comments.map(comment => (
             <Comment
@@ -531,6 +531,7 @@ class SinglePost extends Component {
               onDelete={this.deleteCommentHandler.bind(this, comment._id)}
             />
           ))}
+          <hr></hr>
           {buttons}
         </section>
       </Fragment>

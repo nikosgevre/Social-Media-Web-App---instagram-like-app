@@ -1,9 +1,12 @@
-.post {
-    margin: 1rem 0;
-    border: 1px solid #3b0062;
+.post1 {
+    margin: 0.5rem 0;
+    /* border: 1px solid #3b0062; */
+    /* border-radius: 5px; */
+    border: 1px solid #707070;
     border-radius: 5px;
     padding: 0.5rem;
   }
+
   
   /* .Post {
     border-radius: 3px;

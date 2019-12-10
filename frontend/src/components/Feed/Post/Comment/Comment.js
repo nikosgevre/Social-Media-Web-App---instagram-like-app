@@ -1,9 +1,9 @@
-import React, {Component} from 'react';
+import React, {Component, Fragment} from 'react';
 import { NavLink } from 'react-router-dom';
 import TimeAgo from 'react-timeago'
 
 import Button from '../../../Button/Button';
-import './Comment.css';
+import style from './Comment.css';
 
 class Post extends Component {
 
@@ -101,17 +101,21 @@ class Post extends Component {
     //     </div>
     //     {buttons}
     //   </article>
-
-      <article className="post">
-        <div >
-          <NavLink className='Nav-link' to={'/profile/' + this.props.creator._id} user={this.props.creator}>{this.props.author}</NavLink> {this.props.content}
-        </div>
-        <div className="Post-caption" >
-          <TimeAgo date={this.props.date} minPeriod="30"  />
-        </div>
-        {buttons}
-      </article>
-
+      <Fragment>
+        {/* <hr></hr> */}
+        <article className="post1">
+          <div>
+            <div >
+              <NavLink className='Nav-link' to={'/profile/' + this.props.creator._id} user={this.props.creator}>{this.props.author}</NavLink> {this.props.content}
+            </div>
+            <div className="Post-caption" >
+              <TimeAgo date={this.props.date} minPeriod="30"  />
+            </div>
+          </div>
+          {/* <hr></hr> */}
+          {buttons}
+        </article>
+      </Fragment>
     );
   }
 }
