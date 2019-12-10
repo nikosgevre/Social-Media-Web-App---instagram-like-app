@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 import TimeAgo from 'react-timeago'
 
 import Button from '../../../Button/Button';
-import style from './Comment.css';
+// import style from './Comment.css';
 
 class Post extends Component {
 
@@ -66,7 +66,7 @@ class Post extends Component {
 
   render () {
 
-    let postUser = (<header className="post__header"></header>);
+    // let postUser = (<header className="post__header"></header>);
     let buttons = (
       <div className="post__actions">
       </div>
@@ -83,13 +83,14 @@ class Post extends Component {
           </Button>
         </div>
       )
-    }
+    };
 
-    postUser= (
-        <div className="Post-user-nickname">
-            <NavLink className='Nav-link' to={'/profile/' + this.props.creator._id} user={this.props.creator}>{this.props.author}</NavLink>
-        </div>
-    );
+    // postUser= (
+    //     <div className="Post-user-nickname">
+    //         <NavLink className='Nav-link' to={'/profile/' + this.props.creator._id} user={this.props.creator}>{this.props.author}</NavLink>
+    //     </div>
+    // );
+
     return (
 
     //   <article className="post">
@@ -102,7 +103,6 @@ class Post extends Component {
     //     {buttons}
     //   </article>
       <Fragment>
-        {/* <hr></hr> */}
         <article className="post1">
           <div>
             <div >
@@ -112,7 +112,6 @@ class Post extends Component {
               <TimeAgo date={this.props.date} minPeriod="30"  />
             </div>
           </div>
-          {/* <hr></hr> */}
           {buttons}
         </article>
       </Fragment>
