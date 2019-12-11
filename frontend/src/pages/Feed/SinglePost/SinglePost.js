@@ -150,7 +150,7 @@ class SinglePost extends Component {
   };
 
   deleteCommentHandler = commentId => {
-    console.log('yoyoyo');
+    // console.log('yoyoyo');
     this.setState({ postsLoading: true });
     fetch('http://localhost:8080/feed/comment?commentId=' + commentId + '&postId=' + this.state.post._id, {
       method: 'DELETE',

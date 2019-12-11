@@ -285,9 +285,6 @@ exports.deleteComment = async (req, res, next) => {
   
   try {
     const comment = await Comment.findById(commentId).populate('post');
-    // console.log(comment.post._id);
-    // console.log('cmid: ' + commentId);
-    // console.log('pstid ' + postId);
     if (!comment) {
       const error = new Error('Could not find comment.');
       error.statusCode = 404;
@@ -298,8 +295,6 @@ exports.deleteComment = async (req, res, next) => {
       error.statusCode = 403;
       throw error;
     }
-    // Check logged in user
-    // clearImage(post.imageUrl);
 
     await Comment.findByIdAndRemove(commentId);
 

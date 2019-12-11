@@ -26,6 +26,8 @@ const App = (props) => {
   const [error, setError] = useState(null);
 
   const logoutHandler = useCallback(() => {
+    // event.preventDefault();
+    // console.log('~~~~~~~~~');
     setIsAuth(false);
     setToken(null);
     localStorage.removeItem('token');
@@ -35,6 +37,7 @@ const App = (props) => {
   }, [props.history]);
 
   const setAutoLogout = useCallback((milliseconds) => {
+    // event.preventDefault();
     setTimeout(() => {
       logoutHandler();
     }, milliseconds);
@@ -58,6 +61,7 @@ const App = (props) => {
     setToken(token1);
     setUserId(userId1);
     setAutoLogout(remainingMilliseconds);
+    // console.log(token + ' : ' + token1 );
   }, [logoutHandler, setAutoLogout]);
 
   const mobileNavHandler = (isOpen) => {
@@ -156,8 +160,6 @@ const App = (props) => {
       });
   };
 
-  
-
   const errorHandler = () => {
     setError(null);
   };
@@ -237,6 +239,7 @@ const App = (props) => {
       </Switch>
     );
   }
+  // console.log('------------' + token);
 
   return (
     <Fragment>
