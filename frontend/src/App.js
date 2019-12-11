@@ -1,5 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import { Route, Switch, Redirect, withRouter } from 'react-router-dom';
+import { connect } from 'react-redux';
+// import thunk from 'redux-thunk';
 
 import Layout from './components/Layout/Layout';
 import Backdrop from './components/Backdrop/Backdrop';
@@ -13,6 +15,7 @@ import LoginPage from './pages/Auth/Login';
 import SignupPage from './pages/Auth/Signup';
 import SearchPage from './pages/Search/Search.js';
 import ProfilePage from './pages/Profile/Profile.js';
+import * as actions from './store/actions/index';
 import './App.css';
 
 class App extends Component {
@@ -273,4 +276,27 @@ class App extends Component {
   }
 }
 
-export default withRouter(App);
+const mapStateToProps = state => {
+  return{
+    showBackdrop: state.showBackdrop,
+    // showMobileNav: state.showMobileNav,
+    isAuth: state.isAuth,
+    // token: state.token,
+    // userId: state.userId,
+    authLoading: state.authLoading,
+    error: state.error
+  }
+};
+
+const mapDispatchToProps = dispatch => {
+  return{
+    // loginHandle: (token, userId) => dispatch(actions.loginHandler(token, userId)),
+    logoutHandle: () => dispatch(actions.logoutHandler()),
+    signupHandle: () => dispatch(actions.signupHandler()),
+    backdropHandle: () => dispatch(actions.backdropHandler()),
+    // mobileNavHandle: (isOpen) => dispatch(actions.mobileNavHandler(isOpen)),
+    errorHandle: () => dispatch(actions.errorHandler())
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(App));
