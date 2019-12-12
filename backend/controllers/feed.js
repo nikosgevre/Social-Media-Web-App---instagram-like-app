@@ -486,6 +486,10 @@ exports.updateComment = async (req, res, next) => {
       action: 'editComment',
       post: post
     });
+    io.getIO().emit('post', {
+      action: 'editComment',
+      post: post
+    });
     res.status(200).json({
       message: 'Post updated!',
       post: post

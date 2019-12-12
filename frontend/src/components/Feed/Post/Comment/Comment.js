@@ -16,32 +16,10 @@ class Post extends Component {
   };
 
   componentDidMount() {
-    // const postId = this.props.id;
-    // fetch('http://localhost:8080/feed/post/' + postId, {
-    //   headers: {
-    //     Authorization: 'Bearer ' + this.props.token
-    //   }
-    // })
-    // .then(res => {
-    //   if (res.status !== 200) {
-    //     throw new Error('Failed to fetch');
-    //   }
-    //   return res.json();
-    // })
-    // .then(resData => {
-    //   this.setState({
-    //     author: resData.post.creator.name,
-    //     date: new Date(resData.post.createdAt).toLocaleString()
-    //   });
       this.loadComments();
-    // })
-    // .catch(err => {
-    //   console.log(err);
-    // });
   }
 
   loadComments = () => {
-    // console.log('asdasdsa');
     fetch('http://localhost:8080/feed/getComments/' + this.props.postId, {
       headers: {
         Authorization: 'Bearer ' + this.props.token
@@ -72,6 +50,8 @@ class Post extends Component {
       </div>
     );
 
+    // console.log('this.props.creator._id: ' + this.props.creator._id);
+    // console.log('localstorage: ' + localStorage.getItem("userId"));
     if(this.props.creator._id === localStorage.getItem("userId")) {
       buttons = (
         <div className="post__actions" >
@@ -86,16 +66,6 @@ class Post extends Component {
     }
 
     return (
-
-    //   <article className="post">
-    //     <div style={{float:"left"}}>
-    //       <NavLink className='Nav-link' to={'/profile/' + this.props.creator._id} user={this.props.creator}>{this.props.author}</NavLink> {this.props.content}
-    //     </div>
-    //     <div className="Post-caption" style={{float:"right"}}>
-    //       <TimeAgo date={this.props.date} minPeriod="30"  />
-    //     </div>
-    //     {buttons}
-    //   </article>
       <Fragment>
         {/* <hr></hr> */}
         <article className="post1">
