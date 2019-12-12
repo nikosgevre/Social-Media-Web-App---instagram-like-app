@@ -164,6 +164,7 @@ class App extends Component {
   render() {
 
     // console.log(React.version);
+    // console.log(this.state.isAuth);
     
     let routes = (
       <Switch>

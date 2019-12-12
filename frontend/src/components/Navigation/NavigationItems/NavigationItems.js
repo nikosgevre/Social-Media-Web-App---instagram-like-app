@@ -11,7 +11,8 @@ class NavigationItems extends Component {
       { id: 'feed', text: 'Feed', link: '/', auth: true },
       { id: 'Profile', text: 'Profile', link: '/profile/' + this.props.userId, auth: true },
       { id: 'login', text: 'Login', link: '/', auth: false },
-      { id: 'signup', text: 'Signup', link: '/signup', auth: false }
+      { id: 'signup', text: 'Signup', link: '/signup', auth: false },
+      { id: 'logout', text: 'Logout', link: '/', auth: true }
     ];
 
     return( [
@@ -20,17 +21,17 @@ class NavigationItems extends Component {
           key={item.id}
           className={['navigation-item', this.props.mobile ? 'mobile' : ''].join(' ')}
         >
-          <NavLink to={item.link} exact onClick={this.props.onChoose}>
-            {item.text}
-          </NavLink>
+          {item.id !== 'logout' ? (<NavLink to={item.link} exact onClick={this.props.onChoose}>{item.text}</NavLink>) : (<NavLink to={item.link} exact onClick={this.props.onLogout}>Logout</NavLink>) }
+          
         </li>
       )),
-      this.props.isAuth && (
-        <li className="navigation-item" key="logout">
-          <button onClick={this.props.onLogout}>Logout</button>
-        </li>
-      )
+      // this.props.isAuth && (
+      //   <li className="navigation-item" key="logout">
+      //     <button onClick={this.props.onLogout}>Logout</button>
+      //   </li>
+      // )
     ] );
+    
   }
 
 }

@@ -115,7 +115,7 @@ exports.createPost = async (req, res, next) => {
     const user = await User.findById(req.userId);
     user.posts.push(post);
     await user.save();
-    io.getIO().emit('posts', {
+    io.getIO().emit('feed', {
       action: 'create',
       post: {
         ...post._doc,
@@ -203,7 +203,7 @@ exports.updatePost = async (req, res, next) => {
     post.imageUrl = imageUrl;
     post.content = content;
     const result = await post.save();
-    io.getIO().emit('posts', {
+    io.getIO().emit('feed', {
       action: 'update',
       post: result
     });
@@ -264,7 +264,7 @@ exports.deletePost = async (req, res, next) => {
     user.posts.pull(postId);
     await user.save();
 
-    io.getIO().emit('posts', {
+    io.getIO().emit('feed', {
       action: 'delete',
       post: postId
     });
@@ -314,6 +314,10 @@ exports.deleteComment = async (req, res, next) => {
       action: 'deleteComment',
       post: postId
     });
+    io.getIO().emit('post', {
+      action: 'deleteComment',
+      post: postId
+    });
     res.status(200).json({
       message: 'Deleted comment.'
     });
@@ -328,6 +332,8 @@ exports.deleteComment = async (req, res, next) => {
 exports.postLike = async (req, res, next) => {
   const postId = req.query.postId;
   const userId = req.query.userId;
+  console.log('pid: ' + postId);
+  console.log('uid: ' + userId);
 
   try {
     const post = await Post.findById(postId).populate('creator').populate('likes');
@@ -338,6 +344,10 @@ exports.postLike = async (req, res, next) => {
       // console.log('liked a post');
       const result = await post.save();
       io.getIO().emit('singlePost', {
+        action: 'postLike',
+        post: postId
+      });
+      io.getIO().emit('post', {
         action: 'postLike',
         post: postId
       });
@@ -355,12 +365,15 @@ exports.postLike = async (req, res, next) => {
         action: 'postLike',
         post: postId
       });
+      io.getIO().emit('post', {
+        action: 'postLike',
+        post: postId
+      });
       res.status(200).json({
         message: 'Post disliked!',
         post: result
       });
     }
-
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
@@ -394,6 +407,10 @@ exports.postComment = async (req, res, next) => {
     post.comments.push(newComment);
     await post.save();
     io.getIO().emit('singlePost', {
+      action: 'createComment',
+      post: postId
+    });
+    io.getIO().emit('post', {
       action: 'createComment',
       post: postId
     });

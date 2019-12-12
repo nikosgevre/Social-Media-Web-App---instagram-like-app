@@ -2,6 +2,8 @@ import React, {Component} from 'react';
 import { NavLink } from 'react-router-dom';
 import TimeAgo from 'react-timeago'
 
+import openSocket from 'socket.io-client';
+
 import Button from '../../Button/Button';
 import './Post.css';
 
@@ -53,11 +55,21 @@ class Post extends Component {
           };
         })
       });
+      const socket = openSocket('http://localhost:8080');
+      socket.on('post', data => {
+        if (data.action === 'createComment') {
+          this.loadPost();
+        } else if (data.action === 'postLike') {
+          this.loadPost();
+        } else if (data.action === 'deleteComment') {
+          this.loadPost();
+        } 
+      });
     })
     .catch(err => {
       console.log(err);
     });
-  }
+  };
 
   likeHandler = event => {
     event.preventDefault();
@@ -81,6 +93,37 @@ class Post extends Component {
       })});
     })
     .catch(this.catchError);
+  };
+
+  loadPost = () => {
+    // console.log('kalestika');
+    const postId = this.props.id;
+    fetch('http://localhost:8080/feed/post/' + postId, {
+      headers: {
+        Authorization: 'Bearer ' + this.props.token
+      }
+    })
+    .then(res => {
+      if (res.status !== 200) {
+        throw new Error('Failed to fetch status');
+      }
+      return res.json();
+    })
+    .then(resData => {
+      this.setState({
+        likes: resData.post.likes.map(like => {
+          return{...like};
+        }),
+        comments: resData.post.comments.map(comment => {
+          return {
+            ...comment
+          };
+        })
+      });
+    })
+    .catch(err => {
+      console.log(err);
+    });
   };
 
   // showDropdown = () => {
