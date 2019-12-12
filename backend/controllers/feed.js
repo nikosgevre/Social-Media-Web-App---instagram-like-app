@@ -332,8 +332,8 @@ exports.deleteComment = async (req, res, next) => {
 exports.postLike = async (req, res, next) => {
   const postId = req.query.postId;
   const userId = req.query.userId;
-  console.log('pid: ' + postId);
-  console.log('uid: ' + userId);
+  // console.log('pid: ' + postId);
+  // console.log('uid: ' + userId);
 
   try {
     const post = await Post.findById(postId).populate('creator').populate('likes');
@@ -384,20 +384,22 @@ exports.postLike = async (req, res, next) => {
 };
 
 exports.postComment = async (req, res, next) => {
-  // console.log('yoyoyo');
+  
   const postId = req.params.postId;
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    const error = new Error('Validation failed, entered data is incorrect.');
-    error.statusCode = 422;
-    throw error;
-  }
+  // console.log('yoyoyo ' + postId);
+  // const errors = validationResult(req);
+  // if (!errors.isEmpty()) {
+  //   const error = new Error('Validation failed, entered data is incorrect.');
+  //   error.statusCode = 422;
+  //   throw error;
+  // }
   const comment = req.body.comment;
   const newComment = new Comment({
     comment: comment,
     creator: req.userId,
     post: postId
   });
+  console.log(comment);
   try {
     await newComment.save();
     const user = await User.findById(req.userId);
@@ -406,11 +408,11 @@ exports.postComment = async (req, res, next) => {
     const post = await Post.findById(postId);
     post.comments.push(newComment);
     await post.save();
-    io.getIO().emit('singlePost', {
+    io.getIO().emit('post', {
       action: 'createComment',
       post: postId
     });
-    io.getIO().emit('post', {
+    io.getIO().emit('singlePost', {
       action: 'createComment',
       post: postId
     });

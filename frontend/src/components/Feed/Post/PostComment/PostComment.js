@@ -93,6 +93,11 @@ class PostComment extends Component {
       postForm: POST_FORM,
       formIsValid: false
     });
+    // this.setState({
+    //   postForm: POST_FORM,
+    //   formIsValid: false
+    // });
+    // this.props.onCancelEdit();
   };
 
   render() {

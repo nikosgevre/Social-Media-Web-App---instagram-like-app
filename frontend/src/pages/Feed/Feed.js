@@ -339,8 +339,8 @@ class Feed extends Component {
           ) : null}
           {!this.state.postsLoading && (
             <Paginator
-              onPrevious={this.loadPosts.bind(this, 'previous')}
-              onNext={this.loadPosts.bind(this, 'next')}
+              // onPrevious={this.loadPosts.bind(this, 'previous')}
+              // onNext={this.loadPosts.bind(this, 'next')}
               lastPage={Math.ceil(this.state.totalPosts / paginationNumber)}
               currentPage={this.state.postPage}
             >

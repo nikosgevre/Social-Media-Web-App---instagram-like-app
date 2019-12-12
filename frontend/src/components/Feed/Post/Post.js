@@ -56,17 +56,11 @@ class Post extends Component {
         image: 'http://localhost:8080/' + resData.post.imageUrl,
         date: new Date(resData.post.createdAt).toLocaleString(),
         content: resData.post.content,
-        // comments: 'resData.post.comments', //map gia ola ta comments / isws kai state gia to post olokliro
         userImage: 'http://localhost:8080/' + resData.post.creator.image,
         likes: resData.post.likes.map(like => {
           return{...like};
         }),
         post: resData.post
-        // comments: resData.post.comments.map(comment => {
-        //   return {
-        //     ...comment
-        //   };
-        // })
       });
       this.loadComments();
       
@@ -77,11 +71,11 @@ class Post extends Component {
     const socket = openSocket('http://localhost:8080');
     socket.on('post', data => {
       if (data.action === 'createComment') {
-        this.loadPost();
+        this.loadComments();
       } else if (data.action === 'postLike') {
-        this.loadPost();
+        this.loadComments();
       } else if (data.action === 'deleteComment') {
-        this.loadPost();
+        this.loadComments();
       } else if (data.action === 'editComment') {
         this.loadComments();
       }
@@ -113,7 +107,6 @@ class Post extends Component {
   };
 
   loadPost = () => {
-    // console.log('kalestika');
     const postId = this.props.id;
     fetch('http://localhost:8080/feed/post/' + postId, {
       headers: {
@@ -144,7 +137,6 @@ class Post extends Component {
   };
 
   loadComments = () => {
-    // console.log('asdasdsa');
     fetch('http://localhost:8080/feed/getComments/' + this.state.post._id, {
       headers: {
         Authorization: 'Bearer ' + this.props.token
@@ -173,7 +165,6 @@ class Post extends Component {
   };
 
   startCommentHandler = postId => {
-    // console.log('yoyoyo start');
     this.setState(prevState => {
       const loadedPost = this.state.post;
 
@@ -189,7 +180,6 @@ class Post extends Component {
   };
 
   finishCommentHandler = postData => {
-    console.log('yoyoyo finish');
     this.setState({
       commentLoading: true
     });
@@ -221,6 +211,7 @@ class Post extends Component {
           };
         });
         window.location.reload();
+        // this.loadPost();
       })
       .catch(err => {
         console.log(err);
@@ -341,7 +332,7 @@ class Post extends Component {
 
     let postUser = (
       <header className="post__header">
-        <button onClick={this.showOptionsHandler}><strong>...</strong></button>
+        {/* <button onClick={this.showOptionsHandler}><strong>...</strong></button> */}
       </header>
     );
     let buttons = (
@@ -420,7 +411,7 @@ class Post extends Component {
               <div className="Post-user-nickname">
                 <NavLink className='Nav-link' to={'/profile/' + this.props.creator._id} user={this.props.creator}>{this.props.author}</NavLink>
               </div>
-              <button style={{float:'right'}} onClick={this.showOptionsHandler}><strong>...</strong></button>
+              {/* <button style={{float:'right'}} onClick={this.showOptionsHandler}><strong>...</strong></button> */}
           </div>
           
         </header>

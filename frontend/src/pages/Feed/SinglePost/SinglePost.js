@@ -192,7 +192,7 @@ class SinglePost extends Component {
   };
 
   finishCommentHandler = postData => {
-    console.log('yoyoyo finish');
+    // console.log('yoyoyo finish');
     this.setState({
       commentLoading: true
     });
