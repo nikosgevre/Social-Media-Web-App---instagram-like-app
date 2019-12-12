@@ -197,14 +197,14 @@ class Feed extends Component {
       return res.json();
     })
     .then(resData => {
-      console.log(resData);
-      const post = {
-        _id: resData.post._id,
-        title: resData.post.title,
-        content: resData.post.content,
-        creator: resData.post.creator,
-        createdAt: resData.post.createdAt
-      };
+      // console.log(resData);
+      // const post = {
+      //   _id: resData.post._id,
+      //   title: resData.post.title,
+      //   content: resData.post.content,
+      //   creator: resData.post.creator,
+      //   createdAt: resData.post.createdAt
+      // };
       this.setState(prevState => {
         return {
           isEditing: false,

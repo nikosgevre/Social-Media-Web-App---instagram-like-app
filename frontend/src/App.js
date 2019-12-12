@@ -162,6 +162,9 @@ class App extends Component {
   };
 
   render() {
+
+    // console.log(React.version);
+    
     let routes = (
       <Switch>
         <Route

@@ -150,7 +150,7 @@ class SinglePost extends Component {
   };
 
   deleteCommentHandler = commentId => {
-    console.log('yoyoyo');
+    // console.log('yoyoyo');
     this.setState({ postsLoading: true });
     fetch('http://localhost:8080/feed/comment?commentId=' + commentId + '&postId=' + this.state.post._id, {
       method: 'DELETE',
@@ -281,14 +281,14 @@ class SinglePost extends Component {
         return res.json();
       })
       .then(resData => {
-        console.log(resData);
-        const post = {
-          _id: resData.post._id,
-          title: resData.post.title,
-          content: resData.post.content,
-          creator: resData.post.creator,
-          createdAt: resData.post.createdAt
-        };
+        // console.log(resData);
+        // const post = {
+        //   _id: resData.post._id,
+        //   title: resData.post.title,
+        //   content: resData.post.content,
+        //   creator: resData.post.creator,
+        //   createdAt: resData.post.createdAt
+        // };
         this.setState(prevState => {
           return {
             isEditing: false,
