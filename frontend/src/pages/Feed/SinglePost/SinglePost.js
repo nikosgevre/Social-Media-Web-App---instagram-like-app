@@ -552,7 +552,7 @@ class SinglePost extends Component {
                 type="text"
                 rows="1"
                 placeholder="Comment"
-                control="textarea"
+                control="input"
                 onChange={this.commentInputChangeHandler}
                 value={this.state.commentText}
               />

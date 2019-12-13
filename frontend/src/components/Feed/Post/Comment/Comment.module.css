@@ -1,38 +1,16 @@
 .post1 {
-  /* margin: 0.5rem 0; */
-  /* border: 1px solid #3b0062; */
-  /* border-radius: 5px; */
   border: 1px solid #707070;
   border-radius: 3px;
   padding: 0.5rem;
-  /* padding-left: 25px; */
   text-align: left;
+  /* display: inline-block;
+  flex-shrink: 1;
+  min-width: 0;
+  box-sizing: border-box;
+  position: relative;
+  vertical-align: baseline; */
 }
 
-
-/* .Post {
-  border-radius: 3px;
-  border: 1px solid #e6e6e6;
-  background-color: #fff;
-  margin-bottom: 60px;
-  margin-left : 20%;
-  margin-right: 20%;
-} */
-
-.PostUser {
-  display: flex;
-  padding: 16px;
-  align-items: center;
-}
-.PostUserAvatar {
-  width: 30px;
-  height: 30px;
-}
-.PostUserAvatar img {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-}
 .PostUserNickname {
   margin-left: 12px;
   font-family: 'PT Sans', sans-serif;
@@ -49,13 +27,11 @@
   font-weight: bold;
 }
 
-.PostImageBg {
-  background-color: #efefef;
+.post__actions {
+  text-align: right;
+  /* position: relative; */
 }
-.PostImage img {
-  display: block;
-  width: 100%;
-}
+
 
 
 
@@ -71,81 +47,19 @@
   font-weight: bold;
 }
 
-
-
-.PBorder{
-  padding-bottom: 25px;
-  padding-top: 25px;
-  border-bottom: 1px solid #ededed;
-  border-top: 1px solid #ededed;
+.Navlink:hover,
+.Navlink:active {
+  outline: none;
+  text-decoration: none;
+  display: inline-block;
+  color: black;
+  font-family: 'PT Sans', sans-serif;
+  font-weight: bold;
 }
 
 
 
 
-
-
-.post__meta {
-  font-size: 1rem;
-  color: #707070;
-  margin: 0;
-  padding: 6px;
-}
-
-.post__title {
-  font-size: 1.5rem;
-  margin: 1rem 0;
-  color: #3b0062;
-}
-
-.post__image {
-  height: 15rem;
-  width: 100%;
-}
-
-.post__actions {
-  text-align: right;
-  /* position: relative; */
-}
-
-
-
-
-
-
-.showLeft{
-  background-color: #0d77b6 !important;
-  border:1px solid #0d77b6 !important;
-  text-shadow: none !important;
-  color:#fff !important;
-  padding:10px;
-}
-
-.icons li {
-  background: none repeat scroll 0 0 #fff;
-  height: 7px;
-  width: 7px;
-  line-height: 0;
-  list-style: none outside none;
-  margin-right: 15px;
-  margin-top: 3px;
-  vertical-align: top;
-  border-radius:50%;
-  pointer-events: none;
-}
-
-.btnLeft {
-  left: 0.4em;
-}
-
-.btnRight {
-  right: 0.4em;
-}
-
-.btnLeft, .btnRight {
-  position: absolute;
-  top: 0.24em;
-}
 
 .dropbtn {
   background-color: #4CAF50;

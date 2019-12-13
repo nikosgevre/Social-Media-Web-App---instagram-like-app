@@ -65,6 +65,16 @@
   font-weight: bold;
 }
 
+.Navlink:hover,
+.Navlink:active {
+  outline: none;
+  text-decoration: none;
+  display: inline-block;
+  color: black;
+  font-family: 'PT Sans', sans-serif;
+  font-weight: bold;
+}
+
 
 
 .PBorder{

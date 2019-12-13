@@ -72,9 +72,9 @@ class Post extends Component {
             <div >
               <NavLink className={styles.Navlink} to={'/profile/' + this.props.creator._id} user={this.props.creator}>{this.props.author}</NavLink> {this.props.content}
             </div>
-            <div className={styles.PostCaption} >
+            {/* <div className={styles.PostCaption} >
               <TimeAgo date={this.props.date} minPeriod="30"  />
-            </div>
+            </div> */}
           </div>
           {/* <hr></hr> */}
           {buttons}

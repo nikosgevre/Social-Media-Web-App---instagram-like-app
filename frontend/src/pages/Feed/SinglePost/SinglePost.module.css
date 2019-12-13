@@ -20,6 +20,20 @@
 
 
 
+.feed__status {
+  width: 90%;
+  margin: 1rem auto;
+}
+
+.feed__status form {
+  display: flex;
+  align-items: center;
+}
+
+.feed__status form * {
+  margin: 0 0.5rem;
+}
+
 
 
 
@@ -33,6 +47,16 @@
 
 
 .Navlink{
+  outline: none;
+  text-decoration: none;
+  display: inline-block;
+  color: black;
+  font-family: 'PT Sans', sans-serif;
+  font-weight: bold;
+}
+
+.Navlink:hover,
+.Navlink:active {
   outline: none;
   text-decoration: none;
   display: inline-block;
