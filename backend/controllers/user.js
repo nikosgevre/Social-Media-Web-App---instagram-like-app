@@ -1,5 +1,26 @@
 const User = require('../models/user');
 
+exports.getUsers = async (req, res, next) => {
+    console.log('users');
+    try {
+      const users = await user.find();
+      if (!users) {
+        const error = new Error('Could not find users.');
+        error.statusCode = 404;
+        throw error;
+      }
+      res.status(200).json({
+        message: 'Users fetched.',
+        users: users
+      });
+    } catch (err) {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    }
+  };
+
 exports.getSearch = async (req, res, next) => {
     const searchName = req.query.username;
     const limit = req.query.limit;

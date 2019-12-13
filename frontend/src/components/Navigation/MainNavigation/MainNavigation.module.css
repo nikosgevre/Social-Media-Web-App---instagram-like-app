@@ -1,4 +1,4 @@
-.main-nav {
+.mainNav {
   height: 100%;
   padding: 0 1rem;
   display: flex;
@@ -9,7 +9,7 @@
   flex: 1;
 }
 
-.main-nav__items {
+.mainNav__items {
   list-style: none;
   padding: 0;
   margin: 0 1.5rem;
@@ -17,7 +17,7 @@
 }
 
 @media (min-width: 768px) {
-  .main-nav__items {
+  .mainNav__items {
     display: flex;
   }
 }

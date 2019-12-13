@@ -1,0 +1,31 @@
+
+
+.search {
+    margin-top: 11px;
+    width: 90%;
+    float: right;
+}
+
+#myInput {
+    font-size: 16px; /* Increase font-size */
+    padding: 12px 10px 12px 10px; /* Add some padding */
+    border: 1px solid #ddd; /* Add a grey border */
+    margin-bottom: 12px; /* Add some space below the input */
+    width: 90%;
+    float: right;
+  }
+
+  @media (min-width: 768px) {
+    .search {
+        align-self: center;
+        width: 100%;
+        display: flex;
+        position: inherit;
+    }
+    #myInput {
+        align-self: center;
+        width: 100%;
+        display: flex;
+        position: inherit;
+    }
+  }

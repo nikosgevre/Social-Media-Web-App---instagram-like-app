@@ -6,12 +6,13 @@ import openSocket from 'socket.io-client';
 import PostOptions from './PostOptions/PostOptions';
 import OptionsModal from '../../Modal/OptionsModal/OptionsModal';
 import Button from '../../Button/Button';
+import Input from '../../Form/Input/Input';
 
-import PostComment from '../../../components/Feed/Post/PostComment/PostComment';
+// import PostComment from '../../../components/Feed/Post/PostComment/PostComment';
 import CommentEdit from '../../../components/Feed/Post/PostComment/PostComment';
 import Comment from '../../../components/Feed/Post/Comment/Comment';
 
-import './Post.css';
+import styles from './Post.module.css';
 
 class Post extends Component {
 
@@ -28,12 +29,14 @@ class Post extends Component {
     trueUserId: localStorage.getItem('userId'),
     post: {},
     showOptions: false,
+    commentLoading: false,
     isCommenting: false,
     commentPost: null,
     isEditing: false,
     editLoading: false,
     editComment: null,
-    isEditingComment: false
+    isEditingComment: false,
+    commentText: ''
   };
 
   componentDidMount() {
@@ -71,9 +74,12 @@ class Post extends Component {
     const socket = openSocket('http://localhost:8080');
     socket.on('post', data => {
       if (data.action === 'createComment') {
+        // this.loadComments();
+        // this.loadPost();
         this.loadComments();
       } else if (data.action === 'postLike') {
-        this.loadComments();
+        // this.loadPost();
+        this.loadLikes();
       } else if (data.action === 'deleteComment') {
         this.loadComments();
       } else if (data.action === 'editComment') {
@@ -130,6 +136,7 @@ class Post extends Component {
           };
         })
       });
+      this.loadComments();
     })
     .catch(err => {
       console.log(err);
@@ -160,6 +167,33 @@ class Post extends Component {
     .catch(this.catchError);
   };
 
+  loadLikes = () => {
+    // console.log('getlikes');
+    const postId = this.props.id;
+    // console.log(postId);
+    fetch('http://localhost:8080/feed/getLikes/' + postId, {
+        headers: {
+          Authorization: 'Bearer ' + this.props.token
+        }
+      })
+      .then(res => {
+        if (res.status !== 200) {
+          throw new Error('Failed to fetch likes.');
+        }
+        return res.json();
+      })
+      .then(resData => {
+        this.setState({
+          likes: resData.likes.map(like => {
+            return {
+              ...like
+            };
+          })
+        });
+      })
+      .catch(this.catchError);
+  }
+
   showOptionsHandler = () => {
     this.setState({showOptions: true})
   };
@@ -183,11 +217,13 @@ class Post extends Component {
     this.setState({
       commentLoading: true
     });
+    this.startCommentHandler();
+    // console.log(this.state.commentText);
     const formData = new FormData();
-    formData.append('comment', postData.comment);
-    let url = 'http://localhost:8080/feed/postComment/' + this.state.commentPost._id;
+    // formData.append('comment', postData.comment);
+    formData.append('comment', this.state.commentText);
+    let url = 'http://localhost:8080/feed/postComment/' + this.state.post._id;
     let method = 'POST';
-
     fetch(url, {
       method: method,
       body: formData,
@@ -210,8 +246,8 @@ class Post extends Component {
             editLoading: false
           };
         });
-        window.location.reload();
-        // this.loadPost();
+        // window.location.reload();
+        this.loadComments();
       })
       .catch(err => {
         console.log(err);
@@ -224,8 +260,11 @@ class Post extends Component {
       });
   };
 
+  commentInputChangeHandler = (input, value) => {
+    this.setState({ commentText: value });
+  };
+
   startEditCommentHandler = comment => {
-    // console.log('asdasdasd');
     this.setState(prevState => {
       const loadedComment = comment;
 
@@ -241,7 +280,6 @@ class Post extends Component {
   };
 
   finishEditCommentHandler = postData => {
-    // console.log('yoyoyo finish edit comment');
     this.setState({
       editLoading: true
     });
@@ -276,7 +314,6 @@ class Post extends Component {
             editLoading: false
           };
         });
-        // window.location.reload();
       })
       .catch(err => {
         console.log(err);
@@ -290,7 +327,6 @@ class Post extends Component {
   };
 
   deleteCommentHandler = commentId => {
-    // console.log('yoyoyo');
     this.setState({ postsLoading: true });
     fetch('http://localhost:8080/feed/comment?commentId=' + commentId + '&postId=' + this.state.post._id, {
       method: 'DELETE',
@@ -311,32 +347,17 @@ class Post extends Component {
         console.log(err);
         this.setState({ postsLoading: false });
       });
-      // this.props.history.push('/');
-      // window.location.reload();
   };
-
-  // showDropdown = () => {
-  //   document.getElementById("myDropdown").classList.toggle("show");
-  // }
-
-  // toggleOverflowMenu = () => {
-  //   this.setState((prevState) => ({ overFlowMenuActive: 
-  //      !prevState.overFlowMenuActive }));
-  // };
-
-  // closeOverflowMenu = () => {
-  //     this.setState({ overFlowMenuActive: false });
-  // };
 
   render () {
 
     let postUser = (
-      <header className="post__header">
+      <header className={styles.post__header}>
         {/* <button onClick={this.showOptionsHandler}><strong>...</strong></button> */}
       </header>
     );
     let buttons = (
-      <div className="post__actions">
+      <div className={styles.post__actions}>
         <Button mode="flat" link={`${this.props.id}`}>
           View
         </Button>
@@ -344,35 +365,33 @@ class Post extends Component {
     );
     let likesAndComments = (
       <div>
-        <div className="Post-caption">
+        <div className={styles.PostCaption}>
             <Button onClick={this.likeHandler}>Like</Button> <strong> {this.state.likes.length} | </strong>
-            {/* <NavLink className='Nav-link' to={`${this.props.id}`} user={this.props.creator}><strong>  comments</strong> ({(this.state.comments.length === 0) ? '' : this.state.comments.length})</NavLink> */}
-            <Button  onClick={this.startCommentHandler.bind(this, this.state.post._id)}>  Comment  </Button>  <strong> {this.state.comments.length} </strong>
+            <NavLink className={styles.Navlink} to={`${this.props.id}`} user={this.props.creator}><strong>  comments</strong> ({(this.state.comments.length === 0) ? '' : this.state.comments.length})</NavLink>
+            {/* <Button  onClick={this.startCommentHandler.bind(this, this.state.post._id)}>  Comment  </Button>  <strong> {this.state.comments.length} </strong> */}
         </div>
-        <div className="Post-caption">
-          <NavLink className='Nav-link' to={'/profile/' + this.props.creator._id} user={this.props.creator}>{this.props.author}</NavLink> {this.props.content}
-        </div>
+        
       </div>
     );
 
     if (this.state.likes.some(like => like._id.toString() === this.state.trueUserId)){
       likesAndComments = (
       <div>
-        <div className="Post-caption">
+        <div className={styles.PostCaption}>
             <Button design="danger" onClick={this.likeHandler}>Dislike</Button> <strong> {this.state.likes.length} | </strong>
-            {/* <NavLink className='Nav-link' to={`${this.props.id}`} user={this.props.creator}><strong>  comments</strong> ({(this.state.comments.length === 0) ? '' : this.state.comments.length})</NavLink> */}
-            <Button  onClick={this.startCommentHandler.bind(this, this.state.post._id)}>  Comment  </Button> <strong> {this.state.comments.length} </strong>
+            <NavLink className={styles.Navlink} to={`${this.props.id}`} user={this.props.creator}><strong>  comments</strong> ({(this.state.comments.length === 0) ? '' : this.state.comments.length})</NavLink>
+            {/* <Button  onClick={this.startCommentHandler.bind(this, this.state.post._id)}>  Comment  </Button> <strong> {this.state.comments.length} </strong> */}
         </div>
-        <div className="Post-caption">
+        {/* <div className="Post-caption">
           <NavLink className='Nav-link' to={'/profile/' + this.props.creator._id} user={this.props.creator}>{this.props.author}</NavLink> {this.props.content}
-        </div>
+        </div> */}
       </div>
       );
     };
 
     if(this.props.creator._id === localStorage.getItem("userId")) {
       buttons = (
-        <div className="post__actions">
+        <div className={styles.post__actions}>
           <Button mode="flat" link={`${this.props.id}`}>
             View
           </Button>
@@ -389,7 +408,7 @@ class Post extends Component {
     if(this.props.profile) {
       if(this.props.creator._id === this.props.trueUserId){
         buttons = (
-          <div className="post__actions">
+          <div className={styles.post__actions}>
             <Button mode="flat" link={`${this.props.id}`}>
               View
             </Button>
@@ -403,13 +422,13 @@ class Post extends Component {
 
     if(this.props.caller === 'feed') {
       postUser= (
-        <header className="post__header">
-          <div className="Post-user">
-              <div className="Post-user-avatar">
+        <header className={styles.post__header}>
+          <div className={styles.PostUser}>
+              <div className={styles.PostUserAvatar}>
                 <img src={this.state.userImage} alt={this.props.author} />
               </div>
-              <div className="Post-user-nickname">
-                <NavLink className='Nav-link' to={'/profile/' + this.props.creator._id} user={this.props.creator}>{this.props.author}</NavLink>
+              <div className={styles.PostUserNickname}>
+                <NavLink className={styles.Navlink} to={'/profile/' + this.props.creator._id} user={this.props.creator}>{this.props.author}</NavLink>
               </div>
               {/* <button style={{float:'right'}} onClick={this.showOptionsHandler}><strong>...</strong></button> */}
           </div>
@@ -419,20 +438,20 @@ class Post extends Component {
     }
     else if(this.props.caller === 'profile'){
       postUser = (
-      <header className="post__header">
+      <header className={styles.post__header}>
       </header>
       );
     }
 
     return (
-      <article className="post">
-        <PostComment
+      <article className={styles.post}>
+        {/* <PostComment
           editing={this.state.isCommenting}
           selectedPost={this.state.commentPost}
           loading={this.state.commentLoading}
           onCancelEdit={this.cancelCommentHandler}
           onFinishEdit={this.finishCommentHandler}
-        />
+        /> */}
         <CommentEdit
           editing={this.state.isEditingComment}
           selectedPost={this.state.editComment}
@@ -453,15 +472,17 @@ class Post extends Component {
 
         {postUser}
         {/* <body></body> */}
-        <div className="Post-image">
-          <div className="Post-image-bg">
+        <div className={styles.PostImage}>
+          <div className={styles.PostImageBg}>
             <img alt={this.props.content} src={this.state.image} />
           </div>
         </div>
 
         {likesAndComments}
 
-        
+        <div className={styles.PostCaption}>
+          <NavLink className={styles.Navlink} to={'/profile/' + this.props.creator._id} user={this.props.creator}>{this.props.author}</NavLink> {this.props.content}
+        </div>
 
         {this.state.comments.map(comment => (
             <Comment
@@ -477,6 +498,23 @@ class Post extends Component {
               onDelete={this.deleteCommentHandler.bind(this, comment._id)}
             />
           ))}
+
+          <section className={styles.feed__status}>
+            <form onSubmit={this.finishCommentHandler}>
+              <Input
+                id={this.state.post._id}
+                type="text"
+                rows="1"
+                placeholder="Comment"
+                control="input"
+                onChange={this.commentInputChangeHandler}
+                value={this.state.commentText}
+              />
+              <Button mode="flat" type="submit">
+                Comment
+              </Button>
+            </form>
+          </section>
 
         <hr></hr>
 

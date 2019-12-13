@@ -1,4 +1,4 @@
-.auth-form {
+.authForm {
     width: 90%;
     margin: auto;
     padding: 1rem;
@@ -7,7 +7,7 @@
   }
   
   @media (min-width: 768px) {
-    .auth-form {
+    .authForm {
       width: 40rem;
     }
   }

@@ -386,41 +386,47 @@ exports.postLike = async (req, res, next) => {
 exports.postComment = async (req, res, next) => {
   
   const postId = req.params.postId;
-  // console.log('yoyoyo ' + postId);
-  // const errors = validationResult(req);
-  // if (!errors.isEmpty()) {
-  //   const error = new Error('Validation failed, entered data is incorrect.');
-  //   error.statusCode = 422;
-  //   throw error;
-  // }
+  console.log('yoyoyo ' + postId);
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    const error = new Error('Validation failed, entered data is incorrect.');
+    error.statusCode = 422;
+    throw error;
+  }
   const comment = req.body.comment;
+  // if (comment )
   const newComment = new Comment({
     comment: comment,
     creator: req.userId,
     post: postId
   });
-  console.log(comment);
+  console.log(newComment);
   try {
     await newComment.save();
     const user = await User.findById(req.userId);
     user.comments.push(newComment);
     await user.save();
+    console.log('panw apo to post');
     const post = await Post.findById(postId);
     post.comments.push(newComment);
     await post.save();
+    console.log('katw apo to post');
     io.getIO().emit('post', {
       action: 'createComment',
       post: postId
     });
+    console.log('katw apo to prwto io');
     io.getIO().emit('singlePost', {
       action: 'createComment',
       post: postId
     });
+    console.log('katw apo to deutero io');
     res.status(201).json({
-      message: 'Post created successfully!',
+      message: 'Comment created successfully!',
       comment: comment,
       post: post
     });
+    // console.log('katw apo to prwto io');
   } catch (err) {
     if (!err.statusCode) {
       err.statusCode = 500;
@@ -431,14 +437,36 @@ exports.postComment = async (req, res, next) => {
 
 exports.getComments = async (req, res, next) => {
   const postId = req.params.postId;
-  // console.log('comments');
+  try {
+    const comments = await Comment.find({ post: postId})
+    .populate('creator');
+    if (!comments) {
+      const error = new Error('Could not find comments.');
+      error.statusCode = 404;
+      throw error;
+    }
+    res.status(200).json({
+      message: 'Post fetched.',
+      comments: comments
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
+exports.getLikes = async (req, res, next) => {
+  const postId = req.params.postId;
+  console.log('getlikes');
   try {
     // const post = await Post.findById(postId)
     // .populate('creator')
     // .populate('likes')
     // .populate('comments');
-    const comments = await Comment.find({ post: postId})
-    .populate('creator');
+    const post = await Post.findById(postId)
+    .populate('likes').populate('creator');
     // if (!post) {
     //   const error = new Error('Could not find post.');
     //   error.statusCode = 404;
@@ -446,7 +474,7 @@ exports.getComments = async (req, res, next) => {
     // }
     res.status(200).json({
       message: 'Post fetched.',
-      comments: comments
+      likes: post.likes
     });
   } catch (err) {
     if (!err.statusCode) {

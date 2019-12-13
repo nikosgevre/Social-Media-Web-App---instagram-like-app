@@ -1,18 +1,18 @@
-.single-post {
+.singlePost {
   width: 90%;
   margin: auto;
   text-align: center;
   color: #3b0062;
 }
 
-.single-post h2 {
+.singlePost h2 {
   font-size: 1rem;
   color: #464646;
   padding-bottom: 1rem;
   border-bottom: 2px solid #464646;
 }
 
-.single-post__image {
+.singlePost__image {
   height: 20rem;
   width: 20rem;
   margin: 1rem auto;
@@ -23,16 +23,16 @@
 
 
 
-.Post-caption {
+.PostCaption {
   padding: 16px 16px;
 }
-.Post-caption strong {
+.PostCaption strong {
   font-family: 'PT Sans', sans-serif;
   font-weight: bold;
 }
 
 
-.Nav-link{
+.Navlink{
   outline: none;
   text-decoration: none;
   display: inline-block;
@@ -43,7 +43,7 @@
 
 
 
-.P-border{
+.PBorder{
   /* padding-bottom: 25px; */
   /* padding-top: 25px; */
   /* border-bottom: 1px solid #ededed; */
@@ -55,7 +55,7 @@
 
 
 @media (min-width: 768px) {
-  .single-post {
+  .singlePost {
     width: 40rem;
   }
 }

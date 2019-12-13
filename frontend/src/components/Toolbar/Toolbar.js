@@ -1,9 +1,9 @@
 import React from 'react';
 
-import './Toolbar.css';
+import styles from './Toolbar.module.css';
 
 const toolbar = props => (
-    <div className="toolbar">
+    <div className={styles.toolbar}>
        {props.children}
     </div>
 );

@@ -50,7 +50,7 @@ main {
 }
 
 
-.number-stat {
+.numberStat {
     /* padding: 0px; */
     font-size: 14pt;
     font-weight: bold;
@@ -58,7 +58,7 @@ main {
     color: #aaa;
 }
 
-.desc-stat {
+.descStat {
     margin-top: -15px;
     font-size: 10pt;
     color: #bbb;

@@ -6,11 +6,12 @@ import { NavLink } from 'react-router-dom';
 import Image from '../../../components/Image/Image';
 import Button from '../../../components/Button/Button';
 import FeedEdit from '../../../components/Feed/FeedEdit/FeedEdit';
-import PostComment from '../../../components/Feed/Post/PostComment/PostComment';
+// import PostComment from '../../../components/Feed/Post/PostComment/PostComment';
 import CommentEdit from '../../../components/Feed/Post/PostComment/PostComment';
 import Comment from '../../../components/Feed/Post/Comment/Comment';
+import Input from '../../../components/Form/Input/Input';
 
-import './SinglePost.css';
+import styles from './SinglePost.module.css';
 
 class SinglePost extends Component {
   
@@ -31,7 +32,8 @@ class SinglePost extends Component {
     trueUserId: localStorage.getItem('userId'),
     likes: [],
     editComment: null,
-    isEditingComment: false
+    isEditingComment: false,
+    commentText: ''
   };
 
   componentDidMount() {
@@ -193,12 +195,19 @@ class SinglePost extends Component {
 
   finishCommentHandler = postData => {
     // console.log('yoyoyo finish');
+
     this.setState({
       commentLoading: true
     });
+
+    // if(this.state.commentText.length() === 0){
+    //   console.log('adio comment');
+    // }
+    this.startCommentHandler();
     const formData = new FormData();
-    formData.append('comment', postData.comment);
-    let url = 'http://localhost:8080/feed/postComment/' + this.state.commentPost._id;
+    // formData.append('comment', postData.comment);
+    formData.append('comment', this.state.commentText);
+    let url = 'http://localhost:8080/feed/postComment/' + this.state.post._id;
     let method = 'POST';
 
     fetch(url, {
@@ -223,7 +232,7 @@ class SinglePost extends Component {
             editLoading: false
           };
         });
-        window.location.reload();
+        // window.location.reload();
       })
       .catch(err => {
         console.log(err);
@@ -234,6 +243,10 @@ class SinglePost extends Component {
           error: err
         });
       });
+  };
+
+  commentInputChangeHandler = (input, value) => {
+    this.setState({ commentText: value });
   };
 
   startEditPostHandler = postId => {
@@ -439,19 +452,19 @@ class SinglePost extends Component {
   render() {
 
     let buttons = (
-      <div className="post__actions">
-        <Button mode="flat"  onClick={this.startCommentHandler.bind(this, this.state.post._id)}>
+      <div className={styles.post__actions}>
+        {/* <Button mode="flat"  onClick={this.startCommentHandler.bind(this, this.state.post._id)}>
           Comment
-        </Button>
+        </Button> */}
       </div>
     );
 
     if(this.state.creator._id === localStorage.getItem("userId")) {
       buttons = (
-        <div className="post__actions">
-          <Button mode="flat"  onClick={this.startCommentHandler.bind(this, this.state.post._id)}>
+        <div className={styles.post__actions}>
+          {/* <Button mode="flat"  onClick={this.startCommentHandler.bind(this, this.state.post._id)}>
             Comment
-          </Button>
+          </Button> */}
           <Button mode="flat" image={this.state.image} onClick={this.startEditPostHandler.bind(this, this.state.post._id)}>
             Edit
           </Button>
@@ -464,7 +477,7 @@ class SinglePost extends Component {
 
     let likesAndComments = (
       <div>
-        <div className="Post-caption">
+        <div className={styles.PostCaption}>
           <Button onClick={this.likeHandler}>Like</Button> <strong> {this.state.likes.length} </strong>
         </div>
       </div>
@@ -473,7 +486,7 @@ class SinglePost extends Component {
     if (this.state.likes.some(like => like._id.toString() === this.state.trueUserId)){
       likesAndComments = (
       <div>
-        <div className="Post-caption">
+        <div className={styles.PostCaption}>
             <Button design="danger" onClick={this.likeHandler}>Dislike</Button> <strong> {this.state.likes.length} </strong>
         </div>
       </div>
@@ -482,13 +495,13 @@ class SinglePost extends Component {
 
     return (
       <Fragment>
-        <PostComment
+        {/* <PostComment
           editing={this.state.isCommenting}
           selectedPost={this.state.commentPost}
           loading={this.state.commentLoading}
           onCancelEdit={this.cancelCommentHandler}
           onFinishEdit={this.finishCommentHandler}
-        />
+        /> */}
         <CommentEdit
           editing={this.state.isEditingComment}
           selectedPost={this.state.editComment}
@@ -504,18 +517,18 @@ class SinglePost extends Component {
           onFinishEdit={this.finishEditHandler}
         />
         
-        <section className="single-post">
+        <section className={styles.singlePost}>
           {/* <h1>{this.state.title}</h1> */}
           <h2>
-            Created by <NavLink className='Nav-link' to={'/profile/' + this.state.creator._id} user={this.state.creator}>{this.state.creator.name}</NavLink> on {this.state.date}
+            Created by <NavLink className={styles.Navlink} to={'/profile/' + this.state.creator._id} user={this.state.creator}>{this.state.creator.name}</NavLink> on {this.state.date}
             
           </h2>
-          <div className="single-post__image">
+          <div className={styles.singlePost__image}>
             <Image contain imageUrl={this.state.image} />
           </div>
           {likesAndComments}
-          <h2 className="single-post">{this.state.content}</h2>
-          <span className='Nav-link' style={{paddingTop:"15px", paddingBottom:"15px"}}><strong>  comments({this.state.comments.length})</strong></span>
+          <h2 className={styles.singlePost}>{this.state.content}</h2>
+          <span className={styles.Navlink} style={{paddingTop:"15px", paddingBottom:"15px"}}><strong>  comments({this.state.comments.length})</strong></span>
           {/* <p>{this.state.comments}</p> */}
           {this.state.comments.map(comment => (
             <Comment
@@ -531,6 +544,24 @@ class SinglePost extends Component {
               onDelete={this.deleteCommentHandler.bind(this, comment._id)}
             />
           ))}
+
+          <section className={styles.feed__status}>
+            <form onSubmit={this.finishCommentHandler}>
+              <Input
+                id="comment"
+                type="text"
+                rows="1"
+                placeholder="Comment"
+                control="textarea"
+                onChange={this.commentInputChangeHandler}
+                value={this.state.commentText}
+              />
+              <Button mode="flat" type="submit">
+                Comment
+              </Button>
+            </form>
+          </section>
+
           <hr></hr>
           {buttons}
         </section>

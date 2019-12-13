@@ -13,7 +13,7 @@ import LoginPage from './pages/Auth/Login';
 import SignupPage from './pages/Auth/Signup';
 import SearchPage from './pages/Search/Search.js';
 import ProfilePage from './pages/Profile/Profile.js';
-import './App.css';
+// import styles from './App.module.css';
 
 class App extends Component {
   state = {

@@ -4,7 +4,7 @@ import TimeAgo from 'react-timeago'
 
 import Button from '../../../Button/Button';
 // import style from './Comment.css';
-import './Comment.css';
+import styles from './Comment.module.css';
 
 class Post extends Component {
 
@@ -46,7 +46,7 @@ class Post extends Component {
   render () {
 
     let buttons = (
-      <div className="post__actions">
+      <div className={styles.post__actions}>
       </div>
     );
 
@@ -54,7 +54,7 @@ class Post extends Component {
     // console.log('localstorage: ' + localStorage.getItem("userId"));
     if(this.props.creator._id === localStorage.getItem("userId")) {
       buttons = (
-        <div className="post__actions" >
+        <div className={styles.post__actions} >
           <Button mode="flat" onClick={this.props.onStartEdit}>
             Edit
           </Button>
@@ -67,13 +67,12 @@ class Post extends Component {
 
     return (
       <Fragment>
-        {/* <hr></hr> */}
-        <article className="post1">
+        <article className={styles.post1}>
           <div>
             <div >
-              <NavLink className='Nav-link' to={'/profile/' + this.props.creator._id} user={this.props.creator}>{this.props.author}</NavLink> {this.props.content}
+              <NavLink className={styles.Navlink} to={'/profile/' + this.props.creator._id} user={this.props.creator}>{this.props.author}</NavLink> {this.props.content}
             </div>
-            <div className="Post-caption" >
+            <div className={styles.PostCaption} >
               <TimeAgo date={this.props.date} minPeriod="30"  />
             </div>
           </div>

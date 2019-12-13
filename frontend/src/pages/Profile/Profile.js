@@ -5,8 +5,8 @@ import Post from '../../components/Feed/Post/Post';
 import Button from '../../components/Button/Button';
 import Loader from '../../components/Loader/Loader';
 
-import './Profile.css'; 
-// import 'bootstrap/dist/css/bootstrap.min.css';
+import styles from './Profile.module.css'; 
+import btStyles from '../../Assets/global-styles/bootstrap.min.module.css';
 
 class Profile extends Component {
 
@@ -236,29 +236,29 @@ class Profile extends Component {
 
     return (
       <Fragment>
-          <div className="row">
-            <div className="left col-lg-4">
-              <div className="photo-left">
-                <img className="photo" src={this.state.userImage} alt={this.state.user.name}/>
-                <div className="active"></div>
+          <div className={styles.row}>
+            <div className={` ${styles.left} ${btStyles['col-lg-4']} `}>
+              <div className={styles.photoLeft}>
+                <img className={styles.photo} src={this.state.userImage} alt={this.state.user.name}/>
+                <div className={styles.active}></div>
               </div>
-              <h4 className="name">{this.state.user.name}</h4>
-              <p className="info">{this.state.user.email}</p>
-              <div className="stats row">
-                <div className="stat col-xs-4" style={{paddingRight: "300px"}}>
-                  <p className="number-stat">{this.state.followers.length}</p>
-                  <p className="desc-stat">Followers</p>
+              <h4 className={styles.name}>{this.state.user.name}</h4>
+              <p className={styles.info}>{this.state.user.email}</p>
+              <div className={` ${styles.stats} ${styles.row} `}>
+                <div className={` ${styles.stat} ${btStyles['col-xs-4']} `} style={{paddingRight: "300px"}}>
+                  <p className={styles.numberStat}>{this.state.followers.length}</p>
+                  <p className={styles.descStat}>Followers</p>
                 </div>
-                <div className="stat col-xs-4">
-                  <p className="number-stat">{this.state.following.length}</p>
-                  <p className="desc-stat">Following</p>
+                <div className={` ${styles.stat} ${btStyles['col-xs-4']} `}>
+                  <p className={styles.numberStat}>{this.state.following.length}</p>
+                  <p className={styles.descStat}>Following</p>
                 </div>
-                <div className="stat col-xs-4" style={{paddingLeft: "300px"}}>
-                  <p className="number-stat">{this.state.posts.length}</p>
-                  <p className="desc-stat">Posts</p>
+                <div className={` ${styles.stat} ${btStyles['col-xs-4']} `} style={{paddingLeft: "300px"}}>
+                  <p className={styles.numberStat}>{this.state.posts.length}</p>
+                  <p className={styles.descStat}>Posts</p>
                 </div>
               </div>
-              <p className="desc">{this.state.user.status}</p>
+              <p className={styles.desc}>{this.state.user.status}</p>
             </div>
             {followButton}
             {/* <div className="right col-lg-8" >
@@ -270,7 +270,7 @@ class Profile extends Component {
               </ul>
               <span className="follow" style={{float: "right"}}>Follow</span>
             </div> */}
-            <div className="row gallery">
+            <div className={` ${styles.row} ${styles.gallery} `}>
 
               {this.state.postsLoading && (
                 <div style={{ textAlign: 'center', marginTop: '2rem' }}>

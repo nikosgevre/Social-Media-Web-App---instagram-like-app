@@ -8,7 +8,7 @@ import Input from '../../components/Form/Input/Input';
 import Paginator from '../../components/Paginator/Paginator';
 import Loader from '../../components/Loader/Loader';
 import ErrorHandler from '../../components/ErrorHandler/ErrorHandler';
-import './Feed.css';
+import styles from './Feed.module.css';
 
 const paginationNumber = Number.MAX_SAFE_INTEGER;
 
@@ -124,6 +124,10 @@ class Feed extends Component {
     .catch(this.catchError);
   };
 
+  statusInputChangeHandler = (input, value) => {
+    this.setState({ status: value });
+  };
+
   statusUpdateHandler = event => {
     event.preventDefault();
     fetch('http://localhost:8080/auth/status', {
@@ -224,10 +228,6 @@ class Feed extends Component {
     });
   };
 
-  statusInputChangeHandler = (input, value) => {
-    this.setState({ status: value });
-  };
-
   deletePostHandler = postId => {
     this.setState({ postsLoading: true });
     fetch('http://localhost:8080/feed/post/' + postId, {
@@ -244,7 +244,7 @@ class Feed extends Component {
     })
     .then(resData => {
       console.log(resData);
-      this.loadPosts();
+      // this.loadPosts();
     })
     .catch(err => {
       console.log(err);
@@ -309,7 +309,7 @@ class Feed extends Component {
           onFinishEdit={this.finishEditHandler}
           newPost={this.state.newPost}
         />
-        <section className="feed__status">
+        <section className={styles.feed__status}>
           <form onSubmit={this.statusUpdateHandler}>
             <Input
               type="text"
@@ -323,12 +323,12 @@ class Feed extends Component {
             </Button>
           </form>
         </section>
-        <section className="feed__control">
+        <section className={styles.feed__control}>
           <Button mode="raised" design="accent" onClick={this.newPostHandler} newPost={true}>
             New Post
           </Button>
         </section>
-        <section className="feed">
+        <section className={styles.feed}>
           {this.state.postsLoading && (
             <div style={{ textAlign: 'center', marginTop: '2rem' }}>
               <Loader />
@@ -339,8 +339,8 @@ class Feed extends Component {
           ) : null}
           {!this.state.postsLoading && (
             <Paginator
-              // onPrevious={this.loadPosts.bind(this, 'previous')}
-              // onNext={this.loadPosts.bind(this, 'next')}
+              onPrevious={this.loadPosts.bind(this, 'previous')}
+              onNext={this.loadPosts.bind(this, 'next')}
               lastPage={Math.ceil(this.state.totalPosts / paginationNumber)}
               currentPage={this.state.postPage}
             >

@@ -1,10 +1,10 @@
 import React from 'react';
 
-import './OptionsModal.css';
+import styles from './OptionsModal.module.css';
 
 const OptionsModal = (props) => (
     <div 
-        className="OptionsModal"
+        className={styles.OptionsModal}
         style={{transform: props.show ? 'translateY(0)' : 'translateY(-100vh)',
                 opacity: props.show ? '1' : '0'
             }}

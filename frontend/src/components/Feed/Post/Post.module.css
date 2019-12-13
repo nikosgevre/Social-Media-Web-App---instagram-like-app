@@ -15,38 +15,38 @@
   margin-right: 20%;
 } */
 
-.Post-user {
+.PostUser {
   display: flex;
   padding: 16px;
   align-items: center;
 }
-.Post-user-avatar {
+.PostUserAvatar {
   width: 30px;
   height: 30px;
 }
-.Post-user-avatar img {
+.PostUserAvatar img {
   width: 100%;
   height: 100%;
   border-radius: 50%;
 }
-.Post-user-nickname {
+.PostUserNickname {
   margin-left: 12px;
   font-family: 'PT Sans', sans-serif;
   font-weight: bold;
 }
 
-.Post-caption {
+.PostCaption {
   padding: 16px 16px;
 }
-.Post-caption strong {
+.PostCaption strong {
   font-family: 'PT Sans', sans-serif;
   font-weight: bold;
 }
 
-.Post-image-bg {
+.PostImageBg {
   background-color: #efefef;
 }
-.Post-image img {
+.PostImage img {
   display: block;
   width: 100%;
 }
@@ -56,7 +56,7 @@
 
 
 
-.Nav-link{
+.Navlink{
   outline: none;
   text-decoration: none;
   display: inline-block;
@@ -67,7 +67,7 @@
 
 
 
-.P-border{
+.PBorder{
   padding-bottom: 25px;
   padding-top: 25px;
   border-bottom: 1px solid #ededed;
@@ -75,7 +75,19 @@
 }
 
 
+.feed__status {
+  width: 100%;
+  margin: 1rem auto;
+}
 
+.feed__status form {
+  display: flex;
+  align-items: center;
+}
+
+.feed__status form * {
+  margin: 0 0.5rem;
+}
 
 
 
@@ -127,15 +139,15 @@
   pointer-events: none;
 }
 
-.btn-left {
+.btnLeft {
   left: 0.4em;
 }
 
-.btn-right {
+.btnRight {
   right: 0.4em;
 }
 
-.btn-left, .btn-right {
+.btnLeft, .btnRight {
   position: absolute;
   top: 0.24em;
 }
@@ -159,7 +171,7 @@
   right: 0.4em;
 }
 
-.dropdown-content {
+.dropdownContent {
   display: none;
   position: relative;
   margin-top: 60px;
@@ -170,7 +182,7 @@
   z-index: 1;
 }
 
-.dropdown-content a {
+.dropdownContent a {
   color: black;
   padding: 12px 16px;
   text-decoration: none;

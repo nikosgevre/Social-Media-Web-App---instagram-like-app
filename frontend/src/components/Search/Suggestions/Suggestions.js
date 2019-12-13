@@ -1,7 +1,7 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom';
 
-import './Suggestions.css';
+import styles from './Suggestions.module.css';
 
 // class Suggestions extends Component {
 //   render() {
@@ -18,7 +18,7 @@ const Suggestions = (props) => {
       <NavLink to={'/profile/' + r._id}>{r.name}</NavLink>
     </li>
   ))
-  return <ul id="myUL">{options}</ul>
+  return <ul id={styles.myUL}>{options}</ul>
 }
 
 export default Suggestions

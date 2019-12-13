@@ -1,14 +1,42 @@
 import React, { Component, Fragment } from 'react';
 import Suggestions from './Suggestions/Suggestions';
-// import SearchBar from 'react-native-dynamic-search-bar';
 
-import './Search.css';
+import styles from './Search.module.css';
 
 class Search extends Component {
   state = {
     query: '',
     results: []
   }
+
+  componentWillReceiveProps() {
+    this.fetchUsers();
+  }
+
+  fetchUsers = () => {
+    console.log(this.props.token);
+    fetch('http://localhost:8080/user/getUsers', {
+      headers: {
+        Authorization: 'Bearer ' + this.props.token
+      }
+    })
+    .then(res => {
+      if (res.status !== 200) {
+        throw new Error('Failed to fetch users.');
+      }
+      return res.json();
+    })
+    .then(resData => {
+      this.setState({ 
+        users: resData.users.map(user => {
+          return {
+            ...user
+          };
+        })
+      });
+    })
+    .catch(this.catchError);
+  };
 
   fetchSearchResults = () => {
     console.log(this.state.query);
@@ -60,9 +88,9 @@ class Search extends Component {
         {this.props.isAuth && (
           <Fragment>
           
-            <form className="search" onSubmit={this.submitHandler()}>
+            <form className={styles.search} >
               <input
-                id="myInput"
+                id={styles.myInput}
                 type="text"
                 placeholder="Search..."
                 ref={input => this.search = input}

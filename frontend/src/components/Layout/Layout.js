@@ -1,12 +1,12 @@
 import React, { Fragment } from 'react';
 
-import './Layout.css';
+import styles from './Layout.module.css';
 
 const layout = props => (
   <Fragment>
-    <header className="main-header">{props.header}</header>
+    <header className={styles.mainHeader}>{props.header}</header>
     {props.mobileNav}
-    <main className="content">{props.children}</main>
+    <main className={styles.content}>{props.children}</main>
   </Fragment>
 );
 

@@ -6,22 +6,22 @@ import Logo from '../../Logo/Logo';
 import NavigationItems from '../NavigationItems/NavigationItems';
 import Search from '../../Search/Search';
 
-import './MainNavigation.css';
+import styles from './MainNavigation.module.css';
 
 const mainNavigation = props => (
-  <nav className="main-nav">
+  <nav className={styles.mainNav}>
     <MobileToggle onOpen={props.onOpenMobileNav} />
-    <div className="main-nav__logo" >
+    <div className={styles.mainNav__logo} >
       <NavLink to="/">
         <Logo />
       </NavLink>
     </div>
-    <div className="spacer" />
-    <div className="main-nav__logo" >
+    <div className={styles.spacer} />
+    <div className={styles.mainNav__logo} >
         <Search isAuth={props.isAuth} token={props.token} history={props.history} />
     </div>
-    <div className="spacer" />
-    <ul className="main-nav__items">
+    <div className={styles.spacer} />
+    <ul className={styles.mainNav__items}>
       <NavigationItems userId={props.userId} isAuth={props.isAuth} onLogout={props.onLogout} />
     </ul>
   </nav>
