@@ -236,6 +236,9 @@ class Profile extends Component {
 
     return (
       <Fragment>
+        <style dangerouslySetInnerHTML={{__html: `
+           body { background-color: #fafafa; }
+        `}} />
           <div className={styles.row}>
             <div className={` ${styles.left} ${btStyles['col-lg-4']} `}>
               <div className={styles.photoLeft}>

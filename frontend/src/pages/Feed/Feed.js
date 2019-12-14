@@ -8,7 +8,10 @@ import Input from '../../components/Form/Input/Input';
 import Paginator from '../../components/Paginator/Paginator';
 import Loader from '../../components/Loader/Loader';
 import ErrorHandler from '../../components/ErrorHandler/ErrorHandler';
-import styles from './Feed.module.css';
+
+// import styles from './Feed.module.css';
+const styles = require('./Feed.module.css');
+// import './Feed.css';
 
 const paginationNumber = Number.MAX_SAFE_INTEGER;
 
@@ -262,11 +265,16 @@ class Feed extends Component {
   };
 
   render() {
-    this.state.posts.map(post => (
-      console.log(post.creator)
-    ));
+    // this.state.posts.map(post => (
+    //   console.log(post.creator)
+    // ));
+    
     return (
+      
       <Fragment>
+        <style dangerouslySetInnerHTML={{__html: `
+           body { background-color: #fafafa; }
+        `}} />
         <ErrorHandler error={this.state.error} onHandle={this.errorHandler} />
         <FeedEdit
           editing={this.state.isEditing}

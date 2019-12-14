@@ -5,6 +5,7 @@
     list-style-type: none;
     padding: 0;
     margin: 0;
+    /* background-color: khaki; */
   }
   
   #myUL li a {
@@ -16,8 +17,27 @@
     font-size: 18px; /* Increase the font-size */
     color: black; /* Add a black text color */
     display: block; /* Make it into a block element to fill the whole list */
+    background-color: rgb(255, 255, 255);
+    border: 1px solid #616161;
+    border-radius: 7px;
+    text-align: left;
+    /* margin-right: 20px;
+    padding-right: 20px; */
+    padding-left: 0.5rem;
+    padding-right: 8.7rem;
   }
   
   #myUL li a:hover:not(.header) {
     background-color: #eee; /* Add a hover effect to all links, except for headers */
+  }
+
+
+  .list-group {
+    /* display:-ms-flexbox;  */
+    position: absolute;
+    /* display:flex; */
+    -ms-flex-direction:column;
+    flex-direction:column;
+    padding-left:0;
+    margin-bottom:0;
   }

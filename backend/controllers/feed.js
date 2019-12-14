@@ -400,7 +400,7 @@ exports.postComment = async (req, res, next) => {
     creator: req.userId,
     post: postId
   });
-  console.log(newComment);
+  // console.log(newComment);
   try {
     await newComment.save();
     const user = await User.findById(req.userId);
@@ -459,7 +459,7 @@ exports.getComments = async (req, res, next) => {
 
 exports.getLikes = async (req, res, next) => {
   const postId = req.params.postId;
-  console.log('getlikes');
+  // console.log('getlikes');
   try {
     // const post = await Post.findById(postId)
     // .populate('creator')

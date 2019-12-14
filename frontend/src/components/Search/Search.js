@@ -1,7 +1,7 @@
 import React, { Component, Fragment } from 'react';
 import Suggestions from './Suggestions/Suggestions';
 
-// import styles from './Search.module.css';
+import styles from './Search.module.css';
 
 
 class SearchUI extends Component {
@@ -95,7 +95,7 @@ class SearchUI extends Component {
       <Fragment>
       {this.props.isAuth && (
         <div>
-          <input type="text" className="input" onChange={this.handleChange.bind(this)} placeholder="Search..." value={this.state.value} />
+          <input type="text" id={styles.input} onChange={this.handleChange.bind(this)} placeholder="Search..." value={this.state.value} />
           <Suggestions results={this.state.filtered} clear={this.clearFiltered} />
         </div>
     
