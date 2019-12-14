@@ -386,7 +386,7 @@ exports.postLike = async (req, res, next) => {
 exports.postComment = async (req, res, next) => {
   
   const postId = req.params.postId;
-  console.log('yoyoyo ' + postId);
+  // console.log('yoyoyo ' + postId);
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     const error = new Error('Validation failed, entered data is incorrect.');
@@ -406,21 +406,21 @@ exports.postComment = async (req, res, next) => {
     const user = await User.findById(req.userId);
     user.comments.push(newComment);
     await user.save();
-    console.log('panw apo to post');
+    // console.log('panw apo to post');
     const post = await Post.findById(postId);
     post.comments.push(newComment);
     await post.save();
-    console.log('katw apo to post');
+    // console.log('katw apo to post');
     io.getIO().emit('post', {
       action: 'createComment',
       post: postId
     });
-    console.log('katw apo to prwto io');
+    // console.log('katw apo to prwto io');
     io.getIO().emit('singlePost', {
       action: 'createComment',
       post: postId
     });
-    console.log('katw apo to deutero io');
+    // console.log('katw apo to deutero io');
     res.status(201).json({
       message: 'Comment created successfully!',
       comment: comment,

@@ -217,51 +217,64 @@ class Post extends Component {
     this.setState({
       commentLoading: true
     });
-    this.startCommentHandler();
+    this.startCommentHandler(this.state.post._id);
+    this.setState(prevState => {
+      const loadedPost = this.state.post;
+
+      return {
+        isCommenting: true,
+        commentPost: loadedPost
+      };
+    });
     // console.log(this.state.commentText);
-    const formData = new FormData();
-    // formData.append('comment', postData.comment);
-    formData.append('comment', this.state.commentText);
-    let url = 'http://localhost:8080/feed/postComment/' + this.state.post._id;
-    let method = 'POST';
-    fetch(url, {
-      method: method,
-      body: formData,
-      headers: {
-        Authorization: 'Bearer ' + this.props.token
-      }
-    })
-      .then(res => {
-        if (res.status !== 200 && res.status !== 201) {
-          throw new Error('Creating or editing a post failed!');
+    if(this.state.commentText !== ''){
+      const formData = new FormData();
+      // formData.append('comment', postData.comment);
+      formData.append('comment', this.state.commentText);
+      let url = 'http://localhost:8080/feed/postComment/' + this.state.post._id;
+      let method = 'POST';
+      fetch(url, {
+        method: method,
+        body: formData,
+        headers: {
+          Authorization: 'Bearer ' + this.props.token
         }
-        return res.json();
       })
-      .then(resData => {
-        console.log(resData);
-        this.setState(prevState => {
-          return {
+        .then(res => {
+          if (res.status !== 200 && res.status !== 201) {
+            throw new Error('Creating or editing a post failed!');
+          }
+          return res.json();
+        })
+        .then(resData => {
+          console.log(resData);
+          this.setState(prevState => {
+            return {
+              isEditing: false,
+              editPost: null,
+              editLoading: false
+            };
+          });
+          // window.location.reload();
+          this.loadComments();
+        })
+        .catch(err => {
+          console.log(err);
+          this.setState({
             isEditing: false,
             editPost: null,
-            editLoading: false
-          };
+            editLoading: false,
+            error: err
+          });
         });
-        // window.location.reload();
-        this.loadComments();
-      })
-      .catch(err => {
-        console.log(err);
-        this.setState({
-          isEditing: false,
-          editPost: null,
-          editLoading: false,
-          error: err
-        });
-      });
+    }
   };
 
   commentInputChangeHandler = (input, value) => {
     this.setState({ commentText: value });
+    // console.log(this.state.commentText);
+    // console.log(this.props.token);
+    // console.log(this.state.post._id);
   };
 
   startEditCommentHandler = comment => {
@@ -350,6 +363,8 @@ class Post extends Component {
   };
 
   render () {
+
+    // console.log(this.state.commentText);
 
     let postUser = (
       <header className={styles.post__header}>
@@ -485,26 +500,26 @@ class Post extends Component {
         </div>
 
         {this.state.comments.map(comment => (
-            <Comment
-              key={comment._id}
-              id={comment._id}
-              token={this.props.token}
-              postId={this.state.post._id}
-              author={comment.creator.name}
-              creator={comment.creator}
-              date={new Date(comment.createdAt).toLocaleString()}
-              content={comment.comment}
-              onStartEdit={this.startEditCommentHandler.bind(this, comment)}
-              onDelete={this.deleteCommentHandler.bind(this, comment._id)}
-            />
-          ))}
+          <Comment
+            key={comment._id}
+            id={comment._id}
+            token={this.props.token}
+            postId={this.state.post._id}
+            author={comment.creator.name}
+            creator={comment.creator}
+            date={new Date(comment.createdAt).toLocaleString()}
+            content={comment.comment}
+            onStartEdit={this.startEditCommentHandler.bind(this, comment)}
+            onDelete={this.deleteCommentHandler.bind(this, comment._id)}
+          />
+        ))}
 
           <section className={styles.feed__status}>
-            <form onSubmit={this.finishCommentHandler}>
+            <form onSubmit={this.finishCommentHandler.bind(this)}>
               <Input
                 id={this.state.post._id}
                 type="text"
-                rows="1"
+                // rows="1"
                 placeholder="Comment"
                 control="input"
                 onChange={this.commentInputChangeHandler}

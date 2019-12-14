@@ -256,7 +256,7 @@ class App extends Component {
                 isAuth={this.state.isAuth}
                 userId={this.state.userId}
                 token={this.state.token}
-                history={this.props.history}
+                // history={this.props.history}
               />
             </Toolbar>
           }

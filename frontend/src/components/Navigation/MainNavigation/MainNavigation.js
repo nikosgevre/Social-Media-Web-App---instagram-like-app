@@ -18,7 +18,8 @@ const mainNavigation = props => (
     </div>
     <div className={styles.spacer} />
     <div className={styles.mainNav__logo} >
-        <Search isAuth={props.isAuth} token={props.token} history={props.history} />
+    {/* history={props.history} */}
+        <Search isAuth={props.isAuth} token={props.token}  />
     </div>
     <div className={styles.spacer} />
     <ul className={styles.mainNav__items}>

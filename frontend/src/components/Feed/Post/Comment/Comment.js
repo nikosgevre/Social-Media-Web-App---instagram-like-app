@@ -3,7 +3,6 @@ import { NavLink } from 'react-router-dom';
 import TimeAgo from 'react-timeago'
 
 import Button from '../../../Button/Button';
-// import style from './Comment.css';
 import styles from './Comment.module.css';
 
 class Post extends Component {
@@ -47,19 +46,19 @@ class Post extends Component {
 
     let buttons = (
       <div className={styles.post__actions}>
+        <TimeAgo date={this.props.date} minPeriod="30"  />
       </div>
     );
 
-    // console.log('this.props.creator._id: ' + this.props.creator._id);
-    // console.log('localstorage: ' + localStorage.getItem("userId"));
     if(this.props.creator._id === localStorage.getItem("userId")) {
       buttons = (
         <div className={styles.post__actions} >
+          <TimeAgo date={this.props.date} minPeriod="30"  />
           <Button mode="flat" onClick={this.props.onStartEdit}>
-            Edit
+            ?
           </Button>
           <Button mode="flat" design="danger" onClick={this.props.onDelete}>
-            Delete
+            X
           </Button>
         </div>
       )
@@ -72,11 +71,7 @@ class Post extends Component {
             <div >
               <NavLink className={styles.Navlink} to={'/profile/' + this.props.creator._id} user={this.props.creator}>{this.props.author}</NavLink> {this.props.content}
             </div>
-            {/* <div className={styles.PostCaption} >
-              <TimeAgo date={this.props.date} minPeriod="30"  />
-            </div> */}
           </div>
-          {/* <hr></hr> */}
           {buttons}
         </article>
       </Fragment>

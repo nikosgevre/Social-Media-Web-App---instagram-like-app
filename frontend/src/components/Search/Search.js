@@ -14,7 +14,6 @@ class SearchUI extends Component {
   }
 
   fetchUsers = () => {
-    // console.log(this.props.token);
     if(this.props.token){
       fetch('http://localhost:8080/user/getUsers', {
         headers: {
@@ -46,12 +45,6 @@ class SearchUI extends Component {
       filtered: []
     });
   }
-
-  // componentWillReceiveProps(nextProps) {
-  //   this.setState({
-  //     filtered: []
-  //   });
-  // }
 	
 	handleChange(e) {
 		// Variable to hold the original version of the list
@@ -98,25 +91,17 @@ class SearchUI extends Component {
     if(this.state.users.length === 0){
       this.fetchUsers();
     }
-    // console.log(this.state.users);
-    // console.log(this.state.filtered);
 		return (
-			<div>
-				<input type="text" className="input" onChange={this.handleChange.bind(this)} placeholder="Search..." value={this.state.value} />
-        {/* <ul>
-          {this.state.filtered.map(item => (
-            <li key={item._id}>
-              {item} &nbsp;
-              <span
-                className="delete"
-                onClick={() => this.props.delete(item)}
-                />
-            </li>
-          ))}
-        </ul> */}
-        <Suggestions results={this.state.filtered} clear={this.clearFiltered} />
-				</div>
-		)
+      <Fragment>
+      {this.props.isAuth && (
+        <div>
+          <input type="text" className="input" onChange={this.handleChange.bind(this)} placeholder="Search..." value={this.state.value} />
+          <Suggestions results={this.state.filtered} clear={this.clearFiltered} />
+        </div>
+    
+      )}
+    </Fragment>
+    )
 	}
 
 }

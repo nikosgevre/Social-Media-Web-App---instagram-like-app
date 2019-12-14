@@ -1,9 +1,9 @@
 const User = require('../models/user');
 
 exports.getUsers = async (req, res, next) => {
-    console.log('users');
+    // console.log('users');
     try {
-      const users = await user.find();
+      const users = await User.find();
       if (!users) {
         const error = new Error('Could not find users.');
         error.statusCode = 404;

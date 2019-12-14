@@ -40,6 +40,7 @@ class Feed extends Component {
     })
     .then(resData => {
       this.setState({ status: resData.status });
+      // this.loadPosts();
     })
     .catch(this.catchError);
 
@@ -252,43 +253,6 @@ class Feed extends Component {
     });
   };
 
-  // likeHandler = postId => {
-  //   // const postId = this.props.id;
-  //   this.setState({ postsLoading: true });
-  //   const userId = localStorage.getItem('userId');
-  //   console.log('postId: ' + postId);
-  //   console.log('userId: ' + userId);
-  //   // backend for like
-  //   // if already like then dislike
-  //   fetch('http://localhost:8080/feed/postLike?postId=' + postId + '&userId=' + userId, {
-  //     method: 'POST',
-  //     headers: {
-  //       Authorization: 'Bearer ' + this.props.token
-  //     }
-  //   })
-  //   .then(res => {
-  //     if (res.status !== 200 && res.status !== 201) {
-  //       throw new Error("Can't like post!");
-  //     }
-  //     return res.json();
-  //   })
-  //   .then(resData => {
-  //     // // egine to like. sto like handler kaneis like
-  //     // this.setState({gotLike: true})
-  //     // this.setState({ likes: resData.post.likes.map(like => {
-  //     //   return{...like};
-  //     // })});
-  //     // this.setState({
-  //     //   editLoading: true
-  //     // });
-  //     // if(resData.message === '')
-  //     this.loadPosts();
-      
-  //   })
-  //   .catch(this.catchError);
-  //   // console.log('Liikee!!!');
-  // };
-
   errorHandler = () => {
     this.setState({ error: null });
   };
@@ -298,6 +262,9 @@ class Feed extends Component {
   };
 
   render() {
+    this.state.posts.map(post => (
+      console.log(post.creator)
+    ));
     return (
       <Fragment>
         <ErrorHandler error={this.state.error} onHandle={this.errorHandler} />
