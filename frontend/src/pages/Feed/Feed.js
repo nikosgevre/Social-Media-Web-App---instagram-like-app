@@ -51,7 +51,8 @@ class Feed extends Component {
     const socket = openSocket('http://localhost:8080');
     socket.on('feed', data => {
       if (data.action === 'create') {
-        this.addPost(data.post);
+        // this.addPost(data.post);
+        this.loadPosts();
       } else if (data.action === 'update') {
         this.updatePost(data.post);
       } else if (data.action === 'delete') {
@@ -60,21 +61,21 @@ class Feed extends Component {
     });
   }
 
-  addPost = post => {
-    this.setState(prevState => {
-      const updatedPosts = [...prevState.posts];
-      if (prevState.postPage === 1) {
-        if (prevState.posts.length >= paginationNumber) {
-          updatedPosts.pop();
-        }
-        updatedPosts.unshift(post);
-      }
-      return {
-        posts: updatedPosts,
-        totalPosts: prevState.totalPosts + 1
-      };
-    });
-  };
+  // addPost = post => {
+  //   this.setState(prevState => {
+  //     const updatedPosts = [...prevState.posts];
+  //     if (prevState.postPage === 1) {
+  //       if (prevState.posts.length >= paginationNumber) {
+  //         updatedPosts.pop();
+  //       }
+  //       updatedPosts.unshift(post);
+  //     }
+  //     return {
+  //       posts: updatedPosts,
+  //       totalPosts: prevState.totalPosts + 1
+  //     };
+  //   });
+  // };
 
   updatePost = post => {
     this.setState(prevState => {

@@ -14,27 +14,16 @@ exports.getPosts = async (req, res, next) => {
   const currentPage = req.query.page || 1;
   const perPage = Number.MAX_SAFE_INTEGER; //Add number for pagination
   const userId = req.query.userId;
-  // let myPosts = [];
-  // let followingPosts = [];
-  // let totalItems = 0;
-  // console.log('--- ' + userId);
 
   try {
 
-    // const user = await User.findById(userId).populate('following');
-    // totalItems += await Posts.find({creator: userId}).countDocuments();
-    // myPosts = await Posts.find({
-    //   creator: userId
-    // }).populate('creator').populate('likes');
+    const user = await User.findById(userId);
+    const followingUsers = user.following;
+    // console.log(followingUsers);
+    followingUsers.push(user);
 
-    // console.log(user.following);
-    // for (let follower of user.following) {
-    //   console.log(follower.name);
-    //   followingPosts.push(follower.posts)
-    // }
-
-    const totalItems = await Post.find().countDocuments();
-    const posts = await Post.find()
+    const totalItems = await Post.find({creator: { $in: followingUsers }}).countDocuments();
+    const posts = await Post.find({creator: { $in: followingUsers }})
       .populate('creator')
       .populate('likes')
       .sort({
