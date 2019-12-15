@@ -14,6 +14,8 @@ import Input from '../../../components/Form/Input/Input';
 import styles from './SinglePost.module.css';
 
 class SinglePost extends Component {
+
+  _isMounted = false;
   
   state = {
     post: {},
@@ -37,6 +39,7 @@ class SinglePost extends Component {
   };
 
   componentDidMount() {
+    this._isMounted = true;
     const postId = this.props.match.params.postId;
     fetch('http://localhost:8080/feed/post/' + postId, {
       headers: {
@@ -89,29 +92,31 @@ class SinglePost extends Component {
         Authorization: 'Bearer ' + this.props.token
       }
     })
-      .then(res => {
-        if (res.status !== 200) {
-          throw new Error('Failed to fetch post');
-        }
-        return res.json();
-      })
-      .then(resData => {
-        // console.log('resData: ' + resData.post.creator.name);
-        this.setState({
-          post: resData.post,
-          creator: resData.post.creator,
-          image: 'http://localhost:8080/' + resData.post.imageUrl,
-          date: new Date(resData.post.createdAt).toLocaleString('en-US'),
-          content: resData.post.content,
-          likes: resData.post.likes.map(like => {
-            return{...like};
-          })
-        });
-        this.loadComments();
-      })
-      .catch(err => {
-        console.log(err);
+    .then(res => {
+      if (res.status !== 200) {
+        throw new Error('Failed to fetch post');
+      }
+      return res.json();
+    })
+    .then(resData => {
+      // console.log('resData: ' + resData.post.creator.name);
+      // if (this._isMounted) {
+      this.setState({
+        post: resData.post,
+        creator: resData.post.creator,
+        image: 'http://localhost:8080/' + resData.post.imageUrl,
+        date: new Date(resData.post.createdAt).toLocaleString('en-US'),
+        content: resData.post.content,
+        likes: resData.post.likes.map(like => {
+          return{...like};
+        })
       });
+      // } 
+      this.loadComments();
+    })
+    .catch(err => {
+      console.log(err);
+    });
   }
 
   // updatePost = post => {
@@ -495,6 +500,9 @@ class SinglePost extends Component {
 
     return (
       <Fragment>
+        <style dangerouslySetInnerHTML={{__html: `
+           body { background-color: #fafafa; }
+        `}} />
         {/* <PostComment
           editing={this.state.isCommenting}
           selectedPost={this.state.commentPost}

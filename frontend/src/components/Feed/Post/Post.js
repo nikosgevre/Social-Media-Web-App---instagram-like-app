@@ -8,7 +8,7 @@ import OptionsModal from '../../Modal/OptionsModal/OptionsModal';
 import Button from '../../Button/Button';
 import Input from '../../Form/Input/Input';
 
-// import PostComment from '../../../components/Feed/Post/PostComment/PostComment';
+import PostComment from '../../../components/Feed/Post/PostComment/PostComment';
 import CommentEdit from '../../../components/Feed/Post/PostComment/PostComment';
 import Comment from '../../../components/Feed/Post/Comment/Comment';
 
@@ -213,7 +213,7 @@ class Post extends Component {
     this.setState({ isCommenting: false, commentPost: null });
   };
 
-  finishCommentHandler = postData => {
+  finishCommentHandlerInput = postData => {
     this.setState({
       commentLoading: true
     });
@@ -227,7 +227,7 @@ class Post extends Component {
       };
     });
     // console.log(this.state.commentText);
-    if(this.state.commentText !== ''){
+    if(this.state.commentText.length>1){
       const formData = new FormData();
       // formData.append('comment', postData.comment);
       formData.append('comment', this.state.commentText);
@@ -242,17 +242,20 @@ class Post extends Component {
       })
         .then(res => {
           if (res.status !== 200 && res.status !== 201) {
-            throw new Error('Creating or editing a post failed!');
+            throw new Error('Creating or editing a comment failed!');
           }
           return res.json();
         })
         .then(resData => {
-          console.log(resData);
+          // console.log(resData);
           this.setState(prevState => {
             return {
               isEditing: false,
               editPost: null,
-              editLoading: false
+              editLoading: false,
+              commentLoading: false,
+              isCommenting: false,
+              commentPost: null
             };
           });
           // window.location.reload();
@@ -268,6 +271,51 @@ class Post extends Component {
           });
         });
     }
+  };
+
+  finishCommentHandlerButton = postData => {
+    this.setState({
+      commentLoading: true
+    });
+    const formData = new FormData();
+    formData.append('comment', postData.comment);
+    // formData.append('comment', this.state.commentText);
+    let url = 'http://localhost:8080/feed/postComment/' + this.state.commentPost._id;
+    let method = 'POST';
+    fetch(url, {
+      method: method,
+      body: formData,
+      headers: {
+        Authorization: 'Bearer ' + this.props.token
+      }
+    })
+    .then(res => {
+      if (res.status !== 200 && res.status !== 201) {
+        throw new Error('Creating or editing a comment failed!');
+      }
+      return res.json();
+    })
+    .then(resData => {
+      this.setState(prevState => {
+        return {
+          isEditing: false,
+          editPost: null,
+          editLoading: false,
+          commentLoading: false
+        };
+      });
+      // window.location.reload();
+      this.loadComments();
+    })
+    .catch(err => {
+      console.log(err);
+      this.setState({
+        isEditing: false,
+        editPost: null,
+        editLoading: false,
+        error: err
+      });
+    });
   };
 
   commentInputChangeHandler = (input, value) => {
@@ -382,9 +430,11 @@ class Post extends Component {
       <div>
         <div className={styles.PostCaption}>
             <Button onClick={this.likeHandler}>Like</Button> <strong> {this.state.likes.length} | </strong>
-            <NavLink className={styles.Navlink} to={`${this.props.id}`} user={this.props.creator}><strong>  comments</strong> ({(this.state.comments.length === 0) ? '' : this.state.comments.length})</NavLink>
-            {/* <Button  onClick={this.startCommentHandler.bind(this, this.state.post._id)}>  Comment  </Button>  <strong> {this.state.comments.length} </strong> */}
+            <NavLink className={styles.Navlink} to={`${this.props.id}`} user={this.props.creator}><strong>  comments</strong> {(this.state.comments.length === 0) ? '' : ( '(' + this.state.comments.length + ')')}</NavLink>
+            {/* <Button style={{float:"right"}} onClick={this.startCommentHandler.bind(this, this.state.post._id)}>  Comment  </Button>   */}
+            {/* <strong> {this.state.comments.length} </strong> */}
         </div>
+        
         
       </div>
     );
@@ -394,8 +444,9 @@ class Post extends Component {
       <div>
         <div className={styles.PostCaption}>
             <Button design="danger" onClick={this.likeHandler}>Dislike</Button> <strong> {this.state.likes.length} | </strong>
-            <NavLink className={styles.Navlink} to={`${this.props.id}`} user={this.props.creator}><strong>  comments</strong> ({(this.state.comments.length === 0) ? '' : this.state.comments.length})</NavLink>
-            {/* <Button  onClick={this.startCommentHandler.bind(this, this.state.post._id)}>  Comment  </Button> <strong> {this.state.comments.length} </strong> */}
+            <NavLink className={styles.Navlink} to={`${this.props.id}`} user={this.props.creator}><strong>  comments</strong> {(this.state.comments.length === 0) ? '' : ( '(' + this.state.comments.length + ')')}</NavLink>
+            {/* <Button  onClick={this.startCommentHandler.bind(this, this.state.post._id)}>  Comment  </Button>  */}
+            {/* <strong> {this.state.comments.length} </strong> */}
         </div>
         {/* <div className="Post-caption">
           <NavLink className='Nav-link' to={'/profile/' + this.props.creator._id} user={this.props.creator}>{this.props.author}</NavLink> {this.props.content}
@@ -460,19 +511,19 @@ class Post extends Component {
 
     return (
       <article className={styles.post}>
-        {/* <PostComment
+        <PostComment
           editing={this.state.isCommenting}
           selectedPost={this.state.commentPost}
           loading={this.state.commentLoading}
           onCancelEdit={this.cancelCommentHandler}
-          onFinishEdit={this.finishCommentHandler}
-        /> */}
+          onFinishEdit={this.finishCommentHandlerButton}
+        />
         <CommentEdit
           editing={this.state.isEditingComment}
           selectedPost={this.state.editComment}
           loading={this.state.editLoading}
           onCancelEdit={this.cancelEditCommentHandler}
-          onFinishEdit={this.finishEditCommentHandler}
+          onFinishEdit={this.finishEditCommentHandlerButton}
         />
 
         <OptionsModal show={this.state.showOptions}>
@@ -514,8 +565,9 @@ class Post extends Component {
           />
         ))}
 
+          
           <section className={styles.feed__status}>
-            <form onSubmit={this.finishCommentHandler.bind(this)}>
+            <form onSubmit={this.finishCommentHandlerInput.bind(this)}>
               <Input
                 id={this.state.post._id}
                 type="text"
@@ -530,6 +582,7 @@ class Post extends Component {
               </Button>
             </form>
           </section>
+          <div style={{display:"flex", justifyContent:"center"}}><Button  onClick={this.startCommentHandler.bind(this, this.state.post._id)}>  Comment  </Button></div>
 
         <hr></hr>
 
