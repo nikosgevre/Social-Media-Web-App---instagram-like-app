@@ -78,8 +78,8 @@ class Post extends Component {
         // this.loadPost();
         this.loadComments();
       } else if (data.action === 'postLike') {
-        // this.loadPost();
-        this.loadLikes();
+        this.loadPost();
+        // this.loadLikes();
       } else if (data.action === 'deleteComment') {
         this.loadComments();
       } else if (data.action === 'editComment') {
@@ -113,7 +113,8 @@ class Post extends Component {
   };
 
   loadPost = () => {
-    const postId = this.props.id;
+    const postId = this.state.post._id;
+    console.log(this.state.content);
     fetch('http://localhost:8080/feed/post/' + postId, {
       headers: {
         Authorization: 'Bearer ' + this.props.token
@@ -121,22 +122,23 @@ class Post extends Component {
     })
     .then(res => {
       if (res.status !== 200) {
-        throw new Error('Failed to fetch status');
+        throw new Error('Failed to fetch posts');
       }
       return res.json();
     })
     .then(resData => {
-      this.setState({
-        likes: resData.post.likes.map(like => {
-          return{...like};
-        }),
-        comments: resData.post.comments.map(comment => {
-          return {
-            ...comment
-          };
-        })
-      });
+      // this.setState({
+      //   likes: resData.post.likes.map(like => {
+      //     return{...like};
+      //   }),
+      //   comments: resData.post.comments.map(comment => {
+      //     return {
+      //       ...comment
+      //     };
+      //   })
+      // });
       this.loadComments();
+      this.loadLikes();
     })
     .catch(err => {
       console.log(err);
@@ -169,7 +171,7 @@ class Post extends Component {
 
   loadLikes = () => {
     // console.log('getlikes');
-    const postId = this.props.id;
+    const postId = this.state.post._id;
     // console.log(postId);
     fetch('http://localhost:8080/feed/getLikes/' + postId, {
         headers: {
@@ -301,7 +303,9 @@ class Post extends Component {
           isEditing: false,
           editPost: null,
           editLoading: false,
-          commentLoading: false
+          commentLoading: false,
+          isCommenting: false,
+          commentPost: null
         };
       });
       // window.location.reload();
@@ -410,13 +414,20 @@ class Post extends Component {
       });
   };
 
+  optionsCancelHandler = () => {
+    this.setState({showOptions: false});
+  };
+
   render () {
 
     // console.log(this.state.commentText);
+    // console.log('rerender');
 
     let postUser = (
       <header className={styles.post__header}>
-        {/* <button onClick={this.showOptionsHandler}><strong>...</strong></button> */}
+        <div style={{display:"flex", justifyContent:"right", float:"right"}}>
+          <button className={styles.Optoins} onClick={this.showOptionsHandler}><strong>...</strong></button>
+        </div>
       </header>
     );
     let buttons = (
@@ -489,28 +500,34 @@ class Post extends Component {
     if(this.props.caller === 'feed') {
       postUser= (
         <header className={styles.post__header}>
-          <div className={styles.PostUser}>
-              <div className={styles.PostUserAvatar}>
-                <img src={this.state.userImage} alt={this.props.author} />
-              </div>
-              <div className={styles.PostUserNickname}>
-                <NavLink className={styles.Navlink} to={'/profile/' + this.props.creator._id} user={this.props.creator}>{this.props.author}</NavLink>
-              </div>
-              {/* <button style={{float:'right'}} onClick={this.showOptionsHandler}><strong>...</strong></button> */}
+          {/* <div style={{display:"flex", justifyContent:"right", paddingTop:"-10px", paddingBottom:"5px"}}> */}
+          <div style={{float:"right"}}>
+            <button className={styles.Options} onClick={this.showOptionsHandler}><strong>...</strong></button>
           </div>
-          
+          <div className={styles.PostUser}>
+            <div className={styles.PostUserAvatar}>
+              <img src={this.state.userImage} alt={this.props.author} />
+            </div>
+            <div className={styles.PostUserNickname}>
+              <NavLink className={styles.Navlink} to={'/profile/' + this.props.creator._id} user={this.props.creator}>{this.props.author}</NavLink>
+            </div>
+          </div>
         </header>
       );
     }
     else if(this.props.caller === 'profile'){
       postUser = (
       <header className={styles.post__header}>
+        <div style={{display:"flex", justifyContent:"right"}}>
+          <button className={styles.Options} onClick={this.showOptionsHandler}><strong>...</strong></button>
+        </div>
       </header>
       );
     }
 
     return (
       <article className={styles.post}>
+        
         <PostComment
           editing={this.state.isCommenting}
           selectedPost={this.state.commentPost}
@@ -525,14 +542,15 @@ class Post extends Component {
           onCancelEdit={this.cancelEditCommentHandler}
           onFinishEdit={this.finishEditCommentHandlerButton}
         />
-
-        <OptionsModal show={this.state.showOptions}>
+        <OptionsModal show={this.state.showOptions} optionsModalClosed={this.optionsCancelHandler}>
           <PostOptions 
             id={this.props.id}
             onDelete={this.props.onDelete}
             profile={this.props.profile}
             creator={this.props.creator}
             trueUserId={this.props.trueUserId}
+            onCancel={this.cancelCommentHandler}
+            image={this.state.image}
           />
         </OptionsModal>
 
@@ -564,7 +582,6 @@ class Post extends Component {
             onDelete={this.deleteCommentHandler.bind(this, comment._id)}
           />
         ))}
-
           
           <section className={styles.feed__status}>
             <form onSubmit={this.finishCommentHandlerInput.bind(this)}>
@@ -586,11 +603,9 @@ class Post extends Component {
 
         <hr></hr>
 
-        
-
         <div >
           <TimeAgo date={this.state.date} minPeriod="30"  />
-          {buttons}
+          {/* {buttons} */}
         </div>
 
       </article>

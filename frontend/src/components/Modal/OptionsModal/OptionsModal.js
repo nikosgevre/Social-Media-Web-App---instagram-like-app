@@ -1,16 +1,29 @@
-import React from 'react';
+import React, {Fragment} from 'react';
+
+import Button from '../../Button/Button';
+import OptionsBackdrop from '../../Backdrop/OptionsBackdrop/OptionsBackdrop';
 
 import styles from './OptionsModal.module.css';
 
 const OptionsModal = (props) => (
-    <div 
-        className={styles.OptionsModal}
-        style={{transform: props.show ? 'translateY(0)' : 'translateY(-100vh)',
-                opacity: props.show ? '1' : '0'
-            }}
-    >
-        {props.children}
-    </div>
+    <Fragment>
+        <OptionsBackdrop show={props.show} clicked={props.optionsModalClosed} />
+        <div 
+            className={styles.OptionsModal}
+            style={{transform: props.show ? 'translateY(0)' : 'translateY(-100vh)',
+                    opacity: props.show ? '1' : '0'
+            }}>
+            {props.children}
+            {/* <ul>
+                {props.children.map(child => (
+                    <li>{child}</li>
+                ))}
+            </ul> */}
+            <Button mode="flat" design="danger" onClick={props.optionsModalClosed}>
+                Cancel
+            </Button>
+        </div>
+    </Fragment>
 );
 
 export default OptionsModal;

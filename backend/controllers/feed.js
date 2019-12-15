@@ -19,7 +19,6 @@ exports.getPosts = async (req, res, next) => {
 
     const user = await User.findById(userId);
     const followingUsers = user.following;
-    // console.log(followingUsers);
     followingUsers.push(user);
 
     const totalItems = await Post.find({creator: { $in: followingUsers }}).countDocuments();
@@ -31,6 +30,10 @@ exports.getPosts = async (req, res, next) => {
       })
       .skip((currentPage - 1) * perPage)
       .limit(perPage);
+
+    // for (let post of posts){
+      console.log(posts);
+    // }
 
     res.status(200).json({
       message: 'Fetched posts successfully.',
@@ -373,7 +376,7 @@ exports.postLike = async (req, res, next) => {
 };
 
 exports.postComment = async (req, res, next) => {
-  console.log('yo');
+  // console.log('yo');
   const postId = req.params.postId;
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -440,7 +443,7 @@ exports.getComments = async (req, res, next) => {
 
 exports.getLikes = async (req, res, next) => {
   const postId = req.params.postId;
-  // console.log('getlikes');
+  console.log(postId);
   try {
     // const post = await Post.findById(postId)
     // .populate('creator')
@@ -448,11 +451,11 @@ exports.getLikes = async (req, res, next) => {
     // .populate('comments');
     const post = await Post.findById(postId)
     .populate('likes').populate('creator');
-    // if (!post) {
-    //   const error = new Error('Could not find post.');
-    //   error.statusCode = 404;
-    //   throw error;
-    // }
+    if (!post) {
+      const error = new Error('Could not find post.');
+      error.statusCode = 404;
+      throw error;
+    }
     res.status(200).json({
       message: 'Post fetched.',
       likes: post.likes

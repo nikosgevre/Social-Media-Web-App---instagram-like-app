@@ -16,34 +16,40 @@ class PostOptions extends Component {
         );
         if(this.props.creator._id === localStorage.getItem("userId")) {
             buttons = (
-              <div >
-                <Button mode="flat" link={`${this.props.id}`}>
-                  View
-                </Button>
-                {/* <Button mode="flat" image={this.state.image} onClick={this.props.onStartEdit}>
-                  Edit
-                </Button> */}
-                <Button mode="flat" design="danger" onClick={this.props.onDelete}>
-                  Delete
-                </Button>
+              <div>
+                <div>
+                  <Button mode="flat" link={`${this.props.id}`}>
+                    View
+                  </Button>
+                </div>
+                <div>
+                  <Button mode="flat" image={this.props.image} onClick={this.props.onStartEdit}>
+                    Edit
+                  </Button>
+                </div>
+                <div>
+                  <Button mode="flat" onClick={this.props.onDelete}>
+                    Delete
+                  </Button>
+                </div>
               </div>
             )
         };
       
-        if(this.props.profile) {
-            if(this.props.creator._id === this.props.trueUserId){
-                buttons = (
-                <div >
-                    <Button mode="flat" link={`${this.props.id}`}>
-                    View
-                    </Button>
-                    <Button mode="flat" design="danger" onClick={this.props.onDelete}>
-                    Delete
-                    </Button>
-                </div>
-                );
-            }
-        };
+        // if(this.props.profile) {
+        //     if(this.props.creator._id === this.props.trueUserId){
+        //         buttons = (
+        //         <div >
+        //             <Button mode="flat" link={`${this.props.id}`}>
+        //             View
+        //             </Button>
+        //             <Button mode="flat" design="danger" onClick={this.props.onDelete}>
+        //             Delete
+        //             </Button>
+        //         </div>
+        //         );
+        //     }
+        // };
         return (
             <Fragment>
                 {buttons}

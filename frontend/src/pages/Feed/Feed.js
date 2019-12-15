@@ -51,7 +51,7 @@ class Feed extends Component {
     const socket = openSocket('http://localhost:8080');
     socket.on('feed', data => {
       if (data.action === 'create') {
-        // this.addPost(data.post);
+        this.addPost(data.post);
         this.loadPosts();
       } else if (data.action === 'update') {
         this.updatePost(data.post);
@@ -61,21 +61,21 @@ class Feed extends Component {
     });
   }
 
-  // addPost = post => {
-  //   this.setState(prevState => {
-  //     const updatedPosts = [...prevState.posts];
-  //     if (prevState.postPage === 1) {
-  //       if (prevState.posts.length >= paginationNumber) {
-  //         updatedPosts.pop();
-  //       }
-  //       updatedPosts.unshift(post);
-  //     }
-  //     return {
-  //       posts: updatedPosts,
-  //       totalPosts: prevState.totalPosts + 1
-  //     };
-  //   });
-  // };
+  addPost = post => {
+    this.setState(prevState => {
+      const updatedPosts = [...prevState.posts];
+      if (prevState.postPage === 1) {
+        if (prevState.posts.length >= paginationNumber) {
+          updatedPosts.pop();
+        }
+        updatedPosts.unshift(post);
+      }
+      return {
+        posts: updatedPosts,
+        totalPosts: prevState.totalPosts + 1
+      };
+    });
+  };
 
   updatePost = post => {
     this.setState(prevState => {
@@ -125,6 +125,7 @@ class Feed extends Component {
         totalPosts: resData.totalItems,
         postsLoading: false
       });
+      console.log(this.state.posts);
     })
     .catch(this.catchError);
   };
@@ -249,7 +250,8 @@ class Feed extends Component {
     })
     .then(resData => {
       console.log(resData);
-      // this.loadPosts();
+      this.loadPosts();
+      // window.location.reload();
     })
     .catch(err => {
       console.log(err);
@@ -266,9 +268,12 @@ class Feed extends Component {
   };
 
   render() {
-    // this.state.posts.map(post => (
-    //   console.log(post.creator)
-    // ));
+
+    this.state.posts.map(post => (
+      console.log('rerender ' + post.content)
+    ));
+
+    // console.log('in render ' + this.state.posts);
     
     return (
       

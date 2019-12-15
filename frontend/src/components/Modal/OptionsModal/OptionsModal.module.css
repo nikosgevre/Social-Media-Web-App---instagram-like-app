@@ -1,4 +1,4 @@
-.OptionsModal {
+/* .OptionsModal {
     position: fixed;
     z-index: 500;
     background-color: white;
@@ -16,5 +16,32 @@
     .Modal {
         width: 500px;
         left: calc(50% - 250px);
+    }
+} */
+
+.OptionsModal {
+    z-index: 500;
+    background-color: white;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 1px 1px 1px black;
+    padding: 16px;
+    box-sizing: border-box;
+    transition: all 0.3s ease-out;
+    position: fixed;
+    top: 50% !important;
+    left: 40% ;
+    /* display: inline-block; */
+    vertical-align: middle;
+}
+
+@media (min-width: 768px) {
+    .OptionsModal {
+        /* width: 500px; */
+        /* left: calc(50% - 250px); */
+        position: fixed;
+        top: 45% !important;
+        left: 45%;
+        
     }
 }
