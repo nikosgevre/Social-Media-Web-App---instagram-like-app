@@ -108,7 +108,7 @@ class Profile extends Component {
       return res.json();
     })
     .then(resData => {
-
+      const options = {month: 'long', day: 'numeric', year: 'numeric' };
       this.setState({
         user: resData.user,
         posts: resData.user.posts.map(post => {
@@ -127,7 +127,7 @@ class Profile extends Component {
             ...following
           }
         }),
-        created: resData.user.createdAt,
+        created: new Date(resData.user.createdAt).toLocaleDateString('gr-GR', options),
         postsLoading: false
       });
     })
@@ -199,9 +199,9 @@ class Profile extends Component {
     
     if(this.state.user._id !== this.state.trueUserId) {
       if (this.state.followers.some(follower => follower._id.toString() === this.state.trueUserId)){
-        followButton = (<Button  design="follow" onClick={this.followHandler}>Unfollow</Button>);
+        followButton = (<Button className={styles.fBtn} design="unfollow" onClick={this.followHandler}>Unfollow</Button>);
       }else if(!(this.state.followers.some(follower => follower._id.toString() === this.state.trueUserId))){
-        followButton = (<Button  design="follow" onClick={this.followHandler}>Follow</Button>);
+        followButton = (<Button className={styles.ufBtn} design="follow" onClick={this.followHandler}>Follow</Button>);
       }
     }
 
@@ -212,24 +212,23 @@ class Profile extends Component {
         <style dangerouslySetInnerHTML={{__html: `
            body { background-color: #fafafa; }
         `}} />
-          {/* <div className={styles.row}> */}
           <div className={` ${styles.left} ${btStyles['col-lg-4']} `}>
             <div className={styles.photoLeft}>
               <img className={styles.photo} src={this.state.userImage} alt={this.state.user.name}/>
             </div>
-            <h4 className={styles.name}>{this.state.user.name}</h4>
-            <p className={styles.info}>{this.state.user.email}</p>
-            <p className={styles.info}>Member since: {this.state.created}</p>
-            <div className={` ${styles.stats} ${styles.row} `}>
-              <div className={` ${styles.stats} ${btStyles['col-xs-4']} `} style={{paddingRight: "300px"}}>
+            <h4 className={` ${styles.stats} ${styles.name} `}>{this.state.user.name}</h4>
+            <p className={` ${styles.stats} ${styles.info} `}>{this.state.user.email}</p>
+            <p className={` ${styles.stats} ${styles.info} `}>Member since: {this.state.created}</p>
+            <div className={` ${styles.stats} ${btStyles.row} `}>
+              <div className={`  ${btStyles['col-4']} `} style={{paddingRight: "50px"}}>
                 <p className={styles.numberStat}>{this.state.followers.length}</p>
                 <p className={styles.descStat}>Followers</p>
               </div>
-              <div className={` ${styles.stats} ${btStyles['col-xs-4']} `}>
+              <div className={`  ${btStyles['col-4']} `}>
                 <p className={styles.numberStat}>{this.state.following.length}</p>
                 <p className={styles.descStat}>Following</p>
               </div>
-              <div className={` ${styles.stats} ${btStyles['col-xs-4']} `} style={{paddingLeft: "300px"}}>
+              <div className={`  ${btStyles['col-4']} `} style={{paddingLeft: "50px"}}>
                 <p className={styles.numberStat}>{this.state.posts.length}</p>
                 <p className={styles.descStat}>Posts</p>
               </div>
@@ -239,7 +238,7 @@ class Profile extends Component {
 
           {followButton}
 
-          <div className={` ${styles.row} ${styles.gallery} `}>
+          <div className={` ${styles.gallery} `}>
             {this.state.postsLoading && (
               <div style={{ textAlign: 'center', marginTop: '2rem' }}>
                 <Loader />
@@ -261,7 +260,6 @@ class Profile extends Component {
                   content={post.content}
                   caller={this.state.caller}
                   profile={true}
-                  // onStartEdit={this.startEditPostHandler.bind(this, post._id)}
                   onDelete={this.deletePostHandler.bind(this, post._id)}
                 />
               ))}

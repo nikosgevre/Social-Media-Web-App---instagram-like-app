@@ -118,30 +118,57 @@
 .button.button--follow {
   border-color: #0034a3;
   color: #0034a3;
+  margin: 0 auto;
+  position: absolute;
+  left: 38% !important;
+}
+.button.button--unfollow {
+  border-color: #0034a3;
+  color: #0034a3;
+  margin: 0 auto;
+  position: absolute;
+  left: 36% !important;
 }
 
+.button--unfollow:hover,
+.button--unfollow:active,
 .button--follow:hover,
 .button--follow:active {
   background: #0034a3;
   color: white;
 }
 
+.button--flat.button--unfollow:hover,
+.button--flat.button--unfollow:active,
 .button--flat.button--follow:hover,
 .button--flat.button--follow:active {
   background: rgba(0, 52, 163, 0.3);
   color: #0034a3;
 }
 
+.button.button--unfollow.button--raised,
 .button.button--follow.button--raised {
   background: #0034a3;
   color: white;
 }
 
+.button--raised.button--unfollow:hover,
+.button--raised.button--unfollow:active,
 .button--raised.button--follow:hover,
 .button--raised.button--follow:active {
   background: #0034a3;
 }
 
+@media (min-width: 768px) {
+  .button.button--follow {
+    position: absolute;
+    left: 45.5% !important;
+  }
+  .button.button--unfollow {
+    position: absolute;
+    left: 44% !important;
+  }
+}
 
 
 
