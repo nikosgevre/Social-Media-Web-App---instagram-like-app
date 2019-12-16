@@ -540,7 +540,7 @@ class Post extends Component {
           selectedPost={this.state.editComment}
           loading={this.state.editLoading}
           onCancelEdit={this.cancelEditCommentHandler}
-          onFinishEdit={this.finishEditCommentHandlerButton}
+          onFinishEdit={this.finishEditCommentHandler}
         />
         <OptionsModal show={this.state.showOptions} optionsModalClosed={this.optionsCancelHandler}>
           <PostOptions 
