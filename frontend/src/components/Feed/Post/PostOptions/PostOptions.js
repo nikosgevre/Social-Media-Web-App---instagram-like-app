@@ -2,7 +2,7 @@ import React, {Component, Fragment} from 'react';
 // import { NavLink } from 'react-router-dom';
 
 import Button from '../../../Button/Button';
-import './PostOptions.css';
+import styles from './PostOptions.module.css';
 
 class PostOptions extends Component {
 
@@ -17,21 +17,24 @@ class PostOptions extends Component {
         if(this.props.creator._id === localStorage.getItem("userId")) {
             buttons = (
               <div>
-                <div>
+                <div className={styles.btn}>
                   <Button mode="flat" link={`${this.props.id}`}>
                     View
                   </Button>
                 </div>
+                <hr></hr>
                 <div>
                   <Button mode="flat" image={this.props.image} onClick={this.props.onStartEdit}>
                     Edit
                   </Button>
                 </div>
+                <hr></hr>
                 <div>
                   <Button mode="flat" onClick={this.props.onDelete}>
                     Delete
                   </Button>
                 </div>
+                <hr></hr>
               </div>
             )
         };

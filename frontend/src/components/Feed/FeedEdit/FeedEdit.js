@@ -8,6 +8,8 @@ import Image from '../../Image/Image';
 import { required, length } from '../../../util/validators';
 import { generateBase64FromImage } from '../../../util/image';
 
+import styles from './FeedEdit.module.css';
+
 const POST_FORM = {
   // title: {
   //   value: '',
@@ -136,6 +138,7 @@ class FeedEdit extends Component {
   render() {
 
     let modalTitle = this.props.newPost ? 'New Post' : 'Edit Post';
+    // console.log(this.state.imagePreview);
 
     return this.props.editing ? (
       <Fragment>
@@ -167,7 +170,7 @@ class FeedEdit extends Component {
               valid={this.state.postForm['image'].valid}
               touched={this.state.postForm['image'].touched}
             />
-            <div className="new-post__preview-image">
+            <div className={styles.newPost__previewImage}>
               {!this.state.imagePreview && <p>Please choose an image.</p>}
               {this.state.imagePreview && (
                 <Image imageUrl={this.state.imagePreview} contain left />
