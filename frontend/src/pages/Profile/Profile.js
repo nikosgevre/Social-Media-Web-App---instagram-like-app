@@ -127,6 +127,7 @@ class Profile extends Component {
             ...following
           }
         }),
+        created: resData.user.createdAt,
         postsLoading: false
       });
     })
@@ -194,28 +195,9 @@ class Profile extends Component {
 
   render() {
 
-    // console.log('typeof: ' + (this.state.user._id));
-
-    // if(typeof(this.state.user.image) === 'undefined') {
-    //   this.state.user.image= 'http://localhost:8080/images/prof_default.png'http://localhost:8080/images/pro_default.png;
-    // }
-
-    // if(typeof(this.state.user.followers) !== 'undefined'){
-    //   this.setState({followers: this.state.user.followers.length});
-    // }
-    // if(typeof(this.state.user.following) !== 'undefined'){
-    //   this.setState({following: this.state.user.following.length});
-    // }
-
-    // let fButton = (<span className="follow" style={{float: "center"}}>Follow</span>);
-    // if (this.state.user in this.state.user.followers) {
-    //   let fButton = (<span className="follow" style={{float: "center"}}>Unfollow</span>)
-    // } 
-
     let followButton = (<div></div>);
     
     if(this.state.user._id !== this.state.trueUserId) {
-      // followButton = (<div></div>);
       if (this.state.followers.some(follower => follower._id.toString() === this.state.trueUserId)){
         followButton = (<Button  design="follow" onClick={this.followHandler}>Unfollow</Button>);
       }else if(!(this.state.followers.some(follower => follower._id.toString() === this.state.trueUserId))){
@@ -223,87 +205,70 @@ class Profile extends Component {
       }
     }
 
-    // let followButton = (<Button  design="follow" onClick={this.followHandler}>Follow</Button>);
-
-    // // console.log(this.state.followers);
-    // if (this.state.followers.some(follower => follower._id.toString() === this.state.trueUserId)){
-    //   followButton = (<Button  design="follow" onClick={this.followHandler}>Unfollow</Button>);
-    // }
-
-    // if(this.state.user._id === this.state.trueUserId) {
-    //   followButton = (<div></div>);
-    // }
+    console.log(this.state.created);
 
     return (
       <Fragment>
         <style dangerouslySetInnerHTML={{__html: `
            body { background-color: #fafafa; }
         `}} />
-          <div className={styles.row}>
-            <div className={` ${styles.left} ${btStyles['col-lg-4']} `}>
-              <div className={styles.photoLeft}>
-                <img className={styles.photo} src={this.state.userImage} alt={this.state.user.name}/>
-                <div className={styles.active}></div>
-              </div>
-              <h4 className={styles.name}>{this.state.user.name}</h4>
-              <p className={styles.info}>{this.state.user.email}</p>
-              <div className={` ${styles.stats} ${styles.row} `}>
-                <div className={` ${styles.stat} ${btStyles['col-xs-4']} `} style={{paddingRight: "300px"}}>
-                  <p className={styles.numberStat}>{this.state.followers.length}</p>
-                  <p className={styles.descStat}>Followers</p>
-                </div>
-                <div className={` ${styles.stat} ${btStyles['col-xs-4']} `}>
-                  <p className={styles.numberStat}>{this.state.following.length}</p>
-                  <p className={styles.descStat}>Following</p>
-                </div>
-                <div className={` ${styles.stat} ${btStyles['col-xs-4']} `} style={{paddingLeft: "300px"}}>
-                  <p className={styles.numberStat}>{this.state.posts.length}</p>
-                  <p className={styles.descStat}>Posts</p>
-                </div>
-              </div>
-              <p className={styles.desc}>{this.state.user.status}</p>
+          {/* <div className={styles.row}> */}
+          <div className={` ${styles.left} ${btStyles['col-lg-4']} `}>
+            <div className={styles.photoLeft}>
+              <img className={styles.photo} src={this.state.userImage} alt={this.state.user.name}/>
             </div>
-            {followButton}
-            {/* <div className="right col-lg-8" >
-              <ul className="nav" style={{float: "left"}}>
-                <li>Posts</li>
-                <li>Collections</li>
-                <li>Groups</li>
-                <li>About</li>
-              </ul>
-              <span className="follow" style={{float: "right"}}>Follow</span>
-            </div> */}
-            <div className={` ${styles.row} ${styles.gallery} `}>
-
-              {this.state.postsLoading && (
-                <div style={{ textAlign: 'center', marginTop: '2rem' }}>
-                  <Loader />
-                </div>
-              )}
-              {!this.state.postsLoading && (
-                <div>
-                {this.state.posts.map(post => (
-                  <Post
-                    key={post._id}
-                    id={post._id}
-                    token={this.props.token}
-                    author={this.state.user.name}
-                    creator={this.state.user}
-                    trueUser={this.state.trueUserId}
-                    date={new Date(post.createdAt).toLocaleString('en-US')}
-                    title={post.title}
-                    image={post.imageUrl}
-                    content={post.content}
-                    caller={this.state.caller}
-                    profile={true}
-                    // onStartEdit={this.startEditPostHandler.bind(this, post._id)}
-                    onDelete={this.deletePostHandler.bind(this, post._id)}
-                  />
-                ))}
-                </div>
-              )}
+            <h4 className={styles.name}>{this.state.user.name}</h4>
+            <p className={styles.info}>{this.state.user.email}</p>
+            <p className={styles.info}>Member since: {this.state.created}</p>
+            <div className={` ${styles.stats} ${styles.row} `}>
+              <div className={` ${styles.stats} ${btStyles['col-xs-4']} `} style={{paddingRight: "300px"}}>
+                <p className={styles.numberStat}>{this.state.followers.length}</p>
+                <p className={styles.descStat}>Followers</p>
+              </div>
+              <div className={` ${styles.stats} ${btStyles['col-xs-4']} `}>
+                <p className={styles.numberStat}>{this.state.following.length}</p>
+                <p className={styles.descStat}>Following</p>
+              </div>
+              <div className={` ${styles.stats} ${btStyles['col-xs-4']} `} style={{paddingLeft: "300px"}}>
+                <p className={styles.numberStat}>{this.state.posts.length}</p>
+                <p className={styles.descStat}>Posts</p>
+              </div>
             </div>
+            <p className={styles.desc}>{this.state.user.status}</p>
           </div>
+
+          {followButton}
+
+          <div className={` ${styles.row} ${styles.gallery} `}>
+            {this.state.postsLoading && (
+              <div style={{ textAlign: 'center', marginTop: '2rem' }}>
+                <Loader />
+              </div>
+            )}
+            {!this.state.postsLoading && (
+              <div>
+              {this.state.posts.map(post => (
+                <Post
+                  key={post._id}
+                  id={post._id}
+                  token={this.props.token}
+                  author={this.state.user.name}
+                  creator={this.state.user}
+                  trueUser={this.state.trueUserId}
+                  date={new Date(post.createdAt).toLocaleString('en-US')}
+                  title={post.title}
+                  image={post.imageUrl}
+                  content={post.content}
+                  caller={this.state.caller}
+                  profile={true}
+                  // onStartEdit={this.startEditPostHandler.bind(this, post._id)}
+                  onDelete={this.deletePostHandler.bind(this, post._id)}
+                />
+              ))}
+              </div>
+            )}
+          </div>
+
        </Fragment>
     )
   }

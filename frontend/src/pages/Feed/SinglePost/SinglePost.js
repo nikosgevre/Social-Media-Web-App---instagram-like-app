@@ -6,7 +6,7 @@ import { NavLink } from 'react-router-dom';
 import Image from '../../../components/Image/Image';
 import Button from '../../../components/Button/Button';
 import FeedEdit from '../../../components/Feed/FeedEdit/FeedEdit';
-// import PostComment from '../../../components/Feed/Post/PostComment/PostComment';
+import PostComment from '../../../components/Feed/Post/PostComment/PostComment';
 import CommentEdit from '../../../components/Feed/Post/PostComment/PostComment';
 import Comment from '../../../components/Feed/Post/Comment/Comment';
 import Input from '../../../components/Form/Input/Input';
@@ -198,7 +198,7 @@ class SinglePost extends Component {
     this.setState({ isCommenting: false, commentPost: null });
   };
 
-  finishCommentHandler = postData => {
+  finishCommentHandlerInput = postData => {
     // console.log('yoyoyo finish');
 
     this.setState({
@@ -238,6 +238,52 @@ class SinglePost extends Component {
           };
         });
         // window.location.reload();
+      })
+      .catch(err => {
+        console.log(err);
+        this.setState({
+          isEditing: false,
+          editPost: null,
+          editLoading: false,
+          error: err
+        });
+      });
+  };
+
+  finishCommentHandlerButton = postData => {
+    this.setState({
+      commentLoading: true
+    });
+    const formData = new FormData();
+    formData.append('comment', postData.comment);
+    let url = 'http://localhost:8080/feed/postComment/' + this.state.commentPost._id;
+    let method = 'POST';
+
+    fetch(url, {
+      method: method,
+      body: formData,
+      headers: {
+        Authorization: 'Bearer ' + this.props.token
+      }
+    })
+      .then(res => {
+        if (res.status !== 200 && res.status !== 201) {
+          throw new Error('Creating or editing a post failed!');
+        }
+        return res.json();
+      })
+      .then(resData => {
+        console.log(resData);
+        this.setState(prevState => {
+          return {
+            isEditing: false,
+            editPost: null,
+            editLoading: false,
+            commentLoading: false,
+            isCommenting: false,
+            commentPost: null
+          };
+        });
       })
       .catch(err => {
         console.log(err);
@@ -458,18 +504,18 @@ class SinglePost extends Component {
 
     let buttons = (
       <div className={styles.post__actions}>
-        {/* <Button mode="flat"  onClick={this.startCommentHandler.bind(this, this.state.post._id)}>
+        <Button mode="flat"  onClick={this.startCommentHandler.bind(this, this.state.post._id)}>
           Comment
-        </Button> */}
+        </Button>
       </div>
     );
 
     if(this.state.creator._id === localStorage.getItem("userId")) {
       buttons = (
         <div className={styles.post__actions}>
-          {/* <Button mode="flat"  onClick={this.startCommentHandler.bind(this, this.state.post._id)}>
+          <Button mode="flat"  onClick={this.startCommentHandler.bind(this, this.state.post._id)}>
             Comment
-          </Button> */}
+          </Button>
           <Button mode="flat" image={this.state.image} onClick={this.startEditPostHandler.bind(this, this.state.post._id)}>
             Edit
           </Button>
@@ -503,13 +549,13 @@ class SinglePost extends Component {
         <style dangerouslySetInnerHTML={{__html: `
            body { background-color: #fafafa; }
         `}} />
-        {/* <PostComment
+        <PostComment
           editing={this.state.isCommenting}
           selectedPost={this.state.commentPost}
           loading={this.state.commentLoading}
           onCancelEdit={this.cancelCommentHandler}
-          onFinishEdit={this.finishCommentHandler}
-        /> */}
+          onFinishEdit={this.finishCommentHandlerButton}
+        />
         <CommentEdit
           editing={this.state.isEditingComment}
           selectedPost={this.state.editComment}
@@ -554,7 +600,7 @@ class SinglePost extends Component {
           ))}
 
           <section className={styles.feed__status}>
-            <form onSubmit={this.finishCommentHandler}>
+            <form onSubmit={this.finishCommentHandlerInput}>
               <Input
                 id="comment"
                 type="text"
