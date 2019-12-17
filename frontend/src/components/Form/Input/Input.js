@@ -3,15 +3,17 @@ import React from 'react';
 import './Input.css';
 
 const input = props => (
-  <div className="input">
+  <div >
     {props.label && <label htmlFor={props.id}>{props.label}</label>}
     {props.control === 'input' && (
       <input
-        className={[
-          !props.valid ? 'invalid' : 'valid',
-          props.touched ? 'touched' : 'untouched'
-        ].join(' ')}
+        // className={[
+        //   !props.valid ? 'invalid' : 'valid',
+        //   props.touched ? 'touched' : 'untouched'
+        // ].join(' ')}
+        className={props.class}
         type={props.type}
+        name={props.name}
         id={props.id}
         required={props.required}
         value={props.value}

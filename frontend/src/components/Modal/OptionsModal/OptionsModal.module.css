@@ -10,7 +10,7 @@
     box-sizing: border-box;
     transition: all 0.3s ease-out;
     position: fixed;
-    top: 50% !important;
+    top: 40% !important;
     left: 40% ;
     /* display: inline-block; */
     vertical-align: middle;

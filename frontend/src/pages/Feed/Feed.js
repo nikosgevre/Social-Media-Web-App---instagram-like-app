@@ -9,9 +9,7 @@ import Paginator from '../../components/Paginator/Paginator';
 import Loader from '../../components/Loader/Loader';
 import ErrorHandler from '../../components/ErrorHandler/ErrorHandler';
 
-// import styles from './Feed.module.css';
 const styles = require('./Feed.module.css');
-// import './Feed.css';
 
 const paginationNumber = Number.MAX_SAFE_INTEGER;
 

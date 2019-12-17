@@ -32,7 +32,7 @@ exports.getPosts = async (req, res, next) => {
       .limit(perPage);
 
     // for (let post of posts){
-      console.log(posts);
+      // console.log(posts);
     // }
 
     res.status(200).json({
