@@ -3,7 +3,7 @@ import React, { Component, Fragment } from 'react';
 import Input from '../../components/Form/Input/Input';
 // import Button from '../../components/Button/Button';
 import { required, length, email } from '../../util/validators';
-import Auth from './Auth';
+// import Auth from './Auth';
 
 import styles from './Signup.module.css';
 import btStyles from '../../Assets/global-styles/bootstrap.min.module.css';

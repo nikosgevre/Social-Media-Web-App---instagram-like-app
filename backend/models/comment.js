@@ -11,10 +11,18 @@ const commentSchema = new Schema({
     ref: 'User',
     required: true
   },
-  post: [{
+  post: {
     type: Schema.Types.ObjectId,
     ref: 'Post',
     required: true
+  },
+  likes: [{
+    type: Schema.Types.ObjectId,
+    ref: 'User'
+  }],
+  comments: [{
+    type: Schema.Types.ObjectId,
+    ref: 'Comment'
   }]
 }, {
   timestamps: true

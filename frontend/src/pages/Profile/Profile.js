@@ -205,7 +205,7 @@ class Profile extends Component {
       }
     }
 
-    console.log(this.state.created);
+    // console.log(this.state.created);
 
     return (
       <Fragment>

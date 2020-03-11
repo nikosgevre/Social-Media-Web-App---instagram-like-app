@@ -375,6 +375,60 @@ exports.postLike = async (req, res, next) => {
 
 };
 
+exports.commentLike = async (req, res, next) => {
+  const commentId = req.query.commentId;
+  const userId = req.query.userId;
+  // console.log('pid: ' + postId);
+  // console.log('uid: ' + userId);
+
+  try {
+    const comment = await Comment.findById(commentId).populate('creator').populate('likes');
+    const user = await User.findById(userId);
+
+    if (!comment.likes.some(like => like._id.toString() === userId)) {
+      comment.likes.push(user);
+      // console.log('liked a post');
+      const result = await comment.save();
+      io.getIO().emit('singlePost', {
+        action: 'commentLike',
+        comment: commentId
+      });
+      io.getIO().emit('post', {
+        action: 'commentLike',
+        comment: commentId
+      });
+      res.status(200).json({
+        message: 'Comment liked!',
+        comment: result
+      });
+    } else {
+      comment.likes = comment.likes.filter(el => {
+        return el.name != user.name;
+      });
+      // console.log('Disliked a post');
+      const result = await comment.save();
+      io.getIO().emit('singlePost', {
+        action: 'commentLike',
+        comment: commentId
+      });
+      io.getIO().emit('post', {
+        action: 'commentLike',
+        comment: commentId
+      });
+      res.status(200).json({
+        message: 'Post disliked!',
+        comment: result
+      });
+    }
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+
+};
+
 exports.postComment = async (req, res, next) => {
   // console.log('yo');
   const postId = req.params.postId;
@@ -443,7 +497,7 @@ exports.getComments = async (req, res, next) => {
 
 exports.getLikes = async (req, res, next) => {
   const postId = req.params.postId;
-  console.log(postId);
+  // console.log(postId);
   try {
     // const post = await Post.findById(postId)
     // .populate('creator')
@@ -459,6 +513,33 @@ exports.getLikes = async (req, res, next) => {
     res.status(200).json({
       message: 'Post fetched.',
       likes: post.likes
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
+exports.getCommentsLikes = async (req, res, next) => {
+  const commentId = req.params.commentId;
+  // console.log(commentId);
+  try {
+    // const post = await Post.findById(postId)
+    // .populate('creator')
+    // .populate('likes')
+    // .populate('comments');
+    const comment = await Comment.findById(commentId)
+    .populate('likes').populate('creator');
+    if (!comment) {
+      const error = new Error('Could not find comment.');
+      error.statusCode = 404;
+      throw error;
+    }
+    res.status(200).json({
+      message: 'Post fetched.',
+      likes: comment.likes
     });
   } catch (err) {
     if (!err.statusCode) {

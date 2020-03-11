@@ -18,8 +18,14 @@ router.get('/getLikes/:postId', isAuth, feedController.getLikes);
 // GET /feed/getComments
 router.get('/getComments/:postId', isAuth, feedController.getComments);
 
-// POST like handler backend
+// POST post like handler backend
 router.post('/postLike', isAuth, feedController.postLike);
+
+// POST comment like handler backend
+router.post('/commentLike', isAuth, feedController.commentLike);
+
+// GET /feed/getCommentsLikes
+router.get('/getCommentsLikes/:commentId', isAuth, feedController.getCommentsLikes);
 
 // POST /feed/post
 router.post(

@@ -123,7 +123,7 @@ class Feed extends Component {
         totalPosts: resData.totalItems,
         postsLoading: false
       });
-      console.log(this.state.posts);
+      // console.log(this.state.posts);
     })
     .catch(this.catchError);
   };
@@ -267,9 +267,9 @@ class Feed extends Component {
 
   render() {
 
-    this.state.posts.map(post => (
-      console.log('rerender ' + post.content)
-    ));
+    // this.state.posts.map(post => (
+    //   console.log('rerender ' + post.content)
+    // ));
 
     // console.log('in render ' + this.state.posts);
     

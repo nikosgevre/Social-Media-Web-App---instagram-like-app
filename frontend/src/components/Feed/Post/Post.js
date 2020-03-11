@@ -78,8 +78,8 @@ class Post extends Component {
         // this.loadPost();
         this.loadComments();
       } else if (data.action === 'postLike') {
-        this.loadPost();
-        // this.loadLikes();
+        // this.loadPost();
+        this.loadLikes();
       } else if (data.action === 'deleteComment') {
         this.loadComments();
       } else if (data.action === 'editComment') {
@@ -114,7 +114,7 @@ class Post extends Component {
 
   loadPost = () => {
     const postId = this.state.post._id;
-    console.log(this.state.content);
+    // console.log(this.state.content);
     fetch('http://localhost:8080/feed/post/' + postId, {
       headers: {
         Authorization: 'Bearer ' + this.props.token
@@ -430,13 +430,7 @@ class Post extends Component {
         </div>
       </header>
     );
-    let buttons = (
-      <div className={styles.post__actions}>
-        <Button mode="flat" link={`${this.props.id}`}>
-          View
-        </Button>
-      </div>
-    );
+    
     let likesAndComments = (
       <div>
         <div className={styles.PostCaption}>
@@ -466,36 +460,44 @@ class Post extends Component {
       );
     };
 
-    if(this.props.creator._id === localStorage.getItem("userId")) {
-      buttons = (
-        <div className={styles.post__actions}>
-          <Button mode="flat" link={`${this.props.id}`}>
-            View
-          </Button>
-          {/* <Button mode="flat" image={this.state.image} onClick={this.props.onStartEdit}>
-            Edit
-          </Button> */}
-          <Button mode="flat" design="danger" onClick={this.props.onDelete}>
-            Delete
-          </Button>
-        </div>
-      )
-    };
+    // let buttons = (
+    //   <div className={styles.post__actions}>
+    //     <Button mode="flat" link={`${this.props.id}`}>
+    //       View
+    //     </Button>
+    //   </div>
+    // );
 
-    if(this.props.profile) {
-      if(this.props.creator._id === this.props.trueUserId){
-        buttons = (
-          <div className={styles.post__actions}>
-            <Button mode="flat" link={`${this.props.id}`}>
-              View
-            </Button>
-            <Button mode="flat" design="danger" onClick={this.props.onDelete}>
-              Delete
-            </Button>
-          </div>
-        );
-      }
-    };
+    // if(this.props.creator._id === localStorage.getItem("userId")) {
+    //   buttons = (
+    //     <div className={styles.post__actions}>
+    //       <Button mode="flat" link={`${this.props.id}`}>
+    //         View
+    //       </Button>
+    //       {/* <Button mode="flat" image={this.state.image} onClick={this.props.onStartEdit}>
+    //         Edit
+    //       </Button> */}
+    //       <Button mode="flat" design="danger" onClick={this.props.onDelete}>
+    //         Delete
+    //       </Button>
+    //     </div>
+    //   )
+    // };
+
+    // if(this.props.profile) {
+    //   if(this.props.creator._id === this.props.trueUserId){
+    //     buttons = (
+    //       <div className={styles.post__actions}>
+    //         <Button mode="flat" link={`${this.props.id}`}>
+    //           View
+    //         </Button>
+    //         <Button mode="flat" design="danger" onClick={this.props.onDelete}>
+    //           Delete
+    //         </Button>
+    //       </div>
+    //     );
+    //   }
+    // };
 
     if(this.props.caller === 'feed') {
       postUser= (
@@ -567,7 +569,7 @@ class Post extends Component {
         <div className={styles.PostCaption}>
           <NavLink className={styles.Navlink} to={'/profile/' + this.props.creator._id} user={this.props.creator}>{this.props.author}</NavLink> {this.props.content}
         </div>
-
+        <hr></hr>
         {this.state.comments.map(comment => (
           <Comment
             key={comment._id}
