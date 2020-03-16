@@ -212,7 +212,7 @@ class SinglePost extends Component {
     const formData = new FormData();
     // formData.append('comment', postData.comment);
     formData.append('comment', this.state.commentText);
-    let url = 'http://localhost:8080/feed/postComment/' + this.state.post._id;
+    let url = 'http://localhost:8080/feed/postComment?refId=' + this.state.post._id + '&ref=post';
     let method = 'POST';
 
     fetch(url, {
@@ -256,7 +256,7 @@ class SinglePost extends Component {
     });
     const formData = new FormData();
     formData.append('comment', postData.comment);
-    let url = 'http://localhost:8080/feed/postComment/' + this.state.commentPost._id;
+    let url = 'http://localhost:8080/feed/postComment?refId=' + this.state.commentPost._id + '&ref=post';
     let method = 'POST';
 
     fetch(url, {

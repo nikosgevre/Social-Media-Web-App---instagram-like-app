@@ -236,7 +236,7 @@ exports.deletePost = async (req, res, next) => {
     // delete image
     clearImage(post.imageUrl);
 
-    // posts' comments
+    // post's comments
     let comments = await Comment.find({ refId : post._id}).populate('creator');
 
     // for each comment find the user that made the comment and delete it from his comments reference
@@ -445,10 +445,7 @@ exports.deleteComment = async (req, res, next) => {
   const postId = req.query.postId;
   
   try {
-    const comment = await Comment.findById(commentId).populate('post');
-    // console.log(comment.post._id);
-    // console.log('cmid: ' + commentId);
-    // console.log('pstid ' + postId);
+    const comment = await Comment.findById(commentId);
     if (!comment) {
       const error = new Error('Could not find comment.');
       error.statusCode = 404;
@@ -459,11 +456,33 @@ exports.deleteComment = async (req, res, next) => {
       error.statusCode = 403;
       throw error;
     }
-    // Check logged in user
-    // clearImage(post.imageUrl);
 
+    // delete reference to the parent comment
+    if(comment.reference==='comment'){
+      const parentComment = await Comment.findById(comment.refId);
+      if(!parentComment){
+        console.log('no parent comment');
+      }
+      parentComment.comments.pull(commentId);
+    }
+    
+    // get comment's comments
+    let comments = await Comment.find({ refId : commentId, reference: 'comment' }).populate('creator');
+
+    // for each comment find the user that made the comment and delete it from his comments reference
+    for (let cmc of comments) {
+      let userA = await User.findById(cmc.creator._id);
+      userA.comments.pull(cmc._id);
+      await userA.save();
+    }
+
+    // delete the comments of the comment
+    await Comment.deleteMany({ refId: commentId, reference: 'comment' });
+
+    // delete the main comment
     await Comment.findByIdAndRemove(commentId);
 
+    // update the user and the post
     const user = await User.findById(req.userId);
     user.comments.pull(commentId);
     await user.save();
@@ -657,30 +676,6 @@ exports.getComment = async (req, res, next) => {
     next(err);
   }
 };
-
-// exports.getCommentsOfComments = async (req, res, next) => {
-//   const commentId = req.params.commentId;
-  
-//   try {
-//     const comments = await Comment.find({ refId: commentId})
-//     .populate('creator');
-//     if (!comments) {
-//       const error = new Error('Could not find comments.');
-//       error.statusCode = 404;
-//       throw error;
-//     }
-//     console.log('pira ta comments' + comments);
-//     res.status(200).json({
-//       message: 'Post fetched.',
-//       comments: comments
-//     });
-//   } catch (err) {
-//     if (!err.statusCode) {
-//       err.statusCode = 500;
-//     }
-//     next(err);
-//   }
-// };
 
 const clearImage = filePath => {
   filePath = path.join(__dirname, '..', filePath);
