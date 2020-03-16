@@ -16,7 +16,10 @@ router.get('/userPosts', isAuth, feedController.getUserSpecificPosts);
 router.get('/getLikes/:postId', isAuth, feedController.getLikes);
 
 // GET /feed/getComments
-router.get('/getComments/:postId', isAuth, feedController.getComments);
+router.get('/getComments/:refId', isAuth, feedController.getComments);
+
+// // GET /feed/getCommentsOfComment
+// router.get('/getCommentsOfComment/:commentId', isAuth, feedController.getCommentsOfComments);
 
 // POST post like handler backend
 router.post('/postLike', isAuth, feedController.postLike);
@@ -44,7 +47,7 @@ router.post(
 
 // POST /feed/postComment
 router.post(
-  '/postComment/:postId',
+  '/postComment/',
   isAuth,
   [
     body('comment')
@@ -68,6 +71,9 @@ router.put(
 
 // GET view post details
 router.get('/post/:postId', isAuth, feedController.getPost);
+
+// GET comment
+router.get('/getComment/:commentId', isAuth, feedController.getComment);
 
 // PUT update post after edit
 router.put(

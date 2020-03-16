@@ -5,6 +5,9 @@ import openSocket from 'socket.io-client';
 
 import Button from '../../../Button/Button';
 import Comment from './Comment';
+import Input from '../../../Form/Input/Input';
+import CommentEdit from '../PostComment/PostComment';
+
 import styles from './Comment.module.css';
 
 class Post extends Component {
@@ -14,22 +17,51 @@ class Post extends Component {
     date: '',
     comments: [],
     likes: [],
+    commentText: '',
+    comment: null,
+    commentLoading: false,
+    isCommenting: false,
+    commentComment: null,
+    isEditingComment: false,
+    editComment: null,
+    editLoading: false,
     trueUserId: localStorage.getItem('userId')
   };
 
   componentDidMount() {
+    fetch('http://localhost:8080/feed/getComment/' + this.props.id, {
+      headers: {
+        Authorization: 'Bearer ' + this.props.token
+      }
+    })
+    .then(res => {
+      if (res.status !== 200) {
+        throw new Error('Failed to fetch comment.');
+      }
+      return res.json();
+    })
+    .then(resData => {
+      this.setState({
+        comment: resData.comment
+      });
+    })
+    .catch(this.catchError);
       this.loadComments();
       this.loadLikes();
       const socket = openSocket('http://localhost:8080');
       socket.on('comment', data => {
         if (data.action === 'commentLike') {
           this.loadLikes();
-        } 
+        } else if (data.action === 'deleteComment') {
+          this.loadComments();
+        } else if (data.action === 'editComment') {
+          this.loadComments();
+        }
       });
   }
 
   loadComments = () => {
-    fetch('http://localhost:8080/feed/getComments/' + this.props.postId, {
+    fetch('http://localhost:8080/feed/getComments/' + this.props.id, {
       headers: {
         Authorization: 'Bearer ' + this.props.token
       }
@@ -103,7 +135,169 @@ class Post extends Component {
       .catch(this.catchError);
   }
 
+  startCommentHandler = postId => {
+    this.setState(prevState => {
+      const loadedComment = this.state.comment;
+
+      return {
+        isCommenting: true,
+        commentComment: loadedComment
+      };
+    });
+  };
+
+  finishCommentHandlerInput = postData => {
+    this.setState({
+      commentLoading: true
+    });
+    this.startCommentHandler(this.state.comment._id);
+    this.setState(prevState => {
+      const loadedComment = this.state.comment;
+
+      return {
+        isCommenting: true,
+        commentComment: loadedComment
+      };
+    });
+    console.log(this.state.commentText);
+    if(this.state.commentText.length>1){
+      const formData = new FormData();
+      formData.append('comment', this.state.commentText);
+      let url = 'http://localhost:8080/feed/postComment?refId=' + this.props.id + '&ref=comment';
+      let method = 'POST';
+      fetch(url, {
+        method: method,
+        body: formData,
+        headers: {
+          Authorization: 'Bearer ' + this.props.token
+        }
+      })
+        .then(res => {
+          if (res.status !== 200 && res.status !== 201) {
+            throw new Error('Creating or editing a comment failed!');
+          }
+          return res.json();
+        })
+        .then(resData => {
+          this.setState(prevState => {
+            return {
+              isEditing: false,
+              editPost: null,
+              editLoading: false,
+              commentLoading: false,
+              isCommenting: false,
+              commentPost: null
+            };
+          });
+          this.loadComments();
+        })
+        .catch(err => {
+          console.log(err);
+          this.setState({
+            isEditing: false,
+            editPost: null,
+            editLoading: false,
+            error: err
+          });
+        });
+    }
+  };
+
+  commentInputChangeHandler = (input, value) => {
+    this.setState({ commentText: value });
+    // console.log(this.state.commentText);
+    // console.log(this.props.token);
+    // console.log(this.state.post._id);
+  };
+
+  startEditCommentHandler = comment => {
+    this.setState(prevState => {
+      const loadedComment = comment;
+
+      return {
+        isEditingComment: true,
+        editComment: loadedComment
+      };
+    });
+  };
+
+  cancelEditCommentHandler = () => {
+    this.setState({ isEditingComment: false, editComment: null });
+  };
+
+  finishEditCommentHandler = postData => {
+    this.setState({
+      editLoading: true
+    });
+    const formData = new FormData();
+    formData.append('comment', postData.comment);
+    let url = 'http://localhost:8080/feed/postComment/' + this.props.postId;
+    let method = 'POST';
+    if (this.state.editComment) {
+      url = 'http://localhost:8080/feed/editComment?commentId=' + this.state.editComment._id + '&postId=' + this.props.postId;
+      method = 'PUT';
+    }
+
+    fetch(url, {
+      method: method,
+      body: formData,
+      headers: {
+        Authorization: 'Bearer ' + this.props.token
+      }
+    })
+      .then(res => {
+        if (res.status !== 200 && res.status !== 201) {
+          throw new Error('Creating or editing a post failed!');
+        }
+        return res.json();
+      })
+      .then(resData => {
+        console.log(resData);
+        this.setState(prevState => {
+          return {
+            isEditingComment: false,
+            editComment: null,
+            editLoading: false
+          };
+        });
+      })
+      .catch(err => {
+        console.log(err);
+        this.setState({
+          isEditing: false,
+          editPost: null,
+          editLoading: false,
+          error: err
+        });
+      });
+  };
+
+  deleteCommentHandler = commentId => {
+    // this.setState({ postsLoading: true });
+    fetch('http://localhost:8080/feed/comment?commentId=' + commentId + '&postId=' + this.props.postId, {
+      method: 'DELETE',
+      headers: {
+        Authorization: 'Bearer ' + this.props.token
+      }
+    })
+      .then(res => {
+        if (res.status !== 200 && res.status !== 201) {
+          throw new Error('Deleting a post failed!');
+        }
+        return res.json();
+      })
+      .then(resData => {
+        console.log(resData);
+      })
+      .catch(err => {
+        console.log(err);
+        this.setState({ postsLoading: false });
+      });
+  };
+
   render () {
+
+    // console.log(this.state.comment);
 
     let likesAndComments = (
       <div>
@@ -156,28 +350,54 @@ class Post extends Component {
 
     return (
       <Fragment>
+        <CommentEdit
+          editing={this.state.isEditingComment}
+          selectedPost={this.state.editComment}
+          loading={this.state.editLoading}
+          onCancelEdit={this.cancelEditCommentHandler}
+          onFinishEdit={this.finishEditCommentHandler}
+        />
         <article className={styles.post1}>
           <div>
             <div >
               <NavLink className={styles.Navlink} to={'/profile/' + this.props.creator._id} user={this.props.creator}>{this.props.author}</NavLink> {this.props.content}
-              
             </div>
           </div>
           {buttons}
-          {this.state.comments.map(comment => (
-                <Comment
-                  key={comment._id}
-                  id={comment._id}
-                  token={this.props.token}
-                  postId={comment._id}
-                  author={comment.creator.name}
-                  creator={comment.creator}
-                  date={new Date(comment.createdAt).toLocaleString()}
-                  content={comment.comment}
-                  // onStartEdit={this.startEditCommentHandler.bind(this, comment)}
-                  // onDelete={this.deleteCommentHandler.bind(this, comment._id)}
+          {this.props.caller==='comment' ? null : 
+            <section className={styles.feed__status}>
+              <form onSubmit={this.finishCommentHandlerInput.bind(this)}>
+                <Input
+                  id={this.props.id}
+                  type="text"
+                  // rows="1"
+                  placeholder="Comment"
+                  control="input"
+                  onChange={this.commentInputChangeHandler}
+                  value={this.state.commentText}
                 />
-              ))}
+                <Button mode="flat" type="submit">
+                  Comment
+                </Button>
+              </form>
+            </section>
+          }
+          
+          {this.state.comments.map(comment => (
+            <Comment
+              key={comment._id}
+              id={comment._id}
+              token={this.props.token}
+              postId={comment._id}
+              author={comment.creator.name}
+              creator={comment.creator}
+              date={new Date(comment.createdAt).toLocaleString()}
+              content={comment.comment}
+              onStartEdit={this.startEditCommentHandler.bind(this, comment)}
+              onDelete={this.deleteCommentHandler.bind(this, comment._id)}
+              caller='comment'
+            />
+          ))}
         </article>
       </Fragment>
     );

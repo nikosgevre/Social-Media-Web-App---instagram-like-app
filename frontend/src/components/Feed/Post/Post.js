@@ -165,6 +165,7 @@ class Post extends Component {
           };
         })
       });
+      
     })
     .catch(this.catchError);
   };
@@ -232,7 +233,7 @@ class Post extends Component {
     if(this.state.commentText.length>1){
       const formData = new FormData();
       formData.append('comment', this.state.commentText);
-      let url = 'http://localhost:8080/feed/postComment/' + this.state.post._id;
+      let url = 'http://localhost:8080/feed/postComment?refId=' + this.state.post._id + '&ref=post';
       let method = 'POST';
       fetch(url, {
         method: method,
@@ -279,7 +280,7 @@ class Post extends Component {
     const formData = new FormData();
     formData.append('comment', postData.comment);
     // formData.append('comment', this.state.commentText);
-    let url = 'http://localhost:8080/feed/postComment/' + this.state.commentPost._id;
+    let url = 'http://localhost:8080/feed/postComment?refId=' + this.state.commentPost._id + '&ref=post';
     let method = 'POST';
     fetch(url, {
       method: method,
@@ -419,6 +420,7 @@ class Post extends Component {
 
     // console.log(this.state.commentText);
     // console.log('rerender');
+    // console.log(this.state.comments);
 
     let postUser = (
       <header className={styles.post__header}>
@@ -457,45 +459,6 @@ class Post extends Component {
       );
     };
 
-    // let buttons = (
-    //   <div className={styles.post__actions}>
-    //     <Button mode="flat" link={`${this.props.id}`}>
-    //       View
-    //     </Button>
-    //   </div>
-    // );
-
-    // if(this.props.creator._id === localStorage.getItem("userId")) {
-    //   buttons = (
-    //     <div className={styles.post__actions}>
-    //       <Button mode="flat" link={`${this.props.id}`}>
-    //         View
-    //       </Button>
-    //       {/* <Button mode="flat" image={this.state.image} onClick={this.props.onStartEdit}>
-    //         Edit
-    //       </Button> */}
-    //       <Button mode="flat" design="danger" onClick={this.props.onDelete}>
-    //         Delete
-    //       </Button>
-    //     </div>
-    //   )
-    // };
-
-    // if(this.props.profile) {
-    //   if(this.props.creator._id === this.props.trueUserId){
-    //     buttons = (
-    //       <div className={styles.post__actions}>
-    //         <Button mode="flat" link={`${this.props.id}`}>
-    //           View
-    //         </Button>
-    //         <Button mode="flat" design="danger" onClick={this.props.onDelete}>
-    //           Delete
-    //         </Button>
-    //       </div>
-    //     );
-    //   }
-    // };
-
     if(this.props.caller === 'feed') {
       postUser= (
         <header className={styles.post__header}>
@@ -526,7 +489,6 @@ class Post extends Component {
 
     return (
       <article className={styles.post}>
-        
         <PostComment
           editing={this.state.isCommenting}
           selectedPost={this.state.commentPost}
@@ -579,6 +541,7 @@ class Post extends Component {
             content={comment.comment}
             onStartEdit={this.startEditCommentHandler.bind(this, comment)}
             onDelete={this.deleteCommentHandler.bind(this, comment._id)}
+            caller=''
           />
         ))}
           
@@ -598,6 +561,7 @@ class Post extends Component {
               </Button>
             </form>
           </section>
+
           <div style={{display:"flex", justifyContent:"center"}}><Button  onClick={this.startCommentHandler.bind(this, this.state.post._id)}>  Comment  </Button></div>
 
         <hr></hr>

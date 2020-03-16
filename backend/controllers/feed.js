@@ -237,7 +237,7 @@ exports.deletePost = async (req, res, next) => {
     clearImage(post.imageUrl);
 
     // posts' comments
-    let comments = await Comment.find({ post : post._id}).populate('creator');
+    let comments = await Comment.find({ refId : post._id}).populate('creator');
 
     // for each comment find the user that made the comment and delete it from his comments reference
     for (let cmc of comments) {
@@ -335,7 +335,10 @@ exports.postLike = async (req, res, next) => {
 
 exports.postComment = async (req, res, next) => {
   // console.log('yo');
-  const postId = req.params.postId;
+  const ref = req.query.ref;
+  const refId = req.query.refId;
+  console.log(ref);
+  console.log(refId);
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     const error = new Error('Validation failed, entered data is incorrect.');
@@ -346,28 +349,36 @@ exports.postComment = async (req, res, next) => {
   const newComment = new Comment({
     comment: comment,
     creator: req.userId,
-    post: postId
+    reference: ref,
+    refId: refId
   });
   try {
     await newComment.save();
     const user = await User.findById(req.userId);
     user.comments.push(newComment);
     await user.save();
-    const post = await Post.findById(postId);
-    post.comments.push(newComment);
-    await post.save();
+    if(ref==='post'){
+      console.log('itan post');
+      const post = await Post.findById(refId);
+      post.comments.push(newComment);
+      await post.save();
+    } else if(ref==='comment'){
+      const commentOfcomment = await Comment.findById(refId);
+      commentOfcomment.comments.push(newComment);
+      await commentOfcomment.save();
+    }
+    
     io.getIO().emit('post', {
       action: 'createComment',
-      post: postId
+      post: refId
     });
     io.getIO().emit('singlePost', {
       action: 'createComment',
-      post: postId
+      post: refId
     });
     res.status(201).json({
       message: 'Comment created successfully!',
-      comment: comment,
-      post: post
+      comment: comment
     });
   } catch (err) {
     if (!err.statusCode) {
@@ -410,6 +421,10 @@ exports.updateComment = async (req, res, next) => {
       post: post
     });
     io.getIO().emit('post', {
+      action: 'editComment',
+      post: post
+    });
+    io.getIO().emit('comment', {
       action: 'editComment',
       post: post
     });
@@ -461,6 +476,10 @@ exports.deleteComment = async (req, res, next) => {
       post: postId
     });
     io.getIO().emit('post', {
+      action: 'deleteComment',
+      post: postId
+    });
+    io.getIO().emit('comment', {
       action: 'deleteComment',
       post: postId
     });
@@ -538,15 +557,17 @@ exports.commentLike = async (req, res, next) => {
 };
 
 exports.getComments = async (req, res, next) => {
-  const postId = req.params.postId;
+  const refId = req.params.refId;
+  
   try {
-    const comments = await Comment.find({ post: postId})
+    const comments = await Comment.find({ refId: refId})
     .populate('creator');
     if (!comments) {
       const error = new Error('Could not find comments.');
       error.statusCode = 404;
       throw error;
     }
+    // console.log('pira ta comments' + comments);
     res.status(200).json({
       message: 'Post fetched.',
       comments: comments
@@ -612,6 +633,54 @@ exports.getCommentsLikes = async (req, res, next) => {
     next(err);
   }
 };
+
+exports.getComment = async (req, res, next) => {
+  const commentId = req.params.commentId;
+  const comment = await Comment.findById(commentId)
+    .populate('creator')
+    .populate('likes')
+    .populate('comments');
+  try {
+    if (!comment) {
+      const error = new Error('Could not find comment.');
+      error.statusCode = 404;
+      throw error;
+    }
+    res.status(200).json({
+      message: 'Comment fetched.',
+      comment: comment
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
+// exports.getCommentsOfComments = async (req, res, next) => {
+//   const commentId = req.params.commentId;
+  
+//   try {
+//     const comments = await Comment.find({ refId: commentId})
+//     .populate('creator');
+//     if (!comments) {
+//       const error = new Error('Could not find comments.');
+//       error.statusCode = 404;
+//       throw error;
+//     }
+//     console.log('pira ta comments' + comments);
+//     res.status(200).json({
+//       message: 'Post fetched.',
+//       comments: comments
+//     });
+//   } catch (err) {
+//     if (!err.statusCode) {
+//       err.statusCode = 500;
+//     }
+//     next(err);
+//   }
+// };
 
 const clearImage = filePath => {
   filePath = path.join(__dirname, '..', filePath);
