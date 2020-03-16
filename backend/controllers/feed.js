@@ -333,8 +333,10 @@ exports.postLike = async (req, res, next) => {
 
     if (!post.likes.some(like => like._id.toString() === userId)) {
       post.likes.push(user);
+      user.postLikes.push(post);
       // console.log('liked a post');
       const result = await post.save();
+      await user.save();
       io.getIO().emit('singlePost', {
         action: 'postLike',
         post: postId
@@ -351,8 +353,13 @@ exports.postLike = async (req, res, next) => {
       post.likes = post.likes.filter(el => {
         return el.name != user.name;
       });
+      // user.postLikes = user.postLikes.filter(el => {
+      //   return el._id != post._id;
+      // });
+      user.postLikes.pull(postId);
       // console.log('Disliked a post');
       const result = await post.save();
+      await user.save();
       io.getIO().emit('singlePost', {
         action: 'postLike',
         post: postId
@@ -387,13 +394,16 @@ exports.commentLike = async (req, res, next) => {
 
     if (!comment.likes.some(like => like._id.toString() === userId)) {
       comment.likes.push(user);
-      // console.log('liked a post');
+      user.commentLikes.push(comment);
+      console.log('liked a comment');
       const result = await comment.save();
-      io.getIO().emit('singlePost', {
+      await user.save();
+      // console.log('comment Like');
+      io.getIO().emit('comment', {
         action: 'commentLike',
         comment: commentId
       });
-      io.getIO().emit('post', {
+      io.getIO().emit('singlePost', {
         action: 'commentLike',
         comment: commentId
       });
@@ -405,13 +415,18 @@ exports.commentLike = async (req, res, next) => {
       comment.likes = comment.likes.filter(el => {
         return el.name != user.name;
       });
-      // console.log('Disliked a post');
+      // user.commentLikes = user.commentLikes.filter(el => {
+      //   return el._id != comment._id;
+      // });
+      user.commentLikes.pull(commentId);
+      console.log('Disliked a comment');
       const result = await comment.save();
+      await user.save();
       io.getIO().emit('singlePost', {
         action: 'commentLike',
         comment: commentId
       });
-      io.getIO().emit('post', {
+      io.getIO().emit('comment', {
         action: 'commentLike',
         comment: commentId
       });
@@ -511,7 +526,7 @@ exports.getLikes = async (req, res, next) => {
       throw error;
     }
     res.status(200).json({
-      message: 'Post fetched.',
+      message: 'Likes fetched.',
       likes: post.likes
     });
   } catch (err) {

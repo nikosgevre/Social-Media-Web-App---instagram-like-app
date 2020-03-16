@@ -1,6 +1,7 @@
 import React, {Component, Fragment} from 'react';
 import { NavLink } from 'react-router-dom';
 import TimeAgo from 'react-timeago'
+import openSocket from 'socket.io-client';
 
 import Button from '../../../Button/Button';
 import styles from './Comment.module.css';
@@ -18,6 +19,12 @@ class Post extends Component {
   componentDidMount() {
       this.loadComments();
       this.loadLikes();
+      const socket = openSocket('http://localhost:8080');
+      socket.on('comment', data => {
+        if (data.action === 'commentLike') {
+          this.loadLikes();
+        } 
+      });
   }
 
   loadComments = () => {
