@@ -239,15 +239,30 @@ exports.deletePost = async (req, res, next) => {
     // post's comments
     let comments = await Comment.find({ refId : post._id}).populate('creator');
 
-    // for each comment find the user that made the comment and delete it from his comments reference
+    // for each comment find the user that made the comment and delete it from his comments reference and delete all its nested comments
     for (let cmc of comments) {
+
+      // get the user of the comment and delete the reference
       let userA = await User.findById(cmc.creator._id);
       userA.comments.pull(cmc._id);
       await userA.save();
+
+      // get comment's comments
+      let comments2 = await Comment.find({ refId : cmc._id, reference: 'comment' }).populate('creator');
+
+      // for each comment find the user that made the comment and delete it from his comments reference
+      for (let cmc2 of comments2) {
+        let userA = await User.findById(cmc2.creator._id);
+        userA.comments.pull(cmc2._id);
+        await userA.save();
+      }
+
+      // delete the comments of the comment
+      comments2 = await Comment.deleteMany({ refId: cmc._id, reference: 'comment' });
     }
 
     // delete the comments of the post
-    comments = await Comment.deleteMany({ post: post._id});
+    comments = await Comment.deleteMany({ refId: post._id});
 
     // delete the post
     await Post.findByIdAndDelete(postId);
@@ -337,8 +352,8 @@ exports.postComment = async (req, res, next) => {
   // console.log('yo');
   const ref = req.query.ref;
   const refId = req.query.refId;
-  console.log(ref);
-  console.log(refId);
+  // console.log(ref);
+  // console.log(refId);
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     const error = new Error('Validation failed, entered data is incorrect.');
@@ -358,14 +373,18 @@ exports.postComment = async (req, res, next) => {
     user.comments.push(newComment);
     await user.save();
     if(ref==='post'){
-      console.log('itan post');
+      // console.log('itan post');
       const post = await Post.findById(refId);
       post.comments.push(newComment);
+      post.totalComments += 1;
       await post.save();
     } else if(ref==='comment'){
-      const commentOfcomment = await Comment.findById(refId);
-      commentOfcomment.comments.push(newComment);
-      await commentOfcomment.save();
+      const parentComment = await Comment.findById(refId);
+      parentComment.comments.push(newComment);
+      const post = await Post.findById(parentComment.refId);
+      post.totalComments += 1;
+      await post.save();
+      await parentComment.save();
     }
     
     io.getIO().emit('post', {
@@ -443,6 +462,8 @@ exports.updateComment = async (req, res, next) => {
 exports.deleteComment = async (req, res, next) => {
   const commentId = req.query.commentId;
   const postId = req.query.postId;
+
+  let totalItems = 1;
   
   try {
     const comment = await Comment.findById(commentId);
@@ -464,10 +485,12 @@ exports.deleteComment = async (req, res, next) => {
         console.log('no parent comment');
       }
       parentComment.comments.pull(commentId);
+      // parentComment.totalComments -= 1;
     }
     
     // get comment's comments
     let comments = await Comment.find({ refId : commentId, reference: 'comment' }).populate('creator');
+    totalItems += await Comment.find({ refId : commentId, reference: 'comment' }).countDocuments();
 
     // for each comment find the user that made the comment and delete it from his comments reference
     for (let cmc of comments) {
@@ -488,6 +511,7 @@ exports.deleteComment = async (req, res, next) => {
     await user.save();
     const post = await Post.findById(postId).populate('comments');
     post.comments.pull(commentId);
+    post.totalComments -= totalItems;
     await post.save();
 
     io.getIO().emit('singlePost', {

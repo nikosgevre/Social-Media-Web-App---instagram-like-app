@@ -72,11 +72,13 @@ class SinglePost extends Component {
     const socket = openSocket('http://localhost:8080');
     socket.on('singlePost', data => {
       if (data.action === 'createComment') {
-        this.loadComments();
+        // this.loadComments();
+        this.loadPost();
       } else if (data.action === 'postLike') {
         this.loadPost();
       } else if (data.action === 'deleteComment') {
-        this.loadComments();
+        // this.loadComments();
+        this.loadPost();
       } else if (data.action === 'editPost') {
         this.loadPost();
       } else if (data.action === 'editComment') {
@@ -582,7 +584,7 @@ class SinglePost extends Component {
           </div>
           {likesAndComments}
           <h2 className={styles.singlePost}>{this.state.content}</h2>
-          <span className={styles.Navlink} style={{paddingTop:"15px", paddingBottom:"15px"}}><strong>  comments({this.state.comments.length})</strong></span>
+          <span className={styles.Navlink} style={{paddingTop:"15px", paddingBottom:"15px"}}><strong>  comments({this.state.post.totalComments})</strong></span>
           {/* <p>{this.state.comments}</p> */}
           {this.state.comments.map(comment => (
             <Comment

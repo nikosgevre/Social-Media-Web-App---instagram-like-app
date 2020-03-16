@@ -26,7 +26,11 @@ const postSchema = new Schema({
   comments: [{
     type: Schema.Types.ObjectId,
     ref: 'Comment'
-  }]
+  }],
+  totalComments: {
+    type: Number,
+    default: 0
+  }
 }, {
   timestamps: true
 });

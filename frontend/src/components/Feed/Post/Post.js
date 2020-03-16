@@ -75,13 +75,14 @@ class Post extends Component {
     socket.on('post', data => {
       if (data.action === 'createComment') {
         // this.loadComments();
-        // this.loadPost();
-        this.loadComments();
+        this.loadPost();
+        // this.loadComments();
       } else if (data.action === 'postLike') {
         // this.loadPost();
         this.loadLikes();
       } else if (data.action === 'deleteComment') {
-        this.loadComments();
+        this.loadPost();
+        // this.loadComments();
       } else if (data.action === 'editComment') {
         this.loadComments();
       }
@@ -137,6 +138,9 @@ class Post extends Component {
       //     };
       //   })
       // });
+      this.setState({
+        post: resData.post
+      })
       this.loadComments();
       this.loadLikes();
     })
@@ -434,7 +438,8 @@ class Post extends Component {
       <div>
         <div className={styles.PostCaption}>
             <Button onClick={this.likeHandler}><span role="img" aria-label="sheep">&#128077;</span></Button> <strong> {this.state.likes.length} | </strong>
-            <NavLink className={styles.Navlink} to={`${this.props.id}`} user={this.props.creator}><strong>  comments</strong> {(this.state.comments.length === 0) ? '' : ( '(' + this.state.comments.length + ')')}</NavLink>
+            <NavLink className={styles.Navlink} to={`${this.props.id}`} user={this.props.creator}><strong> {this.state.post.totalComments} comments</strong></NavLink>
+            {/* <NavLink className={styles.Navlink} to={`${this.props.id}`} user={this.props.creator}><strong>  comments</strong> {(this.state.comments.length === 0) ? '' : ( '(' + this.state.comments.length + ')')}</NavLink> */}
             {/* <Button style={{float:"right"}} onClick={this.startCommentHandler.bind(this, this.state.post._id)}>  Comment  </Button>   */}
             {/* <strong> {this.state.comments.length} </strong> */}
         </div>
