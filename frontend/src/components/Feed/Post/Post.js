@@ -529,7 +529,7 @@ class Post extends Component {
           <NavLink className={styles.Navlink} to={'/profile/' + this.props.creator._id} user={this.props.creator}>{this.props.author}</NavLink> {this.props.content}
         </div>
         <hr></hr>
-        {this.state.comments.map(comment => (
+        {this.state.comments.slice(0,2).map(comment => (
           <Comment
             key={comment._id}
             id={comment._id}
@@ -541,7 +541,7 @@ class Post extends Component {
             content={comment.comment}
             onStartEdit={this.startEditCommentHandler.bind(this, comment)}
             onDelete={this.deleteCommentHandler.bind(this, comment._id)}
-            caller=''
+            caller='feed'
           />
         ))}
           

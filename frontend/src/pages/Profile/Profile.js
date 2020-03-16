@@ -199,7 +199,7 @@ class Profile extends Component {
     
     if(this.state.user._id !== this.state.trueUserId) {
       if (this.state.followers.some(follower => follower._id.toString() === this.state.trueUserId)){
-        followButton = (<Button className={styles.fBtn} design="unfollow" onClick={this.followHandler}>Unfollow</Button>);
+        followButton = (<Button className={styles.fBtn} design="unfollow" mode='raised' onClick={this.followHandler}>Following</Button>);
       }else if(!(this.state.followers.some(follower => follower._id.toString() === this.state.trueUserId))){
         followButton = (<Button className={styles.ufBtn} design="follow" onClick={this.followHandler}>Follow</Button>);
       }

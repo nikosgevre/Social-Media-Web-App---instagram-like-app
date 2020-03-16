@@ -302,7 +302,7 @@ class Post extends Component {
     let likesAndComments = (
       <div>
         <div className={styles.PostCaption}>
-            <Button onClick={this.likeHandler}><span role="img" aria-label="sheep">&#128077;</span></Button> <strong> {this.state.likes.length} | </strong>
+            <Button onClick={this.likeHandler}><span role="img" aria-label="sheep">&#128077;</span></Button> <strong> {this.state.likes.length}</strong>
             {/* <NavLink className={styles.Navlink} to={`${this.props.id}`} user={this.props.creator}><strong>  comments</strong> {(this.state.comments.length === 0) ? '' : ( '(' + this.state.comments.length + ')')}</NavLink> */}
             {/* <Button style={{float:"right"}} onClick={this.startCommentHandler.bind(this, this.state.post._id)}>  Comment  </Button>   */}
             {/* <strong> {this.state.comments.length} </strong> */}
@@ -314,7 +314,7 @@ class Post extends Component {
       likesAndComments = (
       <div>
         <div className={styles.PostCaption}>
-            <Button mode='raised' onClick={this.likeHandler}><span role="img" aria-label="sheep">&#128077;</span></Button> <strong> {this.state.likes.length} | </strong>
+            <Button mode='raised' onClick={this.likeHandler}><span role="img" aria-label="sheep">&#128077;</span></Button> <strong> {this.state.likes.length}</strong>
             {/* <NavLink className={styles.Navlink} to={`${this.props.id}`} user={this.props.creator}><strong>  comments</strong> {(this.state.comments.length === 0) ? '' : ( '(' + this.state.comments.length + ')')}</NavLink> */}
             {/* <Button  onClick={this.startCommentHandler.bind(this, this.state.post._id)}>  Comment  </Button>  */}
             {/* <strong> {this.state.comments.length} </strong> */}
@@ -365,6 +365,7 @@ class Post extends Component {
           </div>
           {buttons}
           {this.props.caller==='comment' ? null : 
+            (this.props.caller!=='feed') ? (
             <section className={styles.feed__status}>
               <form onSubmit={this.finishCommentHandlerInput.bind(this)}>
                 <Input
@@ -381,9 +382,28 @@ class Post extends Component {
                 </Button>
               </form>
             </section>
+            ) : null
           }
-          
-          {this.state.comments.map(comment => (
+          {this.props.caller==='feed' ? null : 
+            <div>
+                {this.state.comments.map(comment => (
+                <Comment
+                  key={comment._id}
+                  id={comment._id}
+                  token={this.props.token}
+                  postId={comment._id}
+                  author={comment.creator.name}
+                  creator={comment.creator}
+                  date={new Date(comment.createdAt).toLocaleString()}
+                  content={comment.comment}
+                  onStartEdit={this.startEditCommentHandler.bind(this, comment)}
+                  onDelete={this.deleteCommentHandler.bind(this, comment._id)}
+                  caller='comment'
+                />
+              ))}
+            </div>
+          }
+          {/* {this.state.comments.map(comment => (
             <Comment
               key={comment._id}
               id={comment._id}
@@ -397,7 +417,7 @@ class Post extends Component {
               onDelete={this.deleteCommentHandler.bind(this, comment._id)}
               caller='comment'
             />
-          ))}
+          ))} */}
         </article>
       </Fragment>
     );
