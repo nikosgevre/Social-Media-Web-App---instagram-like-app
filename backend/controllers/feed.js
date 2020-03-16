@@ -488,7 +488,7 @@ exports.commentLike = async (req, res, next) => {
     if (!comment.likes.some(like => like._id.toString() === userId)) {
       comment.likes.push(user);
       user.commentLikes.push(comment);
-      console.log('liked a comment');
+      // console.log('liked a comment');
       const result = await comment.save();
       await user.save();
       // console.log('comment Like');
@@ -512,7 +512,7 @@ exports.commentLike = async (req, res, next) => {
       //   return el._id != comment._id;
       // });
       user.commentLikes.pull(commentId);
-      console.log('Disliked a comment');
+      // console.log('Disliked a comment');
       const result = await comment.save();
       await user.save();
       io.getIO().emit('singlePost', {

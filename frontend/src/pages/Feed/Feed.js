@@ -89,6 +89,7 @@ class Feed extends Component {
   };
 
   loadPosts = direction => {
+    // console.log('load posts kalestike');
     if (direction) {
       this.setState({ postsLoading: true, posts: [] });
     }

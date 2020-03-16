@@ -231,7 +231,6 @@ class Post extends Component {
     // console.log(this.state.commentText);
     if(this.state.commentText.length>1){
       const formData = new FormData();
-      // formData.append('comment', postData.comment);
       formData.append('comment', this.state.commentText);
       let url = 'http://localhost:8080/feed/postComment/' + this.state.post._id;
       let method = 'POST';
@@ -249,7 +248,6 @@ class Post extends Component {
           return res.json();
         })
         .then(resData => {
-          // console.log(resData);
           this.setState(prevState => {
             return {
               isEditing: false,
@@ -260,7 +258,6 @@ class Post extends Component {
               commentPost: null
             };
           });
-          // window.location.reload();
           this.loadComments();
         })
         .catch(err => {
@@ -434,7 +431,7 @@ class Post extends Component {
     let likesAndComments = (
       <div>
         <div className={styles.PostCaption}>
-            <Button onClick={this.likeHandler}>Like</Button> <strong> {this.state.likes.length} | </strong>
+            <Button onClick={this.likeHandler}><span role="img" aria-label="sheep">&#128077;</span></Button> <strong> {this.state.likes.length} | </strong>
             <NavLink className={styles.Navlink} to={`${this.props.id}`} user={this.props.creator}><strong>  comments</strong> {(this.state.comments.length === 0) ? '' : ( '(' + this.state.comments.length + ')')}</NavLink>
             {/* <Button style={{float:"right"}} onClick={this.startCommentHandler.bind(this, this.state.post._id)}>  Comment  </Button>   */}
             {/* <strong> {this.state.comments.length} </strong> */}
@@ -448,7 +445,7 @@ class Post extends Component {
       likesAndComments = (
       <div>
         <div className={styles.PostCaption}>
-            <Button design="danger" onClick={this.likeHandler}>Dislike</Button> <strong> {this.state.likes.length} | </strong>
+            <Button mode='raised' onClick={this.likeHandler}><span role="img" aria-label="sheep">&#128077;</span></Button> <strong> {this.state.likes.length} | </strong>
             <NavLink className={styles.Navlink} to={`${this.props.id}`} user={this.props.creator}><strong>  comments</strong> {(this.state.comments.length === 0) ? '' : ( '(' + this.state.comments.length + ')')}</NavLink>
             {/* <Button  onClick={this.startCommentHandler.bind(this, this.state.post._id)}>  Comment  </Button>  */}
             {/* <strong> {this.state.comments.length} </strong> */}

@@ -4,6 +4,7 @@ import TimeAgo from 'react-timeago'
 import openSocket from 'socket.io-client';
 
 import Button from '../../../Button/Button';
+import Comment from './Comment';
 import styles from './Comment.module.css';
 
 class Post extends Component {
@@ -107,7 +108,7 @@ class Post extends Component {
     let likesAndComments = (
       <div>
         <div className={styles.PostCaption}>
-            <Button onClick={this.likeHandler}>L</Button> <strong> {this.state.likes.length} | </strong>
+            <Button onClick={this.likeHandler}><span role="img" aria-label="sheep">&#128077;</span></Button> <strong> {this.state.likes.length} | </strong>
             {/* <NavLink className={styles.Navlink} to={`${this.props.id}`} user={this.props.creator}><strong>  comments</strong> {(this.state.comments.length === 0) ? '' : ( '(' + this.state.comments.length + ')')}</NavLink> */}
             {/* <Button style={{float:"right"}} onClick={this.startCommentHandler.bind(this, this.state.post._id)}>  Comment  </Button>   */}
             {/* <strong> {this.state.comments.length} </strong> */}
@@ -119,7 +120,7 @@ class Post extends Component {
       likesAndComments = (
       <div>
         <div className={styles.PostCaption}>
-            <Button design="danger" onClick={this.likeHandler}>D</Button> <strong> {this.state.likes.length} | </strong>
+            <Button mode='raised' onClick={this.likeHandler}><span role="img" aria-label="sheep">&#128077;</span></Button> <strong> {this.state.likes.length} | </strong>
             {/* <NavLink className={styles.Navlink} to={`${this.props.id}`} user={this.props.creator}><strong>  comments</strong> {(this.state.comments.length === 0) ? '' : ( '(' + this.state.comments.length + ')')}</NavLink> */}
             {/* <Button  onClick={this.startCommentHandler.bind(this, this.state.post._id)}>  Comment  </Button>  */}
             {/* <strong> {this.state.comments.length} </strong> */}
@@ -159,9 +160,24 @@ class Post extends Component {
           <div>
             <div >
               <NavLink className={styles.Navlink} to={'/profile/' + this.props.creator._id} user={this.props.creator}>{this.props.author}</NavLink> {this.props.content}
+              
             </div>
           </div>
           {buttons}
+          {this.state.comments.map(comment => (
+                <Comment
+                  key={comment._id}
+                  id={comment._id}
+                  token={this.props.token}
+                  postId={comment._id}
+                  author={comment.creator.name}
+                  creator={comment.creator}
+                  date={new Date(comment.createdAt).toLocaleString()}
+                  content={comment.comment}
+                  // onStartEdit={this.startEditCommentHandler.bind(this, comment)}
+                  // onDelete={this.deleteCommentHandler.bind(this, comment._id)}
+                />
+              ))}
         </article>
       </Fragment>
     );
