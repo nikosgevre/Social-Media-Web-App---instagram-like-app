@@ -6,6 +6,7 @@ const {
 } = require('express-validator/check');
 
 const io = require('../socket');
+
 const Post = require('../models/post');
 const User = require('../models/user');
 const Comment = require('../models/comment');
@@ -81,6 +82,30 @@ exports.getUserSpecificPosts = async (req, res, next) => {
   }
 };
 
+exports.getPost = async (req, res, next) => {
+  const postId = req.params.postId;
+  const post = await Post.findById(postId)
+    .populate('creator')
+    .populate('likes')
+    .populate('comments');
+  try {
+    if (!post) {
+      const error = new Error('Could not find post.');
+      error.statusCode = 404;
+      throw error;
+    }
+    res.status(200).json({
+      message: 'Post fetched.',
+      post: post
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
 exports.createPost = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -124,30 +149,6 @@ exports.createPost = async (req, res, next) => {
         _id: user._id,
         name: user.name
       }
-    });
-  } catch (err) {
-    if (!err.statusCode) {
-      err.statusCode = 500;
-    }
-    next(err);
-  }
-};
-
-exports.getPost = async (req, res, next) => {
-  const postId = req.params.postId;
-  const post = await Post.findById(postId)
-    .populate('creator')
-    .populate('likes')
-    .populate('comments');
-  try {
-    if (!post) {
-      const error = new Error('Could not find post.');
-      error.statusCode = 404;
-      throw error;
-    }
-    res.status(200).json({
-      message: 'Post fetched.',
-      post: post
     });
   } catch (err) {
     if (!err.statusCode) {
@@ -271,56 +272,6 @@ exports.deletePost = async (req, res, next) => {
   }
 };
 
-exports.deleteComment = async (req, res, next) => {
-  const commentId = req.query.commentId;
-  const postId = req.query.postId;
-  
-  try {
-    const comment = await Comment.findById(commentId).populate('post');
-    // console.log(comment.post._id);
-    // console.log('cmid: ' + commentId);
-    // console.log('pstid ' + postId);
-    if (!comment) {
-      const error = new Error('Could not find comment.');
-      error.statusCode = 404;
-      throw error;
-    }
-    if (comment.creator.toString() !== req.userId) {
-      const error = new Error('Not authorized!');
-      error.statusCode = 403;
-      throw error;
-    }
-    // Check logged in user
-    // clearImage(post.imageUrl);
-
-    await Comment.findByIdAndRemove(commentId);
-
-    const user = await User.findById(req.userId);
-    user.comments.pull(commentId);
-    await user.save();
-    const post = await Post.findById(postId).populate('comments');
-    post.comments.pull(commentId);
-    await post.save();
-
-    io.getIO().emit('singlePost', {
-      action: 'deleteComment',
-      post: postId
-    });
-    io.getIO().emit('post', {
-      action: 'deleteComment',
-      post: postId
-    });
-    res.status(200).json({
-      message: 'Deleted comment.'
-    });
-  } catch (err) {
-    if (!err.statusCode) {
-      err.statusCode = 500;
-    }
-    next(err);
-  }
-};
-
 exports.postLike = async (req, res, next) => {
   const postId = req.query.postId;
   const userId = req.query.userId;
@@ -380,6 +331,148 @@ exports.postLike = async (req, res, next) => {
     next(err);
   }
 
+};
+
+exports.postComment = async (req, res, next) => {
+  // console.log('yo');
+  const postId = req.params.postId;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    const error = new Error('Validation failed, entered data is incorrect.');
+    error.statusCode = 422;
+    throw error;
+  }
+  const comment = req.body.comment;
+  const newComment = new Comment({
+    comment: comment,
+    creator: req.userId,
+    post: postId
+  });
+  try {
+    await newComment.save();
+    const user = await User.findById(req.userId);
+    user.comments.push(newComment);
+    await user.save();
+    const post = await Post.findById(postId);
+    post.comments.push(newComment);
+    await post.save();
+    io.getIO().emit('post', {
+      action: 'createComment',
+      post: postId
+    });
+    io.getIO().emit('singlePost', {
+      action: 'createComment',
+      post: postId
+    });
+    res.status(201).json({
+      message: 'Comment created successfully!',
+      comment: comment,
+      post: post
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
+exports.updateComment = async (req, res, next) => {
+  const commentId = req.query.commentId;
+  const postId = req.query.postId;
+  const errors = validationResult(req);
+  // console.log(commentId);
+  // console.log(postId);
+  if (!errors.isEmpty()) {
+    const error = new Error('Validation failed, entered data is incorrect.');
+    error.statusCode = 422;
+    throw error;
+  }
+  const content = req.body.comment;
+  try {
+    const comment = await Comment.findById(commentId).populate('creator');
+    if (!comment) {
+      const error = new Error('Could not find comment.');
+      error.statusCode = 404;
+      throw error;
+    }
+    if (comment.creator._id.toString() !== req.userId) {
+      const error = new Error('Not authorized!');
+      error.statusCode = 403;
+      throw error;
+    }
+    comment.comment = content;
+    const resultComment = await comment.save();
+    const post = await Post.findById(postId);
+    // result = await post.save();
+    io.getIO().emit('singlePost', {
+      action: 'editComment',
+      post: post
+    });
+    io.getIO().emit('post', {
+      action: 'editComment',
+      post: post
+    });
+    res.status(200).json({
+      message: 'Post updated!',
+      post: post
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
+exports.deleteComment = async (req, res, next) => {
+  const commentId = req.query.commentId;
+  const postId = req.query.postId;
+  
+  try {
+    const comment = await Comment.findById(commentId).populate('post');
+    // console.log(comment.post._id);
+    // console.log('cmid: ' + commentId);
+    // console.log('pstid ' + postId);
+    if (!comment) {
+      const error = new Error('Could not find comment.');
+      error.statusCode = 404;
+      throw error;
+    }
+    if (comment.creator.toString() !== req.userId) {
+      const error = new Error('Not authorized!');
+      error.statusCode = 403;
+      throw error;
+    }
+    // Check logged in user
+    // clearImage(post.imageUrl);
+
+    await Comment.findByIdAndRemove(commentId);
+
+    const user = await User.findById(req.userId);
+    user.comments.pull(commentId);
+    await user.save();
+    const post = await Post.findById(postId).populate('comments');
+    post.comments.pull(commentId);
+    await post.save();
+
+    io.getIO().emit('singlePost', {
+      action: 'deleteComment',
+      post: postId
+    });
+    io.getIO().emit('post', {
+      action: 'deleteComment',
+      post: postId
+    });
+    res.status(200).json({
+      message: 'Deleted comment.'
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
 };
 
 exports.commentLike = async (req, res, next) => {
@@ -442,50 +535,6 @@ exports.commentLike = async (req, res, next) => {
     next(err);
   }
 
-};
-
-exports.postComment = async (req, res, next) => {
-  // console.log('yo');
-  const postId = req.params.postId;
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    const error = new Error('Validation failed, entered data is incorrect.');
-    error.statusCode = 422;
-    throw error;
-  }
-  const comment = req.body.comment;
-  const newComment = new Comment({
-    comment: comment,
-    creator: req.userId,
-    post: postId
-  });
-  try {
-    await newComment.save();
-    const user = await User.findById(req.userId);
-    user.comments.push(newComment);
-    await user.save();
-    const post = await Post.findById(postId);
-    post.comments.push(newComment);
-    await post.save();
-    io.getIO().emit('post', {
-      action: 'createComment',
-      post: postId
-    });
-    io.getIO().emit('singlePost', {
-      action: 'createComment',
-      post: postId
-    });
-    res.status(201).json({
-      message: 'Comment created successfully!',
-      comment: comment,
-      post: post
-    });
-  } catch (err) {
-    if (!err.statusCode) {
-      err.statusCode = 500;
-    }
-    next(err);
-  }
 };
 
 exports.getComments = async (req, res, next) => {
@@ -555,54 +604,6 @@ exports.getCommentsLikes = async (req, res, next) => {
     res.status(200).json({
       message: 'Post fetched.',
       likes: comment.likes
-    });
-  } catch (err) {
-    if (!err.statusCode) {
-      err.statusCode = 500;
-    }
-    next(err);
-  }
-};
-
-exports.updateComment = async (req, res, next) => {
-  const commentId = req.query.commentId;
-  const postId = req.query.postId;
-  const errors = validationResult(req);
-  // console.log(commentId);
-  // console.log(postId);
-  if (!errors.isEmpty()) {
-    const error = new Error('Validation failed, entered data is incorrect.');
-    error.statusCode = 422;
-    throw error;
-  }
-  const content = req.body.comment;
-  try {
-    const comment = await Comment.findById(commentId).populate('creator');
-    if (!comment) {
-      const error = new Error('Could not find comment.');
-      error.statusCode = 404;
-      throw error;
-    }
-    if (comment.creator._id.toString() !== req.userId) {
-      const error = new Error('Not authorized!');
-      error.statusCode = 403;
-      throw error;
-    }
-    comment.comment = content;
-    const resultComment = await comment.save();
-    const post = await Post.findById(postId);
-    // result = await post.save();
-    io.getIO().emit('singlePost', {
-      action: 'editComment',
-      post: post
-    });
-    io.getIO().emit('post', {
-      action: 'editComment',
-      post: post
-    });
-    res.status(200).json({
-      message: 'Post updated!',
-      post: post
     });
   } catch (err) {
     if (!err.statusCode) {

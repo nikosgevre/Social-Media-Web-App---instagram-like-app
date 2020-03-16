@@ -1,6 +1,7 @@
 const { validationResult } = require('express-validator/check');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const io = require('../socket');
 
 const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey('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');
@@ -32,11 +33,17 @@ exports.signup = async (req, res, next) => {
       to: user.email,
       from: 'welcome@insta.com',
       subject: 'Welcome!',
-      html: '<strong>Welcome to my app!</strong>',
+      html: '<strong>Welcome to my app' + user.name + '!</strong>',
     };
     sgMail.send(msg);
 
     const result = await user.save();
+
+    io.getIO().emit('search', {
+      action: 'createUser',
+      user: user
+    });
+    
     res.status(201).json({ message: 'User created!', userId: result._id });
   } catch (err) {
     if (!err.statusCode) {

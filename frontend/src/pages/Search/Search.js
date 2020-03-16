@@ -33,6 +33,7 @@ class Search extends Component {
   }
 
   render() {
+    console.log('search');
     return (
       <section className="single-post">
         {this.state.searchResults.map(user => (

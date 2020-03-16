@@ -1,5 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import Suggestions from './Suggestions/Suggestions';
+import openSocket from 'socket.io-client';
 
 import styles from './Search.module.css';
 
@@ -43,6 +44,12 @@ class SearchUI extends Component {
   componentDidMount() {
     this.setState({
       filtered: []
+    });
+    const socket = openSocket('http://localhost:8080');
+    socket.on('search', data => {
+      if (data.action === 'createUser') {
+        this.fetchUsers();
+      } 
     });
   }
 	
