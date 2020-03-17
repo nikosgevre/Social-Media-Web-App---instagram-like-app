@@ -322,6 +322,7 @@ class SinglePost extends Component {
     this.setState({
       editLoading: true
     });
+    console.log(postData);
     const formData = new FormData();
     formData.append('title', postData.title);
     formData.append('content', postData.content);
@@ -531,7 +532,7 @@ class SinglePost extends Component {
     let likesAndComments = (
       <div>
         <div className={styles.PostCaption}>
-          <Button onClick={this.likeHandler}>Like</Button> <strong> {this.state.likes.length} </strong>
+          <Button onClick={this.likeHandler}><span role="img" aria-label="sheep">&#128077;</span></Button> <strong> {this.state.likes.length} </strong>
         </div>
       </div>
     );
@@ -540,7 +541,7 @@ class SinglePost extends Component {
       likesAndComments = (
       <div>
         <div className={styles.PostCaption}>
-            <Button design="danger" onClick={this.likeHandler}>Dislike</Button> <strong> {this.state.likes.length} </strong>
+            <Button mode='raised' onClick={this.likeHandler}><span role="img" aria-label="sheep">&#128077;</span></Button> <strong> {this.state.likes.length} </strong>
         </div>
       </div>
       );
@@ -600,7 +601,7 @@ class SinglePost extends Component {
               onDelete={this.deleteCommentHandler.bind(this, comment._id)}
             />
           ))}
-
+          <hr></hr>
           <section className={styles.feed__status}>
             <form onSubmit={this.finishCommentHandlerInput}>
               <Input

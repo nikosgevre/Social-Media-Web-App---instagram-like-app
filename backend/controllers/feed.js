@@ -605,6 +605,7 @@ exports.getComments = async (req, res, next) => {
   try {
     const comments = await Comment.find({ refId: refId})
     .populate('creator');
+    // na vriskw kai to refId sta posts gia na epistrefw to totalComments
     if (!comments) {
       const error = new Error('Could not find comments.');
       error.statusCode = 404;

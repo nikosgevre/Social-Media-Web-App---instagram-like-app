@@ -4,6 +4,7 @@ import openSocket from 'socket.io-client';
 import Post from '../../components/Feed/Post/Post';
 import Button from '../../components/Button/Button';
 import Loader from '../../components/Loader/Loader';
+import ProfileEdit from '../../components/Profile/ProfileEdit/ProfileEdit';
 
 import styles from './Profile.module.css'; 
 import btStyles from '../../Assets/global-styles/bootstrap.min.module.css';
@@ -11,7 +12,6 @@ import btStyles from '../../Assets/global-styles/bootstrap.min.module.css';
 class Profile extends Component {
 
   state = {
-    isEditing: false,
     totalPosts: 0,
     editPost: null,
     postPage: 1,
@@ -24,6 +24,8 @@ class Profile extends Component {
     following: [],
     userImage: '',
     userIdNew: '',
+    isEditing: false,
+    editUser: null,
     trueUserId: localStorage.getItem('userId')
   };
 
@@ -184,6 +186,72 @@ class Profile extends Component {
     .catch(this.catchError);
   };
 
+  startEditProfileHandler = userId => {
+    // console.log('asdasdasd');
+    this.setState(prevState => {
+      const loadedUser = this.state.user;
+
+      return {
+        isEditing: true,
+        editUser: loadedUser
+      };
+    });
+  };
+
+  cancelEditHandler = () => {
+    this.setState({ isEditing: false, editUser: null });
+  };
+
+  finishEditHandler = userData => {
+    this.setState({
+      editLoading: true
+    });
+    console.log(userData);
+    const formData = new FormData();
+    formData.append('name', userData.name);
+    formData.append('status', userData.status);
+    formData.append('image', userData.image);
+    let url = 'http://localhost:8080/user/profileEdit';
+    let method = 'POST';
+    if (this.state.editUser) {
+      url = 'http://localhost:8080/user/profileEdit/' + this.state.editUser._id;
+      method = 'PUT';
+    }
+
+    fetch(url, {
+      method: method,
+      body: formData,
+      headers: {
+        Authorization: 'Bearer ' + this.props.token
+      }
+    })
+      .then(res => {
+        if (res.status !== 200 && res.status !== 201) {
+          throw new Error('Editing a user failed!');
+        }
+        return res.json();
+      })
+      .then(resData => {
+        this.setState(prevState => {
+          return {
+            isEditing: false,
+            editUser: null,
+            editLoading: false
+          };
+        });
+        window.location.reload();
+      })
+      .catch(err => {
+        console.log(err);
+        this.setState({
+          isEditing: false,
+          editUser: null,
+          editLoading: false,
+          error: err
+        });
+      });
+  };
+
   errorHandler = () => {
     this.setState({ error: null });
   };
@@ -196,6 +264,7 @@ class Profile extends Component {
   render() {
 
     let followButton = (<div></div>);
+    let editButton = (<div></div>);
     
     if(this.state.user._id !== this.state.trueUserId) {
       if (this.state.followers.some(follower => follower._id.toString() === this.state.trueUserId)){
@@ -205,6 +274,16 @@ class Profile extends Component {
       }
     }
 
+    if(this.state.user._id === this.state.trueUserId) {
+      editButton = (
+        <div className={styles.post__actions}>
+          <Button mode="flat" image={this.state.image} onClick={this.startEditProfileHandler.bind(this, this.state.user._id)}>
+          <span role="img" aria-label="sheep">&#x270F;&#xFE0F;</span>
+          </Button>
+        </div>
+      )
+    }
+
     // console.log(this.state.created);
 
     return (
@@ -212,10 +291,18 @@ class Profile extends Component {
         <style dangerouslySetInnerHTML={{__html: `
            body { background-color: #fafafa; }
         `}} />
+        <ProfileEdit
+          editing={this.state.isEditing}
+          selectedUser={this.state.editUser}
+          loading={this.state.editLoading}
+          onCancelEdit={this.cancelEditHandler}
+          onFinishEdit={this.finishEditHandler}
+        />
           <div className={` ${styles.left} ${btStyles['col-lg-4']} `}>
             <div className={styles.photoLeft}>
               <img className={styles.photo} src={this.state.userImage} alt={this.state.user.name}/>
             </div>
+            {editButton}
             <h4 className={` ${styles.stats} ${styles.name} `}>{this.state.user.name}</h4>
             <p className={` ${styles.stats} ${styles.info} `}>{this.state.user.email}</p>
             <p className={` ${styles.stats} ${styles.info} `}>Member since: {this.state.created}</p>

@@ -68,7 +68,7 @@ mongoose
     MongoAPI
   )
   .then(result => {
-    const server = app.listen(8080);
+    const server = app.listen(8080, '0.0.0.0');
     const io = require('./socket').init(server);
     io.on('connection', socket => {
       // console.log('Client connected');
