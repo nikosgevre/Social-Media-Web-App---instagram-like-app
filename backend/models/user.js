@@ -45,7 +45,9 @@ const userSchema = new Schema({
   comments: [{
     type: Schema.Types.ObjectId,
     ref: 'Comment'
-  }]
+  }],
+  resetToken: String,
+  resetTokenExpiration: Date
 }, {
   timestamps: true
 });

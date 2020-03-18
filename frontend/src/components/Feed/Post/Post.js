@@ -512,6 +512,7 @@ class Post extends Component {
           <PostOptions 
             id={this.props.id}
             onDelete={this.props.onDelete}
+            onStartEdit={this.props.onStartEdit}
             profile={this.props.profile}
             creator={this.props.creator}
             trueUserId={this.props.trueUserId}

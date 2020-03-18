@@ -13,6 +13,8 @@ import LoginPage from './pages/Auth/Login';
 import SignupPage from './pages/Auth/Signup';
 import SearchPage from './pages/Search/Search.js';
 import ProfilePage from './pages/Profile/Profile.js';
+import ResetPage from './pages/Auth/Reset/Reset';
+import NewPasswordPage from './pages/Auth/Reset/NewPassword';
 // import styles from './App.module.css';
 
 class App extends Component {
@@ -150,6 +152,94 @@ class App extends Component {
       });
   };
 
+  resetHandler = (event, authData) => {
+    event.preventDefault();
+    this.setState({ authLoading: true });
+    fetch('http://localhost:8080/auth/reset', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        email: authData.email
+      })
+    })
+      .then(res => {
+        if (res.status === 422) {
+          throw new Error('Reset password failed.');
+        }
+        if (res.status !== 200 && res.status !== 201) {
+          console.log('Error!');
+          throw new Error('Could not authenticate you!');
+        }
+        return res.json();
+      })
+      .then(resData => {
+        // console.log(resData);
+        // this.setState({
+        //   isAuth: true,
+        //   token: resData.token,
+        //   authLoading: false,
+        //   userId: resData.userId
+        // });
+        // localStorage.setItem('token', resData.token);
+        // localStorage.setItem('userId', resData.userId);
+        // const remainingMilliseconds = 60 * 60 * 1000;
+        // const expiryDate = new Date(
+        //   new Date().getTime() + remainingMilliseconds
+        // );
+        // localStorage.setItem('expiryDate', expiryDate.toISOString());
+        // this.setAutoLogout(remainingMilliseconds);
+        this.props.history.push('/');
+      })
+      .catch(err => {
+        console.log(err);
+        this.setState({
+          isAuth: false,
+          authLoading: false,
+          error: err
+        });
+      });
+  };
+
+  newPasswordHandler = (event, authData) => {
+    event.preventDefault();
+    this.setState({ authLoading: true });
+    console.log(authData.passwordToken);
+    fetch('http://localhost:8080/auth/new-password', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        password: authData.password,
+        userId: authData.userId,
+        passwordToken: authData.passwordToken
+      })
+    })
+      .then(res => {
+        if (res.status === 422) {
+          throw new Error('Reset password failed.');
+        }
+        if (res.status !== 200 && res.status !== 201) {
+          console.log('Error!');
+          throw new Error('Could not authenticate you!');
+        }
+        return res.json();
+      })
+      .then(resData => {
+        this.props.history.push('/');
+      })
+      .catch(err => {
+        console.log(err);
+        this.setState({
+          isAuth: false,
+          authLoading: false,
+          error: err
+        });
+      });
+  };
+
   setAutoLogout = milliseconds => {
     setTimeout(() => {
       this.logoutHandler();
@@ -183,6 +273,30 @@ class App extends Component {
             <SignupPage
               {...props}
               onSignup={this.signupHandler}
+              loading={this.state.authLoading}
+            />
+          )}
+        />
+        <Route
+          path="/reset"
+          exact
+          render={props => (
+            <ResetPage
+              {...props}
+              token={this.state.token}
+              onReset={this.resetHandler}
+              loading={this.state.authLoading}
+            />
+          )}
+        />
+        <Route
+          path="/reset/:token"
+          exact
+          render={props => (
+            <NewPasswordPage
+              {...props}
+              token={this.state.token}
+              onSetNewPassword={this.newPasswordHandler}
               loading={this.state.authLoading}
             />
           )}
@@ -223,6 +337,18 @@ class App extends Component {
             )}
           />
           <Route
+            path="/reset"
+            exact
+            render={props => (
+              <ResetPage
+                {...props}
+                token={this.state.token}
+                onReset={this.resetHandler}
+                loading={this.state.authLoading}
+              />
+            )}
+          />
+          <Route
             path="/:postId"
             // exact
             render={props => (
@@ -230,6 +356,18 @@ class App extends Component {
                 {...props}
                 userId={this.state.userId}
                 token={this.state.token}
+              />
+            )}
+          />
+          <Route
+            path="/reset/:token"
+            exact
+            render={props => (
+              <NewPasswordPage
+                {...props}
+                token={this.state.token}
+                onSetNewPassword={this.newPasswordHandler}
+                loading={this.state.authLoading}
               />
             )}
           />

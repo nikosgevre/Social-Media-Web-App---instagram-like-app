@@ -30,6 +30,7 @@ const input = props => (
         ].join(' ')}
         id={props.id}
         rows={props.rows}
+        // cols="50"
         required={props.required}
         value={props.value}
         onChange={e => props.onChange(props.id, e.target.value)}

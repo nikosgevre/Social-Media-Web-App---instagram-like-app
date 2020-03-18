@@ -171,7 +171,7 @@ class ProfileEdit extends Component {
             &nbsp;
             <Input
               id="name"
-              label="userame"
+              label="userame  |"
               control="textarea"
               rows="1"
               onChange={this.userInputChangeHandler}
@@ -183,9 +183,10 @@ class ProfileEdit extends Component {
             &nbsp;
             <Input
               id="status"
-              label="status"
+              label="status  |"
               control="textarea"
               rows="1"
+              cols="50"
               onChange={this.userInputChangeHandler}
               onBlur={this.inputBlurHandler.bind(this, 'status')}
               valid={this.state.userForm['status'].valid}

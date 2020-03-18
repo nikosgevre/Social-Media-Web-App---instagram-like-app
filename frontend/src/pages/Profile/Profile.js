@@ -284,7 +284,7 @@ class Profile extends Component {
       )
     }
 
-    // console.log(this.state.created);
+    // console.log(this.props.token);
 
     return (
       <Fragment>
