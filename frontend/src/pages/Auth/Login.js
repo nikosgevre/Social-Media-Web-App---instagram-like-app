@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 
 import Input from '../../components/Form/Input/Input';
 import Button from '../../components/Button/Button';
@@ -65,42 +65,47 @@ class Login extends Component {
 
   render() {
     return (
-      <Auth>
-        <form
-          onSubmit={e =>
-            this.props.onLogin(e, {
-              email: this.state.loginForm.email.value,
-              password: this.state.loginForm.password.value
-            })
-          }
-        >
-          <Input
-            id="email"
-            label="Your E-Mail"
-            type="email"
-            control="input"
-            onChange={this.inputChangeHandler}
-            onBlur={this.inputBlurHandler.bind(this, 'email')}
-            value={this.state.loginForm['email'].value}
-            valid={this.state.loginForm['email'].valid}
-            touched={this.state.loginForm['email'].touched}
-          />
-          <Input
-            id="password"
-            label="Password"
-            type="password"
-            control="input"
-            onChange={this.inputChangeHandler}
-            onBlur={this.inputBlurHandler.bind(this, 'password')}
-            value={this.state.loginForm['password'].value}
-            valid={this.state.loginForm['password'].valid}
-            touched={this.state.loginForm['password'].touched}
-          />
-          <Button design="raised" type="submit" loading={this.props.loading}>
-            Login
-          </Button>
-        </form>
-      </Auth>
+      <Fragment>
+        <Auth>
+          <form
+            onSubmit={e =>
+              this.props.onLogin(e, {
+                email: this.state.loginForm.email.value,
+                password: this.state.loginForm.password.value
+              })
+            }
+          >
+            <Input
+              id="email"
+              label="Your E-Mail"
+              type="email"
+              control="input"
+              onChange={this.inputChangeHandler}
+              onBlur={this.inputBlurHandler.bind(this, 'email')}
+              value={this.state.loginForm['email'].value}
+              valid={this.state.loginForm['email'].valid}
+              touched={this.state.loginForm['email'].touched}
+            />
+            <Input
+              id="password"
+              label="Password"
+              type="password"
+              control="input"
+              onChange={this.inputChangeHandler}
+              onBlur={this.inputBlurHandler.bind(this, 'password')}
+              value={this.state.loginForm['password'].value}
+              valid={this.state.loginForm['password'].valid}
+              touched={this.state.loginForm['password'].touched}
+            />
+            <Button design="raised" type="submit" loading={this.props.loading}>
+              Login
+            </Button>
+            <Button design="danger" link="reset" loading={this.props.loading}>
+              Reset Password
+            </Button>
+          </form>
+        </Auth>
+      </Fragment>
     );
   }
 }
