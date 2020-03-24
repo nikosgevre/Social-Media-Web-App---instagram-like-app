@@ -1,6 +1,8 @@
 import React, {Component, Fragment} from 'react';
 // import { NavLink } from 'react-router-dom';
 
+// import OptionsBackdrop from '../../../Backdrop/OptionsBackdrop/OptionsBackdrop';
+
 import Button from '../../../Button/Button';
 import styles from './PostOptions.module.css';
 
@@ -23,12 +25,17 @@ class PostOptions extends Component {
                   </Button>
                 </div>
                 <hr></hr>
+                {this.props.caller!=='profile' ? 
                 <div>
-                  <Button mode="flat" image={this.props.image} onClick={this.props.onStartEdit}>
-                    Edit
-                  </Button>
+                  <div>
+                  {/* onClick={this.props.onStartEdit} */}
+                    <Button mode="flat" image={this.props.image} onClick={() => { this.props.onStartEdit(); this.props.optionsModalClosed();}} >
+                      Edit
+                    </Button>
+                  </div>
+                  <hr></hr>
                 </div>
-                <hr></hr>
+                : null}
                 <div>
                   <Button mode="flat" onClick={this.props.onDelete}>
                     Delete
@@ -55,6 +62,7 @@ class PostOptions extends Component {
         // };
         return (
             <Fragment>
+              {/* <OptionsBackdrop show={this.props.show} clicked={this.props.optionsModalClosed} /> */}
                 {buttons}
             </Fragment>
         );

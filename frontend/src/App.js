@@ -13,8 +13,8 @@ import LoginPage from './pages/Auth/Login';
 import SignupPage from './pages/Auth/Signup';
 import SearchPage from './pages/Search/Search.js';
 import ProfilePage from './pages/Profile/Profile.js';
-import ResetPage from './pages/Auth/Reset/Reset';
-import NewPasswordPage from './pages/Auth/Reset/NewPassword';
+import ResetPage from './pages/Auth/Reset/ResetPassword/Reset';
+import NewPasswordPage from './pages/Auth/Reset/ResetPassword/NewPassword';
 // import styles from './App.module.css';
 
 class App extends Component {

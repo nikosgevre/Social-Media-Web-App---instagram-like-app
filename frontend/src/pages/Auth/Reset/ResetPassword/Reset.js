@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 
-import Input from '../../../components/Form/Input/Input';
+import Input from '../../../../components/Form/Input/Input';
 // import Button from '../../components/Button/Button';
-import { required, email } from '../../../util/validators';
-import Auth from '.././Auth';
+import { required, email } from '../../../../util/validators';
+import Auth from '../../Auth';
 
 class Login extends Component {
   state = {

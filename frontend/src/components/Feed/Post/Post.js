@@ -169,7 +169,7 @@ class Post extends Component {
           };
         })
       });
-      
+      this.state.comments.sort((a, b) => parseFloat(b.likes.length) - parseFloat(a.likes.length));
     })
     .catch(this.catchError);
   };
@@ -425,6 +425,7 @@ class Post extends Component {
     // console.log(this.state.commentText);
     // console.log('rerender');
     // console.log(this.state.comments);
+    this.state.comments.sort((a, b) => parseFloat(b.likes.length) - parseFloat(a.likes.length));
 
     let postUser = (
       <header className={styles.post__header}>
@@ -443,8 +444,6 @@ class Post extends Component {
             {/* <Button style={{float:"right"}} onClick={this.startCommentHandler.bind(this, this.state.post._id)}>  Comment  </Button>   */}
             {/* <strong> {this.state.comments.length} </strong> */}
         </div>
-        
-        
       </div>
     );
 
@@ -490,6 +489,13 @@ class Post extends Component {
         </div>
       </header>
       );
+      likesAndComments = (
+        <div>
+          <div className={styles.PostCaption}>
+              <NavLink className={styles.Navlink} to={`${this.props.id}`} user={this.props.creator}><strong>{this.state.likes.length} Likes | {this.state.post.totalComments} Comments</strong></NavLink>
+          </div>
+        </div>
+      );
     }
 
     return (
@@ -518,6 +524,9 @@ class Post extends Component {
             trueUserId={this.props.trueUserId}
             onCancel={this.cancelCommentHandler}
             image={this.state.image}
+            caller={this.props.caller}
+            optionsModalClosed={this.optionsCancelHandler}
+            show={this.state.showOptions}
           />
         </OptionsModal>
 
@@ -535,7 +544,24 @@ class Post extends Component {
           <NavLink className={styles.Navlink} to={'/profile/' + this.props.creator._id} user={this.props.creator}>{this.props.author}</NavLink> {this.props.content}
         </div>
         <hr></hr>
-        {this.state.comments.slice(0,2).map(comment => (
+        {this.props.caller !== 'profile' ? 
+          this.state.comments.slice(0,2).map(comment => (
+            <Comment
+              key={comment._id}
+              id={comment._id}
+              token={this.props.token}
+              postId={this.state.post._id}
+              author={comment.creator.name}
+              creator={comment.creator}
+              date={new Date(comment.createdAt).toLocaleString()}
+              content={comment.comment}
+              onStartEdit={this.startEditCommentHandler.bind(this, comment)}
+              onDelete={this.deleteCommentHandler.bind(this, comment._id)}
+              caller='feed'
+            />
+          ))
+         :  null }
+        {/* {this.state.comments.slice(0,2).map(comment => (
           <Comment
             key={comment._id}
             id={comment._id}
@@ -549,28 +575,29 @@ class Post extends Component {
             onDelete={this.deleteCommentHandler.bind(this, comment._id)}
             caller='feed'
           />
-        ))}
-          
-          <section className={styles.feed__status}>
-            <form onSubmit={this.finishCommentHandlerInput.bind(this)}>
-              <Input
-                id={this.state.post._id}
-                type="text"
-                // rows="1"
-                placeholder="Comment"
-                control="input"
-                onChange={this.commentInputChangeHandler}
-                value={this.state.commentText}
-              />
-              <Button mode="flat" type="submit">
-                Comment
-              </Button>
-            </form>
-          </section>
-
-          <div style={{display:"flex", justifyContent:"center"}}><Button  onClick={this.startCommentHandler.bind(this, this.state.post._id)}>  Comment  </Button></div>
-
-        <hr></hr>
+        ))} */}
+          {this.props.caller !== 'profile' ? (
+            <div>
+              <section className={styles.feed__status}>
+                <form onSubmit={this.finishCommentHandlerInput.bind(this)}>
+                  <Input
+                    id={this.state.post._id}
+                    type="text"
+                    // rows="1"
+                    placeholder="Comment"
+                    control="input"
+                    onChange={this.commentInputChangeHandler}
+                    value={this.state.commentText}
+                  />
+                  <Button mode="flat" type="submit">
+                    Comment
+                  </Button>
+                </form>
+              </section>
+              <div style={{display:"flex", justifyContent:"center"}}><Button  onClick={this.startCommentHandler.bind(this, this.state.post._id)}>  Comment  </Button></div>
+              <hr></hr>
+            </div>
+          ): null}
 
         <div >
           <TimeAgo date={this.state.date} minPeriod="30"  />

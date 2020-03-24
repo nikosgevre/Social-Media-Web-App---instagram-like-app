@@ -1,6 +1,8 @@
 import React, { Component, Fragment } from 'react';
 import openSocket from 'socket.io-client';
 
+// import $ from 'jquery';
+
 import Post from '../../components/Feed/Post/Post';
 import Button from '../../components/Button/Button';
 import FeedEdit from '../../components/Feed/FeedEdit/FeedEdit';
@@ -9,6 +11,11 @@ import Paginator from '../../components/Paginator/Paginator';
 import Loader from '../../components/Loader/Loader';
 import ErrorHandler from '../../components/ErrorHandler/ErrorHandler';
 
+// import {Dropdown} from 'react-bootstrap';
+import DropdownButton from 'react-bootstrap/DropdownButton';
+import Dropdown from 'react-bootstrap/Dropdown';
+
+// import btStyles from '../../Assets/global-styles/bootstrap.min.module.css';
 const styles = require('./Feed.module.css');
 
 const paginationNumber = Number.MAX_SAFE_INTEGER;
@@ -280,6 +287,7 @@ class Feed extends Component {
         <style dangerouslySetInnerHTML={{__html: `
            body { background-color: #fafafa; }
         `}} />
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"></link>
         <ErrorHandler error={this.state.error} onHandle={this.errorHandler} />
         <FeedEdit
           editing={this.state.isEditing}
@@ -303,6 +311,13 @@ class Feed extends Component {
             </Button>
           </form>
         </section>
+        <div>
+        {/* className={`  ${btStyles['col-4']} `} */}
+          <DropdownButton id="dropdown-basic-button" title="Sort">
+            <Dropdown.Item href="#/action-1">Most Popular</Dropdown.Item>
+            <Dropdown.Item href="#/action-2">Most Recent</Dropdown.Item>
+          </DropdownButton>
+        </div>
         <section className={styles.feed__control}>
           <Button mode="raised" design="accent" onClick={this.newPostHandler} newPost={true}>
             New Post

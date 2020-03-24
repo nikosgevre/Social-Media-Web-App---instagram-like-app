@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 
-import Input from '../../../components/Form/Input/Input';
+import Input from '../../../../components/Form/Input/Input';
 // import Button from '../../components/Button/Button';
-import { required, length } from '../../../util/validators';
-import Auth from '.././Auth';
+import { required, length } from '../../../../util/validators';
+import Auth from '../../Auth';
 
 class NewPassword extends Component {
   state = {

@@ -14,11 +14,6 @@ const OptionsModal = (props) => (
                     opacity: props.show ? '1' : '0'
             }}>
             {props.children}
-            {/* <ul>
-                {props.children.map(child => (
-                    <li>{child}</li>
-                ))}
-            </ul> */}
             <Button mode="flat" design="danger" onClick={props.optionsModalClosed}>
                 Cancel
             </Button>

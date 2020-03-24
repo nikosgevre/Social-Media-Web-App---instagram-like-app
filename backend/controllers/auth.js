@@ -162,7 +162,7 @@ exports.postReset = (req, res, next) => {
       })
       .then(result => {
         // res.redirect('/');
-        console.log(result.resetToken);
+        // console.log(result.resetToken);
         console.log('Sending email for reset to: ' + req.body.email);
         const msg = {
           to: req.body.email,
@@ -221,9 +221,9 @@ exports.postNewPassword = (req, res, next) => {
   const userId = req.body.userId;
   const passwordToken = req.body.passwordToken;
   let resetUser;
-  console.log(newPassword);
-  console.log(userId);
-  console.log(passwordToken);
+  // console.log(newPassword);
+  // console.log(userId);
+  // console.log(passwordToken);
   User.findOne({
     resetToken: passwordToken,
     resetTokenExpiration: { $gt: Date.now() },
