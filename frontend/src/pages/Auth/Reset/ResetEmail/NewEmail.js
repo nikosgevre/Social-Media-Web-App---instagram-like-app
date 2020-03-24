@@ -8,17 +8,17 @@ import Auth from '../../Auth';
 class NewPassword extends Component {
   state = {
     resetForm: {
-      password: {
-        value: '',
-        valid: false,
-        touched: false,
-        validators: [required, length({ min: 5 })]
-      },
+      email: {
+          value: '',
+          valid: false,
+          touched: false,
+          validators: [required, email]
+        },
       formIsValid: false
     },
     user: null,
     userId: '',
-    passwordToken: ''
+    emailToken: ''
   };
 
   componentDidMount() {
@@ -40,7 +40,7 @@ class NewPassword extends Component {
       this.setState({
         // user: resData.user,
         userId: resData.userId,
-        passwordToken: resData.passwordToken
+        emailToken: resData.emailToken
       });
     })
     .catch(err => {
@@ -88,34 +88,34 @@ class NewPassword extends Component {
   };
 
   render() {
-    console.log(this.state.passwordToken);
+    // console.log(this.state.passwordToken);
     return (
       <Auth>
         <form
           onSubmit={e =>
             this.props.onSetNewPassword(e, {
-              password: this.state.resetForm.password.value,
+              email: this.state.resetForm.email.value,
               userId: this.state.userId,
-              passwordToken: this.state.passwordToken
+              emailToken: this.state.emailToken
             })
           }
         >
           <fieldset>
-            <p >Set A New Password</p>
+            <p >Set A New Email</p>
             <Input
-              id="password"
-              label="Your New Password"
-              type="password"
+              id="email"
+              label="Your New Email"
+              type="email"
               control="input"
               onChange={this.inputChangeHandler}
-              onBlur={this.inputBlurHandler.bind(this, 'password')}
-              value={this.state.resetForm['password'].value}
-              valid={this.state.resetForm['password'].valid}
-              touched={this.state.resetForm['password'].touched}
+              onBlur={this.inputBlurHandler.bind(this, 'email')}
+              value={this.state.resetForm['email'].value}
+              valid={this.state.resetForm['email'].valid}
+              touched={this.state.resetForm['email'].touched}
             />
             <div>
               <input type="hidden" name="userId" value={this.state.userId} />
-              <input type="hidden" name="passwordToken" value={this.state.passwordToken} />
+              <input type="hidden" name="emailToken" value={this.state.emailToken} />
               <input type="hidden" name="_csrf" value={this.props.token} />
               <input type="submit" value="Register" />
             </div>

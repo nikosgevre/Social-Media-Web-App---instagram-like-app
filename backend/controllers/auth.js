@@ -141,6 +141,8 @@ exports.updateUserStatus = async (req, res, next) => {
 };
 
 exports.postReset = (req, res, next) => {
+  const type = req.query.type;
+  console.log(type);
   crypto.randomBytes(32, (err, buffer) => {
     if (err) {
       console.log(err);

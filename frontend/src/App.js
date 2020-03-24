@@ -13,7 +13,7 @@ import LoginPage from './pages/Auth/Login';
 import SignupPage from './pages/Auth/Signup';
 import SearchPage from './pages/Search/Search.js';
 import ProfilePage from './pages/Profile/Profile.js';
-import ResetPage from './pages/Auth/Reset/ResetPassword/Reset';
+import PasswordResetPage from './pages/Auth/Reset/ResetPassword/Reset';
 import NewPasswordPage from './pages/Auth/Reset/ResetPassword/NewPassword';
 // import styles from './App.module.css';
 
@@ -152,10 +152,10 @@ class App extends Component {
       });
   };
 
-  resetHandler = (event, authData) => {
+  resetHandler = (event, authData, type) => {
     event.preventDefault();
     this.setState({ authLoading: true });
-    fetch('http://localhost:8080/auth/reset', {
+    fetch('http://localhost:8080/auth/reset?type=' + type, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -175,21 +175,6 @@ class App extends Component {
         return res.json();
       })
       .then(resData => {
-        // console.log(resData);
-        // this.setState({
-        //   isAuth: true,
-        //   token: resData.token,
-        //   authLoading: false,
-        //   userId: resData.userId
-        // });
-        // localStorage.setItem('token', resData.token);
-        // localStorage.setItem('userId', resData.userId);
-        // const remainingMilliseconds = 60 * 60 * 1000;
-        // const expiryDate = new Date(
-        //   new Date().getTime() + remainingMilliseconds
-        // );
-        // localStorage.setItem('expiryDate', expiryDate.toISOString());
-        // this.setAutoLogout(remainingMilliseconds);
         this.props.history.push('/');
       })
       .catch(err => {
@@ -281,10 +266,10 @@ class App extends Component {
           path="/reset"
           exact
           render={props => (
-            <ResetPage
+            <PasswordResetPage
               {...props}
               token={this.state.token}
-              onReset={this.resetHandler}
+              onReset={this.resetHandler.bind(this.type, "password")}
               loading={this.state.authLoading}
             />
           )}
@@ -337,25 +322,25 @@ class App extends Component {
             )}
           />
           <Route
-            path="/reset"
-            exact
+            path="/chat"
+            // exact
             render={props => (
-              <ResetPage
-                {...props}
-                token={this.state.token}
-                onReset={this.resetHandler}
-                loading={this.state.authLoading}
+              <ProfilePage 
+                {...props} 
+                userId={this.state.userId} 
+                token={this.state.token} 
               />
             )}
           />
           <Route
-            path="/:postId"
-            // exact
+            path="/reset"
+            exact
             render={props => (
-              <SinglePostPage
+              <PasswordResetPage
                 {...props}
-                userId={this.state.userId}
                 token={this.state.token}
+                onReset={this.resetHandler}
+                loading={this.state.authLoading}
               />
             )}
           />
@@ -368,6 +353,17 @@ class App extends Component {
                 token={this.state.token}
                 onSetNewPassword={this.newPasswordHandler}
                 loading={this.state.authLoading}
+              />
+            )}
+          />
+          <Route
+            path="/:postId"
+            // exact
+            render={props => (
+              <SinglePostPage
+                {...props}
+                userId={this.state.userId}
+                token={this.state.token}
               />
             )}
           />

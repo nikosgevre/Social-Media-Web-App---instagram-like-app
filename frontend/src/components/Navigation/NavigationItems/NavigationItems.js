@@ -10,6 +10,7 @@ class NavigationItems extends Component {
     const navItems = [
       { id: 'feed', text: 'Feed', link: '/', auth: true },
       { id: 'Profile', text: 'Profile', link: '/profile/' + this.props.userId, auth: true },
+      { id: 'chat', text: 'Chat', link: '/chat', auth: true },
       { id: 'login', text: 'Login', link: '/', auth: false },
       { id: 'signup', text: 'Signup', link: '/signup', auth: false },
       { id: 'logout', text: 'Logout', link: '/', auth: true }
