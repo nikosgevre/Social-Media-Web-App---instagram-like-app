@@ -15,6 +15,8 @@ import SearchPage from './pages/Search/Search.js';
 import ProfilePage from './pages/Profile/Profile.js';
 import PasswordResetPage from './pages/Auth/Reset/ResetPassword/Reset';
 import NewPasswordPage from './pages/Auth/Reset/ResetPassword/NewPassword';
+import EmailResetPage from './pages/Auth/Reset/ResetEmail/Reset';
+import NewEmailPage from './pages/Auth/Reset/ResetEmail/NewEmail';
 // import styles from './App.module.css';
 
 class App extends Component {
@@ -152,10 +154,11 @@ class App extends Component {
       });
   };
 
-  resetHandler = (event, authData, type) => {
+  resetHandler = (event, authData) => {
     event.preventDefault();
-    this.setState({ authLoading: true });
-    fetch('http://localhost:8080/auth/reset?type=' + type, {
+    this.setState({ authLoading: false });
+    // console.log(type);
+    fetch('http://localhost:8080/auth/reset?type=' + authData.type, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -187,24 +190,29 @@ class App extends Component {
       });
   };
 
-  newPasswordHandler = (event, authData) => {
+  newCredentialsHandler = (event, authData) => {
     event.preventDefault();
     this.setState({ authLoading: true });
-    console.log(authData.passwordToken);
-    fetch('http://localhost:8080/auth/new-password', {
+    // console.log(authData.passwordToken);
+    const formData = new FormData();
+    if(authData.type==='password'){
+      formData.append('password', authData.password);
+      formData.append('resetToken', authData.passwordToken);
+    } else if(authData.type==='email'){
+      formData.append('email', authData.email);
+      formData.append('resetToken', authData.emailToken);
+    }
+    formData.append('userId', authData.userId);
+    fetch('http://localhost:8080/auth/new-credentials?type=' + authData.type, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        password: authData.password,
-        userId: authData.userId,
-        passwordToken: authData.passwordToken
-      })
+      body: formData
     })
       .then(res => {
         if (res.status === 422) {
-          throw new Error('Reset password failed.');
+          throw new Error('Reset failed.');
         }
         if (res.status !== 200 && res.status !== 201) {
           console.log('Error!');
@@ -269,7 +277,7 @@ class App extends Component {
             <PasswordResetPage
               {...props}
               token={this.state.token}
-              onReset={this.resetHandler.bind(this.type, "password")}
+              onReset={this.resetHandler}
               loading={this.state.authLoading}
             />
           )}
@@ -281,7 +289,7 @@ class App extends Component {
             <NewPasswordPage
               {...props}
               token={this.state.token}
-              onSetNewPassword={this.newPasswordHandler}
+              onSetNewPassword={this.newCredentialsHandler}
               loading={this.state.authLoading}
             />
           )}
@@ -333,10 +341,10 @@ class App extends Component {
             )}
           />
           <Route
-            path="/reset"
+            path="/resetEmail"
             exact
             render={props => (
-              <PasswordResetPage
+              <EmailResetPage
                 {...props}
                 token={this.state.token}
                 onReset={this.resetHandler}
@@ -348,10 +356,10 @@ class App extends Component {
             path="/reset/:token"
             exact
             render={props => (
-              <NewPasswordPage
+              <NewEmailPage
                 {...props}
                 token={this.state.token}
-                onSetNewPassword={this.newPasswordHandler}
+                onSetNewPassword={this.newCredentialsHandler}
                 loading={this.state.authLoading}
               />
             )}

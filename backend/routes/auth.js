@@ -50,8 +50,8 @@ router.patch(
 
 router.post('/reset', authController.postReset);
 
-router.get('/reset/:token', authController.getNewPassword);
+router.get('/reset/:token', authController.getNewCredential);
 
-router.post('/new-password', authController.postNewPassword);
+router.post('/new-credentials', authController.postNewCredential);
 
 module.exports = router;

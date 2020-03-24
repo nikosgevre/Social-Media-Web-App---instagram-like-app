@@ -63,7 +63,8 @@ class Login extends Component {
         <form
           onSubmit={e =>
             this.props.onReset(e, {
-              email: this.state.resetForm.email.value
+              email: this.state.resetForm.email.value,
+              type: 'password'
             })
           }
         >

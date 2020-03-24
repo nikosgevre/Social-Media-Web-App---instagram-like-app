@@ -142,6 +142,7 @@ exports.updateUserStatus = async (req, res, next) => {
 
 exports.postReset = (req, res, next) => {
   const type = req.query.type;
+  let message = '';
   console.log(type);
   crypto.randomBytes(32, (err, buffer) => {
     if (err) {
@@ -163,23 +164,39 @@ exports.postReset = (req, res, next) => {
         return user.save();
       })
       .then(result => {
-        // res.redirect('/');
-        // console.log(result.resetToken);
-        console.log('Sending email for reset to: ' + req.body.email);
-        const msg = {
-          to: req.body.email,
-          from: 'reset@insta.com',
-          subject: 'Password reset',
-          html: `
-            <p>You requested a password reset</p>
-            <p>Click this <a href="http://localhost:3000/reset/${token}">link</a> to set a new password.</p>
-          `,
-        };
-        sgMail.send(msg).catch(err => {
-          console.log(err);
-        });
+        if (type === 'password') {
+          message = 'User requested reset password!';
+          console.log('Sending email for reset to: ' + req.body.email);
+          const msg = {
+            to: req.body.email,
+            from: 'reset@insta.com',
+            subject: 'Password reset',
+            html: `
+              <p>You requested a password reset</p>
+              <p>Click this <a href="http://localhost:3000/reset/${token}">link</a> to set a new password.</p>
+            `,
+          };
+          sgMail.send(msg).catch(err => {
+            console.log(err);
+          });
+        } else if (type === 'email') {
+          message = 'User requested reset email!';
+          console.log('Sending email for reset to: ' + req.body.email);
+          const msg = {
+            to: req.body.email,
+            from: 'reset@insta.com',
+            subject: 'Email reset',
+            html: `
+              <p>You requested an email reset</p>
+              <p>Click this <a href="http://localhost:3000/reset/${token}">link</a> to update your email.</p>
+            `,
+          };
+          sgMail.send(msg).catch(err => {
+            console.log(err);
+          });
+        }
         res.status(200).json({
-          message: 'User requested reset password!',
+          message: message,
           userId: result._id
         });
       })
@@ -191,7 +208,7 @@ exports.postReset = (req, res, next) => {
   });
 };
 
-exports.getNewPassword = (req, res, next) => {
+exports.getNewCredential = async (req, res, next) => {
   const token = req.params.token;
   User.findOne({
       resetToken: token,
@@ -218,38 +235,85 @@ exports.getNewPassword = (req, res, next) => {
     });
 };
 
-exports.postNewPassword = (req, res, next) => {
-  const newPassword = req.body.password;
+exports.postNewCredential = async (req, res, next) => {
   const userId = req.body.userId;
-  const passwordToken = req.body.passwordToken;
+  const type = req.query.type;
+  const resetToken = req.body.resetToken;
+
+  console.log(type);
+  
   let resetUser;
+  let message = '';
+
   // console.log(newPassword);
   // console.log(userId);
   // console.log(passwordToken);
-  User.findOne({
-    resetToken: passwordToken,
-    resetTokenExpiration: { $gt: Date.now() },
-    _id: userId
-  })
-    .then(user => {
-      resetUser = user;
-      return bcrypt.hash(newPassword, 12);
-    })
-    .then(hashedPassword => {
-      resetUser.password = hashedPassword;
+  // User.findOne({
+  //     resetToken: passwordToken,
+  //     resetTokenExpiration: {
+  //       $gt: Date.now()
+  //     },
+  //     _id: userId
+  //   })
+  //   .then(user => {
+  //     resetUser = user;
+  //     return bcrypt.hash(newPassword, 12);
+  //   })
+  //   .then(hashedPassword => {
+  //     resetUser.password = hashedPassword;
+  //     resetUser.resetToken = undefined;
+  //     resetUser.resetTokenExpiration = undefined;
+  //     return resetUser.save();
+  //   })
+  //   .then(result => {
+  //     res.status(200).json({
+  //       message: 'User reseted password!',
+  //       userId: result._id
+  //     });
+  //   })
+  //   .catch(err => {
+  //     const error = new Error(err);
+  //     error.httpStatusCode = 500;
+  //     return next(error);
+  //   });
+  try {
+    const user = await User.findOne({
+      resetToken: resetToken,
+      resetTokenExpiration: {
+        $gt: Date.now()
+      },
+      _id: userId
+    });
+    if (!user) {
+      const error = new Error('User not found.');
+      error.statusCode = 404;
+      throw error;
+    }
+    resetUser = user;
+    if(type==='password'){
+      const newPassword = req.body.password;
+      const hashedPassword1 = await user.bcrypt.hash(newPassword, 12);
+      resetUser.password = hashedPassword1;
       resetUser.resetToken = undefined;
       resetUser.resetTokenExpiration = undefined;
-      return resetUser.save();
-    })
-    .then(result => {
-      res.status(200).json({
-        message: 'User reseted password!',
-        userId: result._id
-      });
-    })
-    .catch(err => {
-      const error = new Error(err);
-      error.httpStatusCode = 500;
-      return next(error);
+      await resetUser.save();
+      message = 'User password reseted!';
+    } else if (type==='email'){
+      const newEmail = req.body.email;
+      resetUser.email = newEmail;
+      resetUser.resetToken = undefined;
+      resetUser.resetTokenExpiration = undefined;
+      await resetUser.save();
+      message = 'User email reseted!';
+    }
+    res.status(200).json({
+      message: message,
+      userId: user._id
     });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
 };
