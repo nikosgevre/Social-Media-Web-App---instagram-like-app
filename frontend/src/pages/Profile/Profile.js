@@ -6,6 +6,9 @@ import Button from '../../components/Button/Button';
 import Loader from '../../components/Loader/Loader';
 import ProfileEdit from '../../components/Profile/ProfileEdit/ProfileEdit';
 
+import DropdownButton from 'react-bootstrap/DropdownButton';
+import Dropdown from 'react-bootstrap/Dropdown';
+
 import styles from './Profile.module.css'; 
 import btStyles from '../../Assets/global-styles/bootstrap.min.module.css';
 
@@ -26,7 +29,8 @@ class Profile extends Component {
     userIdNew: '',
     isEditing: false,
     editUser: null,
-    trueUserId: localStorage.getItem('userId')
+    trueUserId: localStorage.getItem('userId'),
+    sort: 'recent'
   };
 
   componentDidMount() {
@@ -113,11 +117,11 @@ class Profile extends Component {
       const options = {month: 'long', day: 'numeric', year: 'numeric' };
       this.setState({
         user: resData.user,
-        posts: resData.user.posts.map(post => {
-          return {
-            ...post
-          };
-        }),
+        // posts: resData.user.posts.map(post => {
+        //   return {
+        //     ...post
+        //   };
+        // }),
         userImage: 'http://localhost:8080/' + resData.user.image,
         followers: resData.user.followers.map(follower => {
           return {
@@ -132,6 +136,8 @@ class Profile extends Component {
         created: new Date(resData.user.createdAt).toLocaleDateString('gr-GR', options),
         postsLoading: false
       });
+      this.loadPosts();
+      // this.state.posts.sort((a, b) => parseFloat(a.createdAt) - parseFloat(b.createdAt));
     })
     .catch(this.catchError);
   };
@@ -252,6 +258,34 @@ class Profile extends Component {
       });
   };
 
+  sortPosts = (sort) => {
+    fetch('http://localhost:8080/feed/sortPosts?sort=' + sort  + '&userId=' + this.state.user._id, {
+      headers: {
+        Authorization: 'Bearer ' + this.props.token
+      }
+    })
+    .then(res => {
+      if (res.status !== 200) {
+        throw new Error('Failed to sort posts.');
+      }
+      return res.json();
+    })
+    .then(resData => {
+      this.setState({
+        posts: resData.posts.map(post => {
+          return {
+            ...post,
+            imagePath: post.imageUrl
+          };
+        }),
+        totalPosts: resData.totalItems,
+        postsLoading: false
+      });
+      
+    })
+    .catch(this.catchError);
+  };
+
   errorHandler = () => {
     this.setState({ error: null });
   };
@@ -262,6 +296,9 @@ class Profile extends Component {
   };
 
   render() {
+
+    // this.state.posts.sort((a, b) => parseFloat(a.createdAt) - parseFloat(b.createdAt));
+    // console.log(this.state.posts);
 
     let followButton = (<div></div>);
     let editButton = (<div></div>);
@@ -291,6 +328,7 @@ class Profile extends Component {
         <style dangerouslySetInnerHTML={{__html: `
            body { background-color: #fafafa; }
         `}} />
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossOrigin="anonymous"></link>
         <ProfileEdit
           editing={this.state.isEditing}
           selectedUser={this.state.editUser}
@@ -322,10 +360,18 @@ class Profile extends Component {
             </div>
             <p className={styles.desc}>{this.state.user.status}</p>
           </div>
-
-          {followButton}
-
+          <div>
+            {followButton}
+            
+          </div>
           <div className={` ${styles.gallery} `}>
+            <div>
+              <DropdownButton id="dropdown-basic-button" title="Sort">
+                <Dropdown.Item onClick={()=>this.sortPosts('popular')}>Most Popular  |  </Dropdown.Item>
+                <Dropdown.Item onClick={()=>this.sortPosts('Mrecent')}>Most Recent  |  </Dropdown.Item>
+                <Dropdown.Item onClick={()=>this.sortPosts('Lrecent')}>Least Recent</Dropdown.Item>
+              </DropdownButton>
+            </div>
             {this.state.postsLoading && (
               <div style={{ textAlign: 'center', marginTop: '2rem' }}>
                 <Loader />

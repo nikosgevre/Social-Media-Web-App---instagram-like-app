@@ -67,7 +67,7 @@ exports.getProfile = async (req, res, next) => {
             error.statusCode = 404;
             throw error;
         }
-        console.log(user.resetToken);
+        // console.log(user.resetToken);
         res.status(200).json({
             message: 'User profile fetched.',
             user: user

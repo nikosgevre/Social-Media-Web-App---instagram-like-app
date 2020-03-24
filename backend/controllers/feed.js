@@ -64,11 +64,54 @@ exports.getUserSpecificPosts = async (req, res, next) => {
       .populate('creator')
       .populate('likes')
       .sort({
-        createdAt: -1
+        createdAt: 1
       })
       .skip((currentPage - 1) * perPage)
       .limit(perPage);
 
+    // posts.sort((a, b) => (a.createdAt > b.createdAt) ? -1 : 1);
+
+    res.status(200).json({
+      message: 'Fetched posts successfully.',
+      posts: posts,
+      totalItems: totalItems
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
+exports.getSortPosts = async (req, res, next) => {
+  const userId = req.query.userId;
+  const sort = req.query.sort;
+
+  try {
+    const totalItems = await Post.find({
+      creator: userId
+    }).countDocuments();
+    const posts = await Post.find({
+        creator: userId
+      })
+      .populate('creator')
+      .populate('likes');
+
+    switch (sort) {
+      case "popular":
+        console.log("Sorting popular descending");
+        posts.sort((a, b) => parseFloat(b.likes.length) - parseFloat(a.likes.length));
+        break;
+      case "Mrecent":
+        console.log("Sorting recent descending");
+        posts.sort((a, b) => (a.createdAt > b.createdAt) ? -1 : 1);
+        break;
+      case "Lrecent":
+        console.log("Sorting recent ascending");
+        posts.sort((a, b) => (a.createdAt > b.createdAt) ? 1 : -1);
+        break;
+    }
     res.status(200).json({
       message: 'Fetched posts successfully.',
       posts: posts,
@@ -614,6 +657,43 @@ exports.getComments = async (req, res, next) => {
     // console.log('pira ta comments' + comments);
     res.status(200).json({
       message: 'Post fetched.',
+      comments: comments
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};
+
+exports.getSortComments = async (req, res, next) => {
+  const refId = req.query.refId;
+  const sort = req.query.sort;
+
+  try {
+    // const totalItems = await Post.find({
+    //   creator: userId
+    // }).countDocuments();
+    const comments = await Comment.find({ refId: refId})
+    .populate('creator').populate('likes');
+
+    switch (sort) {
+      case "popular":
+        console.log("Sorting popular descending");
+        comments.sort((a, b) => parseFloat(b.likes.length) - parseFloat(a.likes.length));
+        break;
+      case "Mrecent":
+        console.log("Sorting recent descending");
+        comments.sort((a, b) => (a.createdAt > b.createdAt) ? -1 : 1);
+        break;
+      case "Lrecent":
+        console.log("Sorting recent ascending");
+        comments.sort((a, b) => (a.createdAt > b.createdAt) ? 1 : -1);
+        break;
+    }
+    res.status(200).json({
+      message: 'Fetched comments successfully.',
       comments: comments
     });
   } catch (err) {

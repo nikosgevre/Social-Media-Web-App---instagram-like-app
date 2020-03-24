@@ -11,6 +11,9 @@ import CommentEdit from '../../../components/Feed/Post/PostComment/PostComment';
 import Comment from '../../../components/Feed/Post/Comment/Comment';
 import Input from '../../../components/Form/Input/Input';
 
+import DropdownButton from 'react-bootstrap/DropdownButton';
+import Dropdown from 'react-bootstrap/Dropdown';
+
 import styles from './SinglePost.module.css';
 
 class SinglePost extends Component {
@@ -495,6 +498,30 @@ class SinglePost extends Component {
       });
   };
 
+  sortComments = (sort) => {
+    fetch('http://localhost:8080/feed/sortComments?sort=' + sort  + '&refId=' + this.state.post._id, {
+      headers: {
+        Authorization: 'Bearer ' + this.props.token
+      }
+    })
+    .then(res => {
+      if (res.status !== 200) {
+        throw new Error('Failed to sort comments.');
+      }
+      return res.json();
+    })
+    .then(resData => {
+      this.setState({
+        comments: resData.comments.map(comment => {
+          return {
+            ...comment
+          };
+        })
+      });
+    })
+    .catch(this.catchError);
+  };
+
   errorHandler = () => {
     this.setState({ error: null });
   };
@@ -552,6 +579,7 @@ class SinglePost extends Component {
         <style dangerouslySetInnerHTML={{__html: `
            body { background-color: #fafafa; }
         `}} />
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossOrigin="anonymous"></link>
         <PostComment
           editing={this.state.isCommenting}
           selectedPost={this.state.commentPost}
@@ -585,7 +613,16 @@ class SinglePost extends Component {
           </div>
           {likesAndComments}
           <h2 className={styles.singlePost}>{this.state.content}</h2>
-          <span className={styles.Navlink} style={{paddingTop:"15px", paddingBottom:"15px"}}><strong>  comments({this.state.post.totalComments})</strong></span>
+          
+          <div>
+            <span className={styles.Navlink} style={{paddingTop:"15px", paddingBottom:"15px"}}><strong>  comments({this.state.post.totalComments})</strong></span>
+            <DropdownButton id="dropdown-basic-button" title="Sort Comments">
+              <Dropdown.Item onClick={()=>this.sortComments('popular')}>Most Popular  |  </Dropdown.Item>
+              <Dropdown.Item onClick={()=>this.sortComments('Mrecent')}>Most Recent  |  </Dropdown.Item>
+              <Dropdown.Item onClick={()=>this.sortComments('Lrecent')}>Least Recent</Dropdown.Item>
+            </DropdownButton>
+          </div>
+          &nbsp;
           {/* <p>{this.state.comments}</p> */}
           {this.state.comments.map(comment => (
             <Comment

@@ -96,4 +96,10 @@ router.delete('/post/:postId', isAuth, feedController.deletePost);
 // DELETE delete comment
 router.delete('/comment', isAuth, feedController.deleteComment);
 
+// GET sort posts
+router.get('/sortPosts', isAuth, feedController.getSortPosts);
+
+// GET sort comments
+router.get('/sortComments', isAuth, feedController.getSortComments);
+
 module.exports = router;
