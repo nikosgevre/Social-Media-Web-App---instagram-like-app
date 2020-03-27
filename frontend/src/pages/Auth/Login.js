@@ -100,7 +100,7 @@ class Login extends Component {
             <Button design="raised" type="submit" loading={this.props.loading}>
               Login
             </Button>
-            <Button design="danger" link="reset" loading={this.props.loading}>
+            <Button design="danger" link="resetPassword" loading={this.props.loading}>
               Reset Password
             </Button>
           </form>

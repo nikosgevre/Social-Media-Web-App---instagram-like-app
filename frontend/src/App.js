@@ -192,21 +192,26 @@ class App extends Component {
 
   newCredentialsHandler = (event, authData) => {
     event.preventDefault();
-    this.setState({ authLoading: true });
-    // console.log(authData.passwordToken);
+    this.setState({ authLoading: false });
+    // console.log(authData.type);
     const formData = new FormData();
     if(authData.type==='password'){
       formData.append('password', authData.password);
+      formData.append('userId', authData.userId);
       formData.append('resetToken', authData.passwordToken);
     } else if(authData.type==='email'){
       formData.append('email', authData.email);
       formData.append('resetToken', authData.emailToken);
+      formData.append('userId', authData.userId);
     }
-    formData.append('userId', authData.userId);
+    // formData.append('userId', authData.userId);
+    // for (var pair of formData.entries()) {
+    //   console.log(pair[0]+ ' - ' + pair[1]); 
+    // }
     fetch('http://localhost:8080/auth/new-credentials?type=' + authData.type, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        Authorization: 'Bearer ' + this.props.token
       },
       body: formData
     })
@@ -271,7 +276,7 @@ class App extends Component {
           )}
         />
         <Route
-          path="/reset"
+          path="/resetPassword"
           exact
           render={props => (
             <PasswordResetPage
@@ -283,7 +288,7 @@ class App extends Component {
           )}
         />
         <Route
-          path="/reset/:token"
+          path="/resetP/:token"
           exact
           render={props => (
             <NewPasswordPage
@@ -353,7 +358,7 @@ class App extends Component {
             )}
           />
           <Route
-            path="/reset/:token"
+            path="/resetE/:token"
             exact
             render={props => (
               <NewEmailPage

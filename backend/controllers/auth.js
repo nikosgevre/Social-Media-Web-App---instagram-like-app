@@ -6,8 +6,11 @@ const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const io = require('../socket');
 
-const sgMail = require('@sendgrid/mail');
-sgMail.setApiKey('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');
+// const sgMail = require('@sendgrid/mail');
+// sgMail.setApiKey('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');
+var api_key = '5a291b4754975ddf416c6545207ab46e-ed4dc7c4-20997f90';
+var domain = 'sandboxb2cd8dcd1f7b4568b8805e1bcaa77e4c.mailgun.org';
+var mailgun = require('mailgun-js')({apiKey: api_key, domain: domain});
 
 const User = require('../models/user');
 
@@ -34,11 +37,14 @@ exports.signup = async (req, res, next) => {
     console.log('Sending email for welcome to: ' + user.email);
     const msg = {
       to: user.email,
-      from: 'welcome@insta.com',
+      from: 'Insta Welcome <welcome@insta.com>',
       subject: 'Welcome!',
       html: '<strong>Welcome to my app' + user.name + '!</strong>',
     };
-    sgMail.send(msg);
+    // sgMail.send(msg);
+    mailgun.messages().send(msg, function (error, body) {
+      console.log(body);
+    });
 
     const result = await user.save();
 
@@ -143,7 +149,7 @@ exports.updateUserStatus = async (req, res, next) => {
 exports.postReset = (req, res, next) => {
   const type = req.query.type;
   let message = '';
-  console.log(type);
+  // console.log(type);
   crypto.randomBytes(32, (err, buffer) => {
     if (err) {
       console.log(err);
@@ -169,32 +175,33 @@ exports.postReset = (req, res, next) => {
           console.log('Sending email for reset to: ' + req.body.email);
           const msg = {
             to: req.body.email,
-            from: 'reset@insta.com',
+            from: 'Insta Reset <reset@insta.mailgun.org>',
             subject: 'Password reset',
             html: `
               <p>You requested a password reset</p>
-              <p>Click this <a href="http://localhost:3000/reset/${token}">link</a> to set a new password.</p>
+              <p>Click this <a href="http://localhost:3000/resetP/${token}">link</a> to set a new password.</p>
             `,
           };
-          sgMail.send(msg).catch(err => {
-            console.log(err);
+          mailgun.messages().send(msg, function (error, body) {
+            console.log(body);
           });
         } else if (type === 'email') {
           message = 'User requested reset email!';
           console.log('Sending email for reset to: ' + req.body.email);
           const msg = {
             to: req.body.email,
-            from: 'reset@insta.com',
+            from: 'Insta Reset <reset@insta.com>',
             subject: 'Email reset',
             html: `
               <p>You requested an email reset</p>
-              <p>Click this <a href="http://localhost:3000/reset/${token}">link</a> to update your email.</p>
+              <p>Click this <a href="https://localhost:3000/resetE/${token}">link</a> to update your email.</p>
             `,
           };
-          sgMail.send(msg).catch(err => {
-            console.log(err);
+          mailgun.messages().send(msg, function (error, body) {
+            console.log(body);
           });
         }
+        // console.log(result._id);
         res.status(200).json({
           message: message,
           userId: result._id
@@ -209,6 +216,7 @@ exports.postReset = (req, res, next) => {
 };
 
 exports.getNewCredential = async (req, res, next) => {
+  // console.log('-------------------------get');
   const token = req.params.token;
   User.findOne({
       resetToken: token,
@@ -225,7 +233,7 @@ exports.getNewCredential = async (req, res, next) => {
       res.status(200).json({
         message: 'User requested reset password!',
         userId: user._id,
-        passwordToken: token
+        resetToken: token
       });
     })
     .catch(err => {
@@ -236,9 +244,10 @@ exports.getNewCredential = async (req, res, next) => {
 };
 
 exports.postNewCredential = async (req, res, next) => {
+  // console.log('------------in post new credential');
   const userId = req.body.userId;
-  const type = req.query.type;
   const resetToken = req.body.resetToken;
+  const type = req.query.type;
 
   console.log(type);
   
@@ -292,7 +301,7 @@ exports.postNewCredential = async (req, res, next) => {
     resetUser = user;
     if(type==='password'){
       const newPassword = req.body.password;
-      const hashedPassword1 = await user.bcrypt.hash(newPassword, 12);
+      const hashedPassword1 = await bcrypt.hash(newPassword, 12);
       resetUser.password = hashedPassword1;
       resetUser.resetToken = undefined;
       resetUser.resetTokenExpiration = undefined;

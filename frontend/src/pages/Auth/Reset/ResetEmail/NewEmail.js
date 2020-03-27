@@ -96,7 +96,8 @@ class NewPassword extends Component {
             this.props.onSetNewPassword(e, {
               email: this.state.resetForm.email.value,
               userId: this.state.userId,
-              emailToken: this.state.emailToken
+              emailToken: this.state.emailToken,
+              type: 'email'
             })
           }
         >

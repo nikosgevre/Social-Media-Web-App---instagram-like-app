@@ -40,7 +40,7 @@ class NewPassword extends Component {
       this.setState({
         // user: resData.user,
         userId: resData.userId,
-        passwordToken: resData.passwordToken
+        passwordToken: resData.resetToken
       });
     })
     .catch(err => {
@@ -88,7 +88,7 @@ class NewPassword extends Component {
   };
 
   render() {
-    console.log(this.state.passwordToken);
+    // console.log(this.state.passwordToken);
     return (
       <Auth>
         <form
@@ -96,7 +96,8 @@ class NewPassword extends Component {
             this.props.onSetNewPassword(e, {
               password: this.state.resetForm.password.value,
               userId: this.state.userId,
-              passwordToken: this.state.passwordToken
+              passwordToken: this.state.passwordToken,
+              type: 'password'
             })
           }
         >
