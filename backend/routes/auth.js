@@ -7,6 +7,7 @@ const isAuth = require('../middleware/is-auth');
 
 const router = express.Router();
 
+// PUT signup route
 router.put(
   '/signup',
   [
@@ -32,10 +33,13 @@ router.put(
   authController.signup
 );
 
+// POST /login
 router.post('/login', authController.login);
 
+// GET user status
 router.get('/status', isAuth, authController.getUserStatus);
 
+// PATCH update user status
 router.patch(
   '/status',
   isAuth,
@@ -48,10 +52,13 @@ router.patch(
   authController.updateUserStatus
 );
 
+// POST /reset
 router.post('/reset', authController.postReset);
 
+// GET /reset/token
 router.get('/reset/:token', authController.getNewCredential);
 
+// POST new credentials
 router.post('/new-credentials', authController.postNewCredential);
 
 module.exports = router;

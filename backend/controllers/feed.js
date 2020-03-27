@@ -11,6 +11,7 @@ const Post = require('../models/post');
 const User = require('../models/user');
 const Comment = require('../models/comment');
 
+// get the posts for the feed page
 exports.getPosts = async (req, res, next) => {
   const currentPage = req.query.page || 1;
   const perPage = Number.MAX_SAFE_INTEGER; //Add number for pagination
@@ -21,7 +22,7 @@ exports.getPosts = async (req, res, next) => {
   try {
 
     const user = await User.findById(userId);
-
+    // if the user has followers, add them to the array of users from whom i can see posts
     if(user.following){
       followingUsers = user.following;
     }
@@ -49,6 +50,7 @@ exports.getPosts = async (req, res, next) => {
   }
 };
 
+// get the posts for my profile
 exports.getUserSpecificPosts = async (req, res, next) => {
   const currentPage = req.query.page || 1;
   const perPage = Number.MAX_SAFE_INTEGER; //Add number for pagination
@@ -69,8 +71,6 @@ exports.getUserSpecificPosts = async (req, res, next) => {
       .skip((currentPage - 1) * perPage)
       .limit(perPage);
 
-    // posts.sort((a, b) => (a.createdAt > b.createdAt) ? -1 : 1);
-
     res.status(200).json({
       message: 'Fetched posts successfully.',
       posts: posts,
@@ -84,6 +84,7 @@ exports.getUserSpecificPosts = async (req, res, next) => {
   }
 };
 
+// sort posts
 exports.getSortPosts = async (req, res, next) => {
   const userId = req.query.userId;
   const sort = req.query.sort;
@@ -125,6 +126,7 @@ exports.getSortPosts = async (req, res, next) => {
   }
 };
 
+// get all the details of a single post
 exports.getPost = async (req, res, next) => {
   const postId = req.params.postId;
   const post = await Post.findById(postId)
@@ -149,6 +151,7 @@ exports.getPost = async (req, res, next) => {
   }
 };
 
+// create new post cotroller
 exports.createPost = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -161,6 +164,7 @@ exports.createPost = async (req, res, next) => {
     error.statusCode = 422;
     throw error;
   }
+  // create the post
   const imageUrl = req.file.path;
   const title = req.body.title;
   const content = req.body.content;
@@ -171,10 +175,12 @@ exports.createPost = async (req, res, next) => {
     creator: req.userId
   });
   try {
+    // save the post
     await post.save();
     const user = await User.findById(req.userId);
     user.posts.push(post);
     await user.save();
+    // emit the post creation through socket.io
     io.getIO().emit('feed', {
       action: 'create',
       post: {
@@ -201,6 +207,7 @@ exports.createPost = async (req, res, next) => {
   }
 };
 
+// update post controller
 exports.updatePost = async (req, res, next) => {
   const postId = req.params.postId;
   const errors = validationResult(req);
@@ -209,6 +216,7 @@ exports.updatePost = async (req, res, next) => {
     error.statusCode = 422;
     throw error;
   }
+  // get the new details of the post to be updated
   const title = req.body.title;
   const content = req.body.content;
   let imageUrl = req.body.image;
@@ -232,6 +240,7 @@ exports.updatePost = async (req, res, next) => {
       error.statusCode = 403;
       throw error;
     }
+    // update the details of the post
     if (imageUrl !== post.imageUrl) {
       clearImage(post.imageUrl);
     }
@@ -239,6 +248,7 @@ exports.updatePost = async (req, res, next) => {
     post.imageUrl = imageUrl;
     post.content = content;
     const result = await post.save();
+    // emit the updated post to the different routes that requested the updated post
     io.getIO().emit('feed', {
       action: 'update',
       post: result
@@ -259,12 +269,12 @@ exports.updatePost = async (req, res, next) => {
   }
 };
 
+// delete post controller
 exports.deletePost = async (req, res, next) => {
   const postId = req.params.postId;
   try {
-    // to post pou prepei na kanw delete
+    // the post to be deleted
     const post = await Post.findById(postId).populate('comments');
-
     if (!post) {
       const error = new Error('Could not find post.');
       error.statusCode = 404;
@@ -315,6 +325,7 @@ exports.deletePost = async (req, res, next) => {
     user.posts.pull(postId);
     await user.save();
 
+    // emit the changes to the requested route
     io.getIO().emit('feed', {
       action: 'delete',
       post: postId
@@ -330,22 +341,23 @@ exports.deletePost = async (req, res, next) => {
   }
 };
 
+// post like/dislike controller
 exports.postLike = async (req, res, next) => {
   const postId = req.query.postId;
   const userId = req.query.userId;
-  // console.log('pid: ' + postId);
-  // console.log('uid: ' + userId);
 
   try {
     const post = await Post.findById(postId).populate('creator').populate('likes');
     const user = await User.findById(userId);
 
+    // post like controller
     if (!post.likes.some(like => like._id.toString() === userId)) {
+      // add the user the post's likes
       post.likes.push(user);
       user.postLikes.push(post);
-      // console.log('liked a post');
       const result = await post.save();
       await user.save();
+      // emit the changes
       io.getIO().emit('singlePost', {
         action: 'postLike',
         post: postId
@@ -358,17 +370,17 @@ exports.postLike = async (req, res, next) => {
         message: 'Post liked!',
         post: result
       });
-    } else {
+    }
+    // post dislike controller 
+    else {
+      // remove the user from the post's likes
       post.likes = post.likes.filter(el => {
         return el.name != user.name;
       });
-      // user.postLikes = user.postLikes.filter(el => {
-      //   return el._id != post._id;
-      // });
       user.postLikes.pull(postId);
-      // console.log('Disliked a post');
       const result = await post.save();
       await user.save();
+      // emit the changes
       io.getIO().emit('singlePost', {
         action: 'postLike',
         post: postId
@@ -391,18 +403,17 @@ exports.postLike = async (req, res, next) => {
 
 };
 
+// create comment to post/comment controller
 exports.postComment = async (req, res, next) => {
-  // console.log('yo');
   const ref = req.query.ref;
   const refId = req.query.refId;
-  // console.log(ref);
-  // console.log(refId);
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
     const error = new Error('Validation failed, entered data is incorrect.');
     error.statusCode = 422;
     throw error;
   }
+  // create the comment
   const comment = req.body.comment;
   const newComment = new Comment({
     comment: comment,
@@ -412,16 +423,18 @@ exports.postComment = async (req, res, next) => {
   });
   try {
     await newComment.save();
+    // update the user that created the comment
     const user = await User.findById(req.userId);
     user.comments.push(newComment);
     await user.save();
+    // whether the comment belongs to a post or a comment, update the the database accordingly
     if(ref==='post'){
-      // console.log('itan post');
       const post = await Post.findById(refId);
       post.comments.push(newComment);
       post.totalComments += 1;
       await post.save();
     } else if(ref==='comment'){
+      // if the comment is a nested comment, update the parent comment
       const parentComment = await Comment.findById(refId);
       parentComment.comments.push(newComment);
       const post = await Post.findById(parentComment.refId);
@@ -430,6 +443,7 @@ exports.postComment = async (req, res, next) => {
       await parentComment.save();
     }
     
+    // emit the changes
     io.getIO().emit('post', {
       action: 'createComment',
       post: refId
@@ -450,12 +464,11 @@ exports.postComment = async (req, res, next) => {
   }
 };
 
+// update comment controller
 exports.updateComment = async (req, res, next) => {
   const commentId = req.query.commentId;
   const postId = req.query.postId;
   const errors = validationResult(req);
-  // console.log(commentId);
-  // console.log(postId);
   if (!errors.isEmpty()) {
     const error = new Error('Validation failed, entered data is incorrect.');
     error.statusCode = 422;
@@ -474,10 +487,12 @@ exports.updateComment = async (req, res, next) => {
       error.statusCode = 403;
       throw error;
     }
+    // update comment's content
     comment.comment = content;
-    const resultComment = await comment.save();
+    await comment.save();
     const post = await Post.findById(postId);
-    // result = await post.save();
+
+    // emit the changes
     io.getIO().emit('singlePost', {
       action: 'editComment',
       post: post
@@ -502,6 +517,7 @@ exports.updateComment = async (req, res, next) => {
   }
 };
 
+// delete comment controller
 exports.deleteComment = async (req, res, next) => {
   const commentId = req.query.commentId;
   const postId = req.query.postId;
@@ -528,7 +544,6 @@ exports.deleteComment = async (req, res, next) => {
         console.log('no parent comment');
       }
       parentComment.comments.pull(commentId);
-      // parentComment.totalComments -= 1;
     }
     
     // get comment's comments
@@ -557,6 +572,7 @@ exports.deleteComment = async (req, res, next) => {
     post.totalComments -= totalItems;
     await post.save();
 
+    // emit the changes
     io.getIO().emit('singlePost', {
       action: 'deleteComment',
       post: postId
@@ -580,23 +596,22 @@ exports.deleteComment = async (req, res, next) => {
   }
 };
 
+// comment like/dislike controller
 exports.commentLike = async (req, res, next) => {
   const commentId = req.query.commentId;
   const userId = req.query.userId;
-  // console.log('pid: ' + postId);
-  // console.log('uid: ' + userId);
 
   try {
     const comment = await Comment.findById(commentId).populate('creator').populate('likes');
     const user = await User.findById(userId);
 
+    // like controller
     if (!comment.likes.some(like => like._id.toString() === userId)) {
       comment.likes.push(user);
       user.commentLikes.push(comment);
-      // console.log('liked a comment');
       const result = await comment.save();
       await user.save();
-      // console.log('comment Like');
+      // emit changes
       io.getIO().emit('comment', {
         action: 'commentLike',
         comment: commentId
@@ -609,17 +624,16 @@ exports.commentLike = async (req, res, next) => {
         message: 'Comment liked!',
         comment: result
       });
-    } else {
+    }
+    // dislike controller 
+    else {
       comment.likes = comment.likes.filter(el => {
         return el.name != user.name;
       });
-      // user.commentLikes = user.commentLikes.filter(el => {
-      //   return el._id != comment._id;
-      // });
       user.commentLikes.pull(commentId);
-      // console.log('Disliked a comment');
       const result = await comment.save();
       await user.save();
+      // emit changes
       io.getIO().emit('singlePost', {
         action: 'commentLike',
         comment: commentId
@@ -642,19 +656,17 @@ exports.commentLike = async (req, res, next) => {
 
 };
 
+// get all comments
 exports.getComments = async (req, res, next) => {
   const refId = req.params.refId;
-  
   try {
     const comments = await Comment.find({ refId: refId})
     .populate('creator');
-    // na vriskw kai to refId sta posts gia na epistrefw to totalComments
     if (!comments) {
       const error = new Error('Could not find comments.');
       error.statusCode = 404;
       throw error;
     }
-    // console.log('pira ta comments' + comments);
     res.status(200).json({
       message: 'Post fetched.',
       comments: comments
@@ -667,14 +679,12 @@ exports.getComments = async (req, res, next) => {
   }
 };
 
+// sort comments
 exports.getSortComments = async (req, res, next) => {
   const refId = req.query.refId;
   const sort = req.query.sort;
 
   try {
-    // const totalItems = await Post.find({
-    //   creator: userId
-    // }).countDocuments();
     const comments = await Comment.find({ refId: refId})
     .populate('creator').populate('likes');
 
@@ -704,14 +714,10 @@ exports.getSortComments = async (req, res, next) => {
   }
 };
 
+// get all post's likes
 exports.getLikes = async (req, res, next) => {
   const postId = req.params.postId;
-  // console.log(postId);
   try {
-    // const post = await Post.findById(postId)
-    // .populate('creator')
-    // .populate('likes')
-    // .populate('comments');
     const post = await Post.findById(postId)
     .populate('likes').populate('creator');
     if (!post) {
@@ -731,14 +737,10 @@ exports.getLikes = async (req, res, next) => {
   }
 };
 
+// get all comments' likes
 exports.getCommentsLikes = async (req, res, next) => {
   const commentId = req.params.commentId;
-  // console.log(commentId);
   try {
-    // const post = await Post.findById(postId)
-    // .populate('creator')
-    // .populate('likes')
-    // .populate('comments');
     const comment = await Comment.findById(commentId)
     .populate('likes').populate('creator');
     if (!comment) {
@@ -758,6 +760,7 @@ exports.getCommentsLikes = async (req, res, next) => {
   }
 };
 
+// get comment controller
 exports.getComment = async (req, res, next) => {
   const commentId = req.params.commentId;
   const comment = await Comment.findById(commentId)
@@ -782,6 +785,7 @@ exports.getComment = async (req, res, next) => {
   }
 };
 
+// helper function for deleting an image
 const clearImage = filePath => {
   filePath = path.join(__dirname, '..', filePath);
   fs.unlink(filePath, err => console.log(err));
