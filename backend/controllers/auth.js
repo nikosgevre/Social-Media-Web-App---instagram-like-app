@@ -37,7 +37,7 @@ exports.signup = async (req, res, next) => {
     console.log('Sending email for welcome to: ' + user.email);
     const msg = {
       to: user.email,
-      from: 'Insta Welcome <welcome@insta.com>',
+      from: 'Insta Welcome <welcome@insta.mailgun.org>',
       subject: 'Welcome!',
       html: '<strong>Welcome to my app' + user.name + '!</strong>',
     };
@@ -149,13 +149,14 @@ exports.updateUserStatus = async (req, res, next) => {
 exports.postReset = (req, res, next) => {
   const type = req.query.type;
   let message = '';
-  // console.log(type);
+  console.log('/reset -> ' + type);
   crypto.randomBytes(32, (err, buffer) => {
     if (err) {
       console.log(err);
       // return res.redirect('/reset');
     }
     const token = buffer.toString('hex');
+    // if(type)
     User.findOne({
         email: req.body.email
       })
@@ -172,7 +173,7 @@ exports.postReset = (req, res, next) => {
       .then(result => {
         if (type === 'password') {
           message = 'User requested reset password!';
-          console.log('Sending email for reset to: ' + req.body.email);
+          console.log('Sending email for \'reset password\' to: ' + req.body.email);
           const msg = {
             to: req.body.email,
             from: 'Insta Reset <reset@insta.mailgun.org>',
@@ -187,14 +188,14 @@ exports.postReset = (req, res, next) => {
           });
         } else if (type === 'email') {
           message = 'User requested reset email!';
-          console.log('Sending email for reset to: ' + req.body.email);
+          console.log('Sending email for \'reset email\' to: ' + req.body.email);
           const msg = {
             to: req.body.email,
-            from: 'Insta Reset <reset@insta.com>',
+            from: 'Insta Reset <reset@insta.mailgun.org>',
             subject: 'Email reset',
             html: `
               <p>You requested an email reset</p>
-              <p>Click this <a href="https://localhost:3000/resetE/${token}">link</a> to update your email.</p>
+              <p>Click this <a href="https://localhost:3000/resetE/${token}">link</a> to reset your email.</p>
             `,
           };
           mailgun.messages().send(msg, function (error, body) {
@@ -249,7 +250,7 @@ exports.postNewCredential = async (req, res, next) => {
   const resetToken = req.body.resetToken;
   const type = req.query.type;
 
-  console.log(type);
+  console.log('/new-credentials -> ' + type);
   
   let resetUser;
   let message = '';

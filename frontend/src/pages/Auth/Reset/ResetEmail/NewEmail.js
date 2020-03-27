@@ -93,7 +93,7 @@ class NewPassword extends Component {
       <Auth>
         <form
           onSubmit={e =>
-            this.props.onSetNewPassword(e, {
+            this.props.onSetNewEmail(e, {
               email: this.state.resetForm.email.value,
               userId: this.state.userId,
               emailToken: this.state.emailToken,

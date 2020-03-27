@@ -1,6 +1,7 @@
 import React, { Component, Fragment } from 'react';
 
 import Backdrop from '../../Backdrop/Backdrop';
+import Button from '../../Button/Button';
 import Modal from '../../Modal/Modal';
 import Input from '../../Form/Input/Input';
 import FilePicker from '../../Form/Input/FilePicker';
@@ -195,6 +196,10 @@ class ProfileEdit extends Component {
             />
             &nbsp;
           </form>
+          <Button design="danger" link="resetEmail" loading={this.props.loading}>
+            Reset Email
+          </Button>
+          &nbsp;
         </Modal>
       </Fragment>
     ) : null;

@@ -193,7 +193,7 @@ class App extends Component {
   newCredentialsHandler = (event, authData) => {
     event.preventDefault();
     this.setState({ authLoading: false });
-    // console.log(authData.type);
+    console.log(authData.type);
     const formData = new FormData();
     if(authData.type==='password'){
       formData.append('password', authData.password);
@@ -364,7 +364,7 @@ class App extends Component {
               <NewEmailPage
                 {...props}
                 token={this.state.token}
-                onSetNewPassword={this.newCredentialsHandler}
+                onSetNewEmail={this.newCredentialsHandler}
                 loading={this.state.authLoading}
               />
             )}
