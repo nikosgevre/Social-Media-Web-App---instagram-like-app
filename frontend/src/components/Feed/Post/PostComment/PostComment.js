@@ -14,6 +14,7 @@ const POST_FORM = {
   }
 };
 
+// class component of craeting comments from a modal
 class PostComment extends Component {
   state = {
     postForm: POST_FORM,
@@ -93,16 +94,10 @@ class PostComment extends Component {
       postForm: POST_FORM,
       formIsValid: false
     });
-    // this.setState({
-    //   postForm: POST_FORM,
-    //   formIsValid: false
-    // });
-    // this.props.onCancelEdit();
   };
 
   render() {
 
-    // let modalTitle = this.props.newPost ? 'New Post' : 'Edit Post';
     let modalTitle = 'Comment';
 
     return this.props.editing ? (

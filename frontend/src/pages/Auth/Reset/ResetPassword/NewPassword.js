@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 
 import Input from '../../../../components/Form/Input/Input';
-// import Button from '../../components/Button/Button';
 import { required, length } from '../../../../util/validators';
 import Auth from '../../Auth';
 
@@ -23,7 +22,6 @@ class NewPassword extends Component {
 
   componentDidMount() {
     const rstToken = this.props.match.params.token;
-    // console.log(rstToken);
     fetch('http://localhost:8080/auth/reset/' + rstToken, {
       headers: {
         Authorization: 'Bearer ' + this.props.token
@@ -36,9 +34,7 @@ class NewPassword extends Component {
       return res.json();
     })
     .then(resData => {
-      // console.log('resData: ' + resData.post.creator.name);
       this.setState({
-        // user: resData.user,
         userId: resData.userId,
         passwordToken: resData.resetToken
       });
@@ -88,7 +84,6 @@ class NewPassword extends Component {
   };
 
   render() {
-    // console.log(this.state.passwordToken);
     return (
       <Auth>
         <form

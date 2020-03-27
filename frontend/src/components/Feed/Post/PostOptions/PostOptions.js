@@ -1,11 +1,9 @@
 import React, {Component, Fragment} from 'react';
-// import { NavLink } from 'react-router-dom';
-
-// import OptionsBackdrop from '../../../Backdrop/OptionsBackdrop/OptionsBackdrop';
 
 import Button from '../../../Button/Button';
 import styles from './PostOptions.module.css';
 
+// post's options
 class PostOptions extends Component {
 
     render() {
@@ -45,24 +43,8 @@ class PostOptions extends Component {
               </div>
             )
         };
-      
-        // if(this.props.profile) {
-        //     if(this.props.creator._id === this.props.trueUserId){
-        //         buttons = (
-        //         <div >
-        //             <Button mode="flat" link={`${this.props.id}`}>
-        //             View
-        //             </Button>
-        //             <Button mode="flat" design="danger" onClick={this.props.onDelete}>
-        //             Delete
-        //             </Button>
-        //         </div>
-        //         );
-        //     }
-        // };
         return (
             <Fragment>
-              {/* <OptionsBackdrop show={this.props.show} clicked={this.props.optionsModalClosed} /> */}
                 {buttons}
             </Fragment>
         );

@@ -56,7 +56,6 @@ class SinglePost extends Component {
       return res.json();
     })
     .then(resData => {
-      // console.log('resData: ' + resData.post.creator.name);
       this.setState({
         post: resData.post,
         creator: resData.post.creator,
@@ -72,6 +71,7 @@ class SinglePost extends Component {
     .catch(err => {
       console.log(err);
     });
+    // sockets for instant updating changes
     const socket = openSocket('http://localhost:8080');
     socket.on('singlePost', data => {
       if (data.action === 'createComment') {
@@ -90,6 +90,7 @@ class SinglePost extends Component {
     });
   }
 
+  // loading the post handler
   loadPost = () => {
     const postId = this.props.match.params.postId;
     fetch('http://localhost:8080/feed/post/' + postId, {
@@ -104,8 +105,6 @@ class SinglePost extends Component {
       return res.json();
     })
     .then(resData => {
-      // console.log('resData: ' + resData.post.creator.name);
-      // if (this._isMounted) {
       this.setState({
         post: resData.post,
         creator: resData.post.creator,
@@ -124,19 +123,7 @@ class SinglePost extends Component {
     });
   }
 
-  // updatePost = post => {
-  //   this.setState(prevState => {
-  //     const updatedPost = [...prevState.post];
-  //     const updatedPostIndex = updatedPost.findIndex(p => p._id === post._id);
-  //     if (updatedPostIndex > -1) {
-  //       updatedPost[updatedPostIndex] = post;
-  //     }
-  //     return {
-  //       post: updatedPost
-  //     };
-  //   });
-  // };
-
+  // deleting the post handler
   deletePostHandler = postId => {
     this.setState({ postsLoading: true });
     fetch('http://localhost:8080/feed/post/' + postId, {
@@ -161,8 +148,8 @@ class SinglePost extends Component {
       this.props.history.push('/');
   };
 
+  // deleting a comment handler
   deleteCommentHandler = commentId => {
-    // console.log('yoyoyo');
     this.setState({ postsLoading: true });
     fetch('http://localhost:8080/feed/comment?commentId=' + commentId + '&postId=' + this.state.post._id, {
       method: 'DELETE',
@@ -183,15 +170,13 @@ class SinglePost extends Component {
         console.log(err);
         this.setState({ postsLoading: false });
       });
-      // this.props.history.push('/');
-      // window.location.reload();
   };
 
+  // part of creating comments handler
   startCommentHandler = postId => {
     // console.log('yoyoyo start');
     this.setState(prevState => {
       const loadedPost = this.state.post;
-
       return {
         isCommenting: true,
         commentPost: loadedPost
@@ -199,23 +184,19 @@ class SinglePost extends Component {
     });
   };
 
+  // part of creating comments handler
   cancelCommentHandler = () => {
     this.setState({ isCommenting: false, commentPost: null });
   };
 
+  // part of creating comments handler from input
   finishCommentHandlerInput = postData => {
-    // console.log('yoyoyo finish');
 
     this.setState({
       commentLoading: true
     });
-
-    // if(this.state.commentText.length() === 0){
-    //   console.log('adio comment');
-    // }
     this.startCommentHandler();
     const formData = new FormData();
-    // formData.append('comment', postData.comment);
     formData.append('comment', this.state.commentText);
     let url = 'http://localhost:8080/feed/postComment?refId=' + this.state.post._id + '&ref=post';
     let method = 'POST';
@@ -242,7 +223,6 @@ class SinglePost extends Component {
             editLoading: false
           };
         });
-        // window.location.reload();
       })
       .catch(err => {
         console.log(err);
@@ -255,6 +235,7 @@ class SinglePost extends Component {
       });
   };
 
+  // part of creating comments handler from modal
   finishCommentHandlerButton = postData => {
     this.setState({
       commentLoading: true
@@ -301,12 +282,13 @@ class SinglePost extends Component {
       });
   };
 
+  // part of creating comments handler from input
   commentInputChangeHandler = (input, value) => {
     this.setState({ commentText: value });
   };
 
+  // part of updating comments handler
   startEditPostHandler = postId => {
-    // console.log('asdasdasd');
     this.setState(prevState => {
       const loadedPost = this.state.post;
 
@@ -317,15 +299,16 @@ class SinglePost extends Component {
     });
   };
 
+  // part of updating post handler
   cancelEditHandler = () => {
     this.setState({ isEditing: false, editPost: null });
   };
 
+  // part of updating comments handler
   finishEditHandler = postData => {
     this.setState({
       editLoading: true
     });
-    console.log(postData);
     const formData = new FormData();
     formData.append('title', postData.title);
     formData.append('content', postData.content);
@@ -351,14 +334,6 @@ class SinglePost extends Component {
         return res.json();
       })
       .then(resData => {
-        // console.log(resData);
-        // const post = {
-        //   _id: resData.post._id,
-        //   title: resData.post.title,
-        //   content: resData.post.content,
-        //   creator: resData.post.creator,
-        //   createdAt: resData.post.createdAt
-        // };
         this.setState(prevState => {
           return {
             isEditing: false,
@@ -379,10 +354,13 @@ class SinglePost extends Component {
       });
   };
 
+  // MAY BE DELETED
+  // part of updating comments handler
   statusInputChangeHandler = (input, value) => {
     this.setState({ status: value });
   };
 
+  // liking the post handler
   likeHandler = event => {
     event.preventDefault();
     const postId = this.state.post._id;
@@ -408,8 +386,8 @@ class SinglePost extends Component {
     .catch(this.catchError);
   };
 
+  // loading post's comments handler
   loadComments = () => {
-    // console.log('asdasdsa');
     fetch('http://localhost:8080/feed/getComments/' + this.state.post._id, {
       headers: {
         Authorization: 'Bearer ' + this.props.token
@@ -433,11 +411,10 @@ class SinglePost extends Component {
     .catch(this.catchError);
   };
 
+  // part of updating comments handler
   startEditCommentHandler = comment => {
-    // console.log('asdasdasd');
     this.setState(prevState => {
       const loadedComment = comment;
-
       return {
         isEditingComment: true,
         editComment: loadedComment
@@ -445,12 +422,13 @@ class SinglePost extends Component {
     });
   };
 
+  // part of updating comments handler
   cancelEditCommentHandler = () => {
     this.setState({ isEditingComment: false, editComment: null });
   };
 
+  // part of updating comments handler
   finishEditCommentHandler = postData => {
-    // console.log('yoyoyo finish edit comment');
     this.setState({
       editLoading: true
     });
@@ -485,7 +463,6 @@ class SinglePost extends Component {
             editLoading: false
           };
         });
-        // window.location.reload();
       })
       .catch(err => {
         console.log(err);
@@ -498,6 +475,7 @@ class SinglePost extends Component {
       });
   };
 
+  // sort comments handler
   sortComments = (sort) => {
     fetch('http://localhost:8080/feed/sortComments?sort=' + sort  + '&refId=' + this.state.post._id, {
       headers: {
@@ -522,6 +500,7 @@ class SinglePost extends Component {
     .catch(this.catchError);
   };
 
+  // error handler
   errorHandler = () => {
     this.setState({ error: null });
   };
@@ -532,6 +511,7 @@ class SinglePost extends Component {
 
   render() {
 
+    // buttons section
     let buttons = (
       <div className={styles.post__actions}>
         <Button mode="flat"  onClick={this.startCommentHandler.bind(this, this.state.post._id)}>
@@ -556,6 +536,7 @@ class SinglePost extends Component {
       )
     }
 
+    // likes and comments section
     let likesAndComments = (
       <div>
         <div className={styles.PostCaption}>
@@ -623,7 +604,6 @@ class SinglePost extends Component {
             </DropdownButton>
           </div>
           &nbsp;
-          {/* <p>{this.state.comments}</p> */}
           {this.state.comments.map(comment => (
             <Comment
               key={comment._id}

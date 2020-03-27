@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 
 import './Button.css';
 
+// button component for whether the button should act as a link or actual button
 const button = props =>
   !props.link ? (
     <button

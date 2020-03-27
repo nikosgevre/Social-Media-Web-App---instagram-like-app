@@ -38,6 +38,7 @@ class FeedEdit extends Component {
     imagePreview: null
   };
 
+  // update the form
   componentDidUpdate(prevProps, prevState) {
     if (
       this.props.editing &&
@@ -138,7 +139,6 @@ class FeedEdit extends Component {
   render() {
 
     let modalTitle = this.props.newPost ? 'New Post' : 'Edit Post';
-    // console.log(this.state.imagePreview);
 
     return this.props.editing ? (
       <Fragment>

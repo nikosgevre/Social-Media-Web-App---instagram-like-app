@@ -71,6 +71,7 @@ class Post extends Component {
     .catch(err => {
       console.log(err);
     });
+    // sockets for instant updating changes on a post
     const socket = openSocket('http://localhost:8080');
     socket.on('post', data => {
       if (data.action === 'createComment') {
@@ -89,6 +90,7 @@ class Post extends Component {
     });
   };
 
+  // like/dislike post handler
   likeHandler = event => {
     event.preventDefault();
     const postId = this.props.id;
@@ -113,9 +115,9 @@ class Post extends Component {
     .catch(this.catchError);
   };
 
+  // loading post's details handler
   loadPost = () => {
     const postId = this.state.post._id;
-    // console.log(this.state.content);
     fetch('http://localhost:8080/feed/post/' + postId, {
       headers: {
         Authorization: 'Bearer ' + this.props.token
@@ -128,16 +130,6 @@ class Post extends Component {
       return res.json();
     })
     .then(resData => {
-      // this.setState({
-      //   likes: resData.post.likes.map(like => {
-      //     return{...like};
-      //   }),
-      //   comments: resData.post.comments.map(comment => {
-      //     return {
-      //       ...comment
-      //     };
-      //   })
-      // });
       this.setState({
         post: resData.post
       })
@@ -149,6 +141,7 @@ class Post extends Component {
     });
   };
 
+  // loading post's comments handler
   loadComments = () => {
     fetch('http://localhost:8080/feed/getComments/' + this.state.post._id, {
       headers: {
@@ -174,10 +167,9 @@ class Post extends Component {
     .catch(this.catchError);
   };
 
+  // loading post's likes handler
   loadLikes = () => {
-    // console.log('getlikes');
     const postId = this.state.post._id;
-    // console.log(postId);
     fetch('http://localhost:8080/feed/getLikes/' + postId, {
         headers: {
           Authorization: 'Bearer ' + this.props.token
@@ -201,14 +193,15 @@ class Post extends Component {
       .catch(this.catchError);
   }
 
+  // post's options handler
   showOptionsHandler = () => {
     this.setState({showOptions: true})
   };
 
+  // part of creating a comment handler
   startCommentHandler = postId => {
     this.setState(prevState => {
       const loadedPost = this.state.post;
-
       return {
         isCommenting: true,
         commentPost: loadedPost
@@ -216,10 +209,12 @@ class Post extends Component {
     });
   };
 
+  // part of creating a comment handler
   cancelCommentHandler = () => {
     this.setState({ isCommenting: false, commentPost: null });
   };
 
+  // part of creating a comment handler from input
   finishCommentHandlerInput = postData => {
     this.setState({
       commentLoading: true
@@ -233,7 +228,6 @@ class Post extends Component {
         commentPost: loadedPost
       };
     });
-    // console.log(this.state.commentText);
     if(this.state.commentText.length>1){
       const formData = new FormData();
       formData.append('comment', this.state.commentText);
@@ -277,6 +271,7 @@ class Post extends Component {
     }
   };
 
+  // part of creating a comment handler from modal
   finishCommentHandlerButton = postData => {
     this.setState({
       commentLoading: true
@@ -324,6 +319,7 @@ class Post extends Component {
     });
   };
 
+  // part of creating a comment handler from input
   commentInputChangeHandler = (input, value) => {
     this.setState({ commentText: value });
     // console.log(this.state.commentText);
@@ -331,10 +327,10 @@ class Post extends Component {
     // console.log(this.state.post._id);
   };
 
+  // part of editing a comment handler
   startEditCommentHandler = comment => {
     this.setState(prevState => {
       const loadedComment = comment;
-
       return {
         isEditingComment: true,
         editComment: loadedComment
@@ -342,10 +338,12 @@ class Post extends Component {
     });
   };
 
+  // part of editing a comment handler
   cancelEditCommentHandler = () => {
     this.setState({ isEditingComment: false, editComment: null });
   };
 
+  // part of editing a comment handler
   finishEditCommentHandler = postData => {
     this.setState({
       editLoading: true
@@ -393,6 +391,7 @@ class Post extends Component {
       });
   };
 
+  // delete comment handler
   deleteCommentHandler = commentId => {
     this.setState({ postsLoading: true });
     fetch('http://localhost:8080/feed/comment?commentId=' + commentId + '&postId=' + this.state.post._id, {
@@ -416,17 +415,17 @@ class Post extends Component {
       });
   };
 
+  // cancel post's options menu handler
   optionsCancelHandler = () => {
     this.setState({showOptions: false});
   };
 
   render () {
 
-    // console.log(this.state.commentText);
-    // console.log('rerender');
-    // console.log(this.state.comments);
+    // sort comments based on most likes
     this.state.comments.sort((a, b) => parseFloat(b.likes.length) - parseFloat(a.likes.length));
 
+    // post's header creator
     let postUser = (
       <header className={styles.post__header}>
         <div style={{display:"flex", justifyContent:"right", float:"right"}}>
@@ -435,14 +434,12 @@ class Post extends Component {
       </header>
     );
     
+    // post's likes and comments section
     let likesAndComments = (
       <div>
         <div className={styles.PostCaption}>
             <Button onClick={this.likeHandler}><span role="img" aria-label="sheep">&#128077;</span></Button> <strong> {this.state.likes.length} | </strong>
             <NavLink className={styles.Navlink} to={`${this.props.id}`} user={this.props.creator}><strong> {this.state.post.totalComments} comments</strong></NavLink>
-            {/* <NavLink className={styles.Navlink} to={`${this.props.id}`} user={this.props.creator}><strong>  comments</strong> {(this.state.comments.length === 0) ? '' : ( '(' + this.state.comments.length + ')')}</NavLink> */}
-            {/* <Button style={{float:"right"}} onClick={this.startCommentHandler.bind(this, this.state.post._id)}>  Comment  </Button>   */}
-            {/* <strong> {this.state.comments.length} </strong> */}
         </div>
       </div>
     );
@@ -453,12 +450,7 @@ class Post extends Component {
         <div className={styles.PostCaption}>
             <Button mode='raised' onClick={this.likeHandler}><span role="img" aria-label="sheep">&#128077;</span></Button> <strong> {this.state.likes.length} | </strong>
             <NavLink className={styles.Navlink} to={`${this.props.id}`} user={this.props.creator}><strong>  comments</strong> {(this.state.comments.length === 0) ? '' : ( '(' + this.state.comments.length + ')')}</NavLink>
-            {/* <Button  onClick={this.startCommentHandler.bind(this, this.state.post._id)}>  Comment  </Button>  */}
-            {/* <strong> {this.state.comments.length} </strong> */}
         </div>
-        {/* <div className="Post-caption">
-          <NavLink className='Nav-link' to={'/profile/' + this.props.creator._id} user={this.props.creator}>{this.props.author}</NavLink> {this.props.content}
-        </div> */}
       </div>
       );
     };
@@ -466,7 +458,6 @@ class Post extends Component {
     if(this.props.caller === 'feed') {
       postUser= (
         <header className={styles.post__header}>
-          {/* <div style={{display:"flex", justifyContent:"right", paddingTop:"-10px", paddingBottom:"5px"}}> */}
           <div style={{float:"right"}}>
             <button className={styles.Options} onClick={this.showOptionsHandler}><strong>...</strong></button>
           </div>
@@ -531,7 +522,7 @@ class Post extends Component {
         </OptionsModal>
 
         {postUser}
-        {/* <body></body> */}
+
         <div className={styles.PostImage}>
           <div className={styles.PostImageBg}>
             <img alt={this.props.content} src={this.state.image} />
@@ -561,21 +552,6 @@ class Post extends Component {
             />
           ))
          :  null }
-        {/* {this.state.comments.slice(0,2).map(comment => (
-          <Comment
-            key={comment._id}
-            id={comment._id}
-            token={this.props.token}
-            postId={this.state.post._id}
-            author={comment.creator.name}
-            creator={comment.creator}
-            date={new Date(comment.createdAt).toLocaleString()}
-            content={comment.comment}
-            onStartEdit={this.startEditCommentHandler.bind(this, comment)}
-            onDelete={this.deleteCommentHandler.bind(this, comment._id)}
-            caller='feed'
-          />
-        ))} */}
           {this.props.caller !== 'profile' ? (
             <div>
               <section className={styles.feed__status}>
@@ -601,7 +577,6 @@ class Post extends Component {
 
         <div >
           <TimeAgo date={this.state.date} minPeriod="30"  />
-          {/* {buttons} */}
         </div>
 
       </article>

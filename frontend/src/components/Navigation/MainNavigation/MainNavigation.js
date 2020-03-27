@@ -18,7 +18,6 @@ const mainNavigation = props => (
     </div>
     <div className={styles.spacer} />
     <div>
-    {/* history={props.history} */}
         <Search isAuth={props.isAuth} token={props.token}  />
     </div>
     <div className={styles.spacer} />

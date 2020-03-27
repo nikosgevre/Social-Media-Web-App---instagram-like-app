@@ -1,8 +1,6 @@
 import React, { Component, Fragment } from 'react';
 import openSocket from 'socket.io-client';
 
-// import $ from 'jquery';
-
 import Post from '../../components/Feed/Post/Post';
 import Button from '../../components/Button/Button';
 import FeedEdit from '../../components/Feed/FeedEdit/FeedEdit';
@@ -11,11 +9,6 @@ import Paginator from '../../components/Paginator/Paginator';
 import Loader from '../../components/Loader/Loader';
 import ErrorHandler from '../../components/ErrorHandler/ErrorHandler';
 
-// import {Dropdown} from 'react-bootstrap';
-// import DropdownButton from 'react-bootstrap/DropdownButton';
-// import Dropdown from 'react-bootstrap/Dropdown';
-
-// import btStyles from '../../Assets/global-styles/bootstrap.min.module.css';
 const styles = require('./Feed.module.css');
 
 const paginationNumber = Number.MAX_SAFE_INTEGER;
@@ -48,10 +41,10 @@ class Feed extends Component {
     })
     .then(resData => {
       this.setState({ status: resData.status });
-      // this.loadPosts();
     })
     .catch(this.catchError);
 
+    // load posts and sockets for instant updating changes
     this.loadPosts();
     const socket = openSocket('http://localhost:8080');
     socket.on('feed', data => {
@@ -66,6 +59,7 @@ class Feed extends Component {
     });
   }
 
+  // add post handler
   addPost = post => {
     this.setState(prevState => {
       const updatedPosts = [...prevState.posts];
@@ -82,6 +76,7 @@ class Feed extends Component {
     });
   };
 
+  // update post handler
   updatePost = post => {
     this.setState(prevState => {
       const updatedPosts = [...prevState.posts];
@@ -95,8 +90,8 @@ class Feed extends Component {
     });
   };
 
+  // loading posts handler
   loadPosts = direction => {
-    // console.log('load posts kalestike');
     if (direction) {
       this.setState({ postsLoading: true, posts: [] });
     }
@@ -131,15 +126,16 @@ class Feed extends Component {
         totalPosts: resData.totalItems,
         postsLoading: false
       });
-      // console.log(this.state.posts);
     })
     .catch(this.catchError);
   };
 
+  // part of updating user status handler
   statusInputChangeHandler = (input, value) => {
     this.setState({ status: value });
   };
 
+  // part of updating user status handler
   statusUpdateHandler = event => {
     event.preventDefault();
     fetch('http://localhost:8080/auth/status', {
@@ -164,14 +160,15 @@ class Feed extends Component {
     .catch(this.catchError);
   };
 
+  // part of creating new post handler
   newPostHandler = () => {
     this.setState({ isEditing: true , newPost: true});
   };
 
+  // part of creating and updating new post handler
   startEditPostHandler = postId => {
     this.setState(prevState => {
       const loadedPost = { ...prevState.posts.find(p => p._id === postId) };
-
       return {
         isEditing: true,
         editPost: loadedPost,
@@ -180,10 +177,12 @@ class Feed extends Component {
     });
   };
 
+  // part of creating and updating new post handler
   cancelEditHandler = () => {
     this.setState({ isEditing: false, editPost: null });
   };
 
+  // part of creating and updating new post handler
   finishEditHandler = postData => {
     this.setState({
       editLoading: true
@@ -213,14 +212,6 @@ class Feed extends Component {
       return res.json();
     })
     .then(resData => {
-      // console.log(resData);
-      // const post = {
-      //   _id: resData.post._id,
-      //   title: resData.post.title,
-      //   content: resData.post.content,
-      //   creator: resData.post.creator,
-      //   createdAt: resData.post.createdAt
-      // };
       this.setState(prevState => {
         return {
           isEditing: false,
@@ -240,6 +231,7 @@ class Feed extends Component {
     });
   };
 
+  // delete post handler
   deletePostHandler = postId => {
     this.setState({ postsLoading: true });
     fetch('http://localhost:8080/feed/post/' + postId, {
@@ -265,6 +257,7 @@ class Feed extends Component {
     });
   };
 
+  // error handler
   errorHandler = () => {
     this.setState({ error: null });
   };
@@ -274,12 +267,6 @@ class Feed extends Component {
   };
 
   render() {
-
-    // this.state.posts.map(post => (
-    //   console.log('rerender ' + post.content)
-    // ));
-
-    // console.log('in render ' + this.state.posts);
     
     return (
       
@@ -312,11 +299,6 @@ class Feed extends Component {
           </form>
         </section>
         <div>
-        {/* className={`  ${btStyles['col-4']} `} */}
-          {/* <DropdownButton id="dropdown-basic-button" title="Sort">
-            <Dropdown.Item href="#/action-1">Most Popular</Dropdown.Item>
-            <Dropdown.Item href="#/action-2">Most Recent</Dropdown.Item>
-          </DropdownButton> */}
         </div>
         <section className={styles.feed__control}>
           <Button mode="raised" design="accent" onClick={this.newPostHandler} newPost={true}>
@@ -353,7 +335,6 @@ class Feed extends Component {
                   caller={this.state.caller}
                   onStartEdit={this.startEditPostHandler.bind(this, post._id)}
                   onDelete={this.deletePostHandler.bind(this, post._id)}
-                  // onLike={this.likeHandler.bind(this, post._id)}
                 />
               ))}
             </Paginator>

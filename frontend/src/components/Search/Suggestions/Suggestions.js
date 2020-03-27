@@ -3,15 +3,6 @@ import { NavLink } from 'react-router-dom';
 
 import styles from './Suggestions.module.css';
 
-// class Suggestions extends Component {
-//   render() {
-//     return {
-//       <ul>
-//       </ul>
-//     }
-//   }
-// }
-
 const Suggestions = (props) => {
   const options = props.results.map(r => (
     <li key={r._id}>

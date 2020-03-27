@@ -25,12 +25,7 @@ class NavigationItems extends Component {
           {item.id !== 'logout' ? (<NavLink to={item.link} exact onClick={this.props.onChoose}>{item.text}</NavLink>) : (<NavLink to={item.link} exact onClick={this.props.onLogout}>Logout</NavLink>) }
           
         </li>
-      )),
-      // this.props.isAuth && (
-      //   <li className="navigation-item" key="logout">
-      //     <button onClick={this.props.onLogout}>Logout</button>
-      //   </li>
-      // )
+      ))
     ] );
     
   }

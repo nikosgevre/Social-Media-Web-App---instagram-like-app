@@ -30,6 +30,7 @@ class App extends Component {
     error: null
   };
 
+  // get user if user login
   componentDidMount() {
     const token = localStorage.getItem('token');
     const expiryDate = localStorage.getItem('expiryDate');
@@ -47,14 +48,17 @@ class App extends Component {
     this.setAutoLogout(remainingMilliseconds);
   }
 
+  // mobile navigation handler
   mobileNavHandler = isOpen => {
     this.setState({ showMobileNav: isOpen, showBackdrop: isOpen });
   };
 
+  // backdrop handler
   backdropClickHandler = () => {
     this.setState({ showBackdrop: false, showMobileNav: false, error: null });
   };
 
+  // logout handler
   logoutHandler = () => {
     this.setState({ isAuth: false, token: null });
     localStorage.removeItem('token');
@@ -63,6 +67,7 @@ class App extends Component {
     this.props.history.replace('/');
   };
 
+  // login handler
   loginHandler = (event, authData) => {
     event.preventDefault();
     this.setState({ authLoading: true });
@@ -87,7 +92,6 @@ class App extends Component {
         return res.json();
       })
       .then(resData => {
-        // console.log(resData);
         this.setState({
           isAuth: true,
           token: resData.token,
@@ -113,6 +117,7 @@ class App extends Component {
       });
   };
 
+  // signup handler
   signupHandler = (event, authData) => {
     event.preventDefault();
     this.setState({ authLoading: true });
@@ -154,10 +159,10 @@ class App extends Component {
       });
   };
 
+  // part of reset email and password handler
   resetHandler = (event, authData) => {
     event.preventDefault();
     this.setState({ authLoading: false });
-    // console.log(type);
     fetch('http://localhost:8080/auth/reset?type=' + authData.type, {
       method: 'POST',
       headers: {
@@ -191,10 +196,10 @@ class App extends Component {
       });
   };
 
+  // part of reset email and password handler
   newCredentialsHandler = (event, authData) => {
     event.preventDefault();
     this.setState({ authLoading: false });
-    // console.log(authData.type);
     const formData = new FormData();
     if(authData.type==='password'){
       formData.append('password', authData.password);
@@ -205,10 +210,6 @@ class App extends Component {
       formData.append('userId', authData.userId);
       formData.append('resetToken', authData.emailToken);
     }
-    // formData.append('userId', authData.userId);
-    // for (var pair of formData.entries()) {
-    //   console.log(pair[0]+ ' - ' + pair[1]); 
-    // }
     fetch('http://localhost:8080/auth/new-credentials?type=' + authData.type, {
       method: 'POST',
       headers: {
@@ -239,6 +240,7 @@ class App extends Component {
       });
   };
 
+  // auto logout handler
   setAutoLogout = milliseconds => {
     setTimeout(() => {
       this.logoutHandler();
@@ -252,6 +254,7 @@ class App extends Component {
 
   render() {
     
+    // available routes to users whether they are loged in or not
     let routes = (
       <Switch>
         <Route

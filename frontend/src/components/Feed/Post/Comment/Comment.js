@@ -46,8 +46,10 @@ class Post extends Component {
       });
     })
     .catch(this.catchError);
+    // load comments and likes
       this.loadComments();
       this.loadLikes();
+      // open socket for instant updating of changes
       const socket = openSocket('http://localhost:8080');
       socket.on('comment', data => {
         if (data.action === 'commentLike') {
@@ -60,6 +62,7 @@ class Post extends Component {
       });
   }
 
+  // load comments handler
   loadComments = () => {
     fetch('http://localhost:8080/feed/getComments/' + this.props.id, {
       headers: {
@@ -84,6 +87,7 @@ class Post extends Component {
     .catch(this.catchError);
   };
 
+  // like/dislike comments handler
   likeHandler = event => {
     event.preventDefault();
     const commentId = this.props.id;
@@ -108,10 +112,9 @@ class Post extends Component {
     .catch(this.catchError);
   };
 
+  // load comments likes handler
   loadLikes = () => {
-    // console.log('getlikes');
     const commentId = this.props.id;
-    // console.log(commentId);
     fetch('http://localhost:8080/feed/getCommentsLikes/' + commentId, {
         headers: {
           Authorization: 'Bearer ' + this.props.token
@@ -135,6 +138,7 @@ class Post extends Component {
       .catch(this.catchError);
   }
 
+  // part of creating nested comments handler
   startCommentHandler = postId => {
     this.setState(prevState => {
       const loadedComment = this.state.comment;
@@ -146,6 +150,7 @@ class Post extends Component {
     });
   };
 
+  // part of creating nested comments handler
   finishCommentHandlerInput = postData => {
     this.setState({
       commentLoading: true
@@ -159,7 +164,6 @@ class Post extends Component {
         commentComment: loadedComment
       };
     });
-    console.log(this.state.commentText);
     if(this.state.commentText.length>1){
       const formData = new FormData();
       formData.append('comment', this.state.commentText);
@@ -203,17 +207,15 @@ class Post extends Component {
     }
   };
 
+  // part of creating and updating comments handler
   commentInputChangeHandler = (input, value) => {
     this.setState({ commentText: value });
-    // console.log(this.state.commentText);
-    // console.log(this.props.token);
-    // console.log(this.state.post._id);
   };
 
+  // part of updating comments handler
   startEditCommentHandler = comment => {
     this.setState(prevState => {
       const loadedComment = comment;
-
       return {
         isEditingComment: true,
         editComment: loadedComment
@@ -221,10 +223,12 @@ class Post extends Component {
     });
   };
 
+  // part of updating comments handler
   cancelEditCommentHandler = () => {
     this.setState({ isEditingComment: false, editComment: null });
   };
 
+  // part of updating comments handler
   finishEditCommentHandler = postData => {
     this.setState({
       editLoading: true
@@ -272,8 +276,8 @@ class Post extends Component {
       });
   };
 
+  // delete comment handler
   deleteCommentHandler = commentId => {
-    // this.setState({ postsLoading: true });
     fetch('http://localhost:8080/feed/comment?commentId=' + commentId + '&postId=' + this.props.postId, {
       method: 'DELETE',
       headers: {
@@ -297,15 +301,11 @@ class Post extends Component {
 
   render () {
 
-    // console.log(this.state.comment);
-
+    // likes and comments section of a comment
     let likesAndComments = (
       <div>
         <div className={styles.PostCaption}>
             <Button onClick={this.likeHandler}><span role="img" aria-label="sheep">&#128077;</span></Button> <strong> {this.state.likes.length}</strong>
-            {/* <NavLink className={styles.Navlink} to={`${this.props.id}`} user={this.props.creator}><strong>  comments</strong> {(this.state.comments.length === 0) ? '' : ( '(' + this.state.comments.length + ')')}</NavLink> */}
-            {/* <Button style={{float:"right"}} onClick={this.startCommentHandler.bind(this, this.state.post._id)}>  Comment  </Button>   */}
-            {/* <strong> {this.state.comments.length} </strong> */}
         </div>
       </div>
     );
@@ -315,17 +315,12 @@ class Post extends Component {
       <div>
         <div className={styles.PostCaption}>
             <Button mode='raised' onClick={this.likeHandler}><span role="img" aria-label="sheep">&#128077;</span></Button> <strong> {this.state.likes.length}</strong>
-            {/* <NavLink className={styles.Navlink} to={`${this.props.id}`} user={this.props.creator}><strong>  comments</strong> {(this.state.comments.length === 0) ? '' : ( '(' + this.state.comments.length + ')')}</NavLink> */}
-            {/* <Button  onClick={this.startCommentHandler.bind(this, this.state.post._id)}>  Comment  </Button>  */}
-            {/* <strong> {this.state.comments.length} </strong> */}
         </div>
-        {/* <div className="Post-caption">
-          <NavLink className='Nav-link' to={'/profile/' + this.props.creator._id} user={this.props.creator}>{this.props.author}</NavLink> {this.props.content}
-        </div> */}
       </div>
       );
     };
 
+    // buttons and time info section of a comment
     let buttons = (
       <div className={styles.post__actions}>
         {likesAndComments}
@@ -403,21 +398,6 @@ class Post extends Component {
               ))}
             </div>
           }
-          {/* {this.state.comments.map(comment => (
-            <Comment
-              key={comment._id}
-              id={comment._id}
-              token={this.props.token}
-              postId={comment._id}
-              author={comment.creator.name}
-              creator={comment.creator}
-              date={new Date(comment.createdAt).toLocaleString()}
-              content={comment.comment}
-              onStartEdit={this.startEditCommentHandler.bind(this, comment)}
-              onDelete={this.deleteCommentHandler.bind(this, comment._id)}
-              caller='comment'
-            />
-          ))} */}
         </article>
       </Fragment>
     );

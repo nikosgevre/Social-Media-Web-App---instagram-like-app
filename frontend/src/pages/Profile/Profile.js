@@ -36,6 +36,7 @@ class Profile extends Component {
   componentDidMount() {
     const userId = this.props.match.params.userId;
     this.setState({userIdNew: userId});
+    // get user profile and sockets
     this.fetchUser();
     const socket = openSocket('http://localhost:8080');
     socket.on('posts', data => {
@@ -50,6 +51,7 @@ class Profile extends Component {
     this.setState({userIdNew: userId});
   };
 
+  // update user profile if other user is selected
   componentDidUpdate() {
     const userId = this.props.match.params.userId;
     if(userId !== this.state.userIdNew) {
@@ -57,6 +59,7 @@ class Profile extends Component {
     }
   };
 
+  // loading user posts handler
   loadPosts = direction => {
     if (direction) {
       this.setState({ postsLoading: true, posts: [] });
@@ -96,6 +99,7 @@ class Profile extends Component {
     .catch(this.catchError);
   };
 
+  // get user profile handler
   fetchUser = (direction) => {
     if (direction) {
       this.setState({ postsLoading: true, posts: [] });
@@ -117,11 +121,6 @@ class Profile extends Component {
       const options = {month: 'long', day: 'numeric', year: 'numeric' };
       this.setState({
         user: resData.user,
-        // posts: resData.user.posts.map(post => {
-        //   return {
-        //     ...post
-        //   };
-        // }),
         userImage: 'http://localhost:8080/' + resData.user.image,
         followers: resData.user.followers.map(follower => {
           return {
@@ -137,11 +136,11 @@ class Profile extends Component {
         postsLoading: false
       });
       this.loadPosts();
-      // this.state.posts.sort((a, b) => parseFloat(a.createdAt) - parseFloat(b.createdAt));
     })
     .catch(this.catchError);
   };
 
+  // delete post handler
   deletePostHandler = postId => {
     this.setState({ postsLoading: true });
     fetch('http://localhost:8080/feed/post/' + postId, {
@@ -166,6 +165,7 @@ class Profile extends Component {
     });
   };
 
+  // follow/unfollow user handler
   followHandler = () => {
     const meId = localStorage.getItem('userId');
     const userId = this.state.userIdNew;
@@ -192,6 +192,7 @@ class Profile extends Component {
     .catch(this.catchError);
   };
 
+  // part of profile edit handler
   startEditProfileHandler = userId => {
     // console.log('asdasdasd');
     this.setState(prevState => {
@@ -204,15 +205,16 @@ class Profile extends Component {
     });
   };
 
+  // part of profile edit handler
   cancelEditHandler = () => {
     this.setState({ isEditing: false, editUser: null });
   };
 
+  // part of profile edit handler
   finishEditHandler = userData => {
     this.setState({
       editLoading: true
     });
-    console.log(userData);
     const formData = new FormData();
     formData.append('name', userData.name);
     formData.append('status', userData.status);
@@ -258,6 +260,7 @@ class Profile extends Component {
       });
   };
 
+  // sort posts handler
   sortPosts = (sort) => {
     fetch('http://localhost:8080/feed/sortPosts?sort=' + sort  + '&userId=' + this.state.user._id, {
       headers: {
@@ -286,6 +289,7 @@ class Profile extends Component {
     .catch(this.catchError);
   };
 
+  // error handler
   errorHandler = () => {
     this.setState({ error: null });
   };
@@ -297,9 +301,7 @@ class Profile extends Component {
 
   render() {
 
-    // this.state.posts.sort((a, b) => parseFloat(a.createdAt) - parseFloat(b.createdAt));
-    // console.log(this.state.posts);
-
+    // follow and edit button handlers
     let followButton = (<div></div>);
     let editButton = (<div></div>);
     
@@ -320,8 +322,6 @@ class Profile extends Component {
         </div>
       )
     }
-
-    // console.log(this.props.token);
 
     return (
       <Fragment>

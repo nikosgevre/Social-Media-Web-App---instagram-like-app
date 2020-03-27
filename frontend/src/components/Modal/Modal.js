@@ -4,6 +4,7 @@ import ReactDOM from 'react-dom';
 import Button from '../Button/Button';
 import styles from './Modal.module.css';
 
+// widely used modal with cancel and accept buttons
 const modal = props =>
   ReactDOM.createPortal(
     <div className={styles.modal}>
@@ -27,35 +28,5 @@ const modal = props =>
     </div>,
     document.getElementById('modal-root')
   );
-
-// class Modal extends Component{
-//   render () {
-//     // return(
-//       const random = ReactDOM.createPortal(
-//         <div className="modal">
-//           <header className="modal__header">
-//             <h1>{this.props.title}</h1>
-//           </header>
-//           <div className="modal__content">{this.props.children}</div>
-//           <div className="modal__actions">
-//             <Button design="danger" mode="flat" onClick={this.props.onCancelModal}>
-//               Cancel
-//             </Button>
-//             <Button
-//               mode="raised"
-//               onClick={this.props.onAcceptModal}
-//               disabled={!this.props.acceptEnabled}
-//               loading={this.props.isLoading}
-//             >
-//               Accept
-//             </Button>
-//           </div>
-//         </div>,
-//         document.getElementById('modal-root')
-//       );
-//     // )
-//     return (random);
-//   }
-// };
 
 export default modal;

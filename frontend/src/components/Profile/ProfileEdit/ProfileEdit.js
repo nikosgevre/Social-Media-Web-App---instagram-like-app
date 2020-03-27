@@ -11,6 +11,7 @@ import { generateBase64FromImage } from '../../../util/image';
 
 import styles from './ProfileEdit.module.css';
 
+// profile edit form
 const USER_FORM = {
   image: {
     value: '',

@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 
 import Input from '../../../../components/Form/Input/Input';
-// import Button from '../../components/Button/Button';
 import { required, email } from '../../../../util/validators';
 import Auth from '../../Auth';
 
@@ -84,9 +83,6 @@ class Login extends Component {
             <input type="hidden" name="_csrf" value={this.props.token} />
             <input type="submit" value="Register" />
           </div>
-          {/* <Button design="raised" type="submit" loading={this.props.loading}>
-            Reset Password
-          </Button> */}
         </form>
       </Auth>
     );

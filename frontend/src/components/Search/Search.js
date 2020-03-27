@@ -78,7 +78,6 @@ class SearchUI extends Component {
 				// issues with capitalization in search terms and search content
         return lc.includes(filter);
       });
-      // console.log(newList);
     } else {
 			// If the search bar is empty, set newList to original task list
       newList = [];

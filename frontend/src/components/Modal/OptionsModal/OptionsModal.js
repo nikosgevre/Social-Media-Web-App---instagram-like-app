@@ -5,6 +5,7 @@ import OptionsBackdrop from '../../Backdrop/OptionsBackdrop/OptionsBackdrop';
 
 import styles from './OptionsModal.module.css';
 
+// modal for post's options
 const OptionsModal = (props) => (
     <Fragment>
         <OptionsBackdrop show={props.show} clicked={props.optionsModalClosed} />
