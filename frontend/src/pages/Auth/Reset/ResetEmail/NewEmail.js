@@ -88,7 +88,7 @@ class NewPassword extends Component {
   };
 
   render() {
-    console.log(this.state.emailToken);
+    // console.log(this.state.emailToken);
     return (
       <Auth>
         <form

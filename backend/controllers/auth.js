@@ -39,7 +39,7 @@ exports.signup = async (req, res, next) => {
       to: user.email,
       from: 'Insta Welcome <welcome@insta.com>',
       subject: 'Welcome!',
-      html: '<strong>Welcome to my app' + user.name + '!</strong>',
+      html: '<strong>Welcome to my app ' + user.name + '!</strong>',
     };
     sgMail.send(msg);
     // mailgun.messages().send(msg, function (error, body) {
@@ -163,83 +163,83 @@ exports.postReset = async (req, res, next) => {
     }
     const token = buffer.toString('hex');
 
-    if(type==='password'){
+    if (type === 'password') {
       User.findOne({
-        email: req.body.email
-      })
-      .then(user => {
-        if (!user) {
-          const error = new Error('A user with this email could not be found.');
-          error.statusCode = 401;
-          throw error;
-        }
-        user.resetToken = token;
-        user.resetTokenExpiration = Date.now() + 3600000;
-        return user.save();
-      })
-      .then(result => {
-        message = 'User requested reset password!';
-        console.log('Sending email for \'reset password\' to: ' + req.body.email);
-        const msg = {
-          to: req.body.email,
-          from: 'Insta Reset <reset@insta.com>',
-          subject: 'Password reset',
-          html: `
+          email: req.body.email
+        })
+        .then(user => {
+          if (!user) {
+            const error = new Error('A user with this email could not be found.');
+            error.statusCode = 401;
+            throw error;
+          }
+          user.resetToken = token;
+          user.resetTokenExpiration = Date.now() + 3600000;
+          return user.save();
+        })
+        .then(result => {
+          message = 'User requested reset password!';
+          console.log('Sending email for \'reset password\' to: ' + req.body.email);
+          const msg = {
+            to: req.body.email,
+            from: 'Insta Reset <reset@insta.com>',
+            subject: 'Password reset',
+            html: `
             <p>You requested a password reset</p>
             <p>Click this <a href="http://localhost:3000/resetP/${token}">link</a> to set a new password.</p>
           `,
-        };
-        sgMail.send(msg);
-        // mailgun.messages().send(msg, function (error, body) {
-        //   console.log(body);
-        // });
-        res.status(200).json({
-          message: message,
-          userId: result._id
+          };
+          sgMail.send(msg);
+          // mailgun.messages().send(msg, function (error, body) {
+          //   console.log(body);
+          // });
+          res.status(200).json({
+            message: message,
+            userId: result._id
+          });
+        })
+        .catch(err => {
+          const error = new Error(err);
+          error.httpStatusCode = 500;
+          return next(error);
         });
-      })
-      .catch(err => {
-        const error = new Error(err);
-        error.httpStatusCode = 500;
-        return next(error);
-      });
-    } else if(type==='email'){
+    } else if (type === 'email') {
       User.findById(userId).then(user => {
-        if (!user) {
-          const error = new Error('A user with this id could not be found.');
-          error.statusCode = 401;
-          throw error;
-        }
-        user.resetToken = token;
-        user.resetTokenExpiration = Date.now() + 3600000;
-        return user.save();
-      })
-      .then(result => {
-        message = 'User requested reset email!';
-        console.log('Sending email for \'reset email\' to: ' + req.body.email);
-        const msg = {
-          to: req.body.email,
-          from: 'Insta Reset <reset@insta.com>',
-          subject: 'Email reset',
-          html: `
+          if (!user) {
+            const error = new Error('A user with this id could not be found.');
+            error.statusCode = 401;
+            throw error;
+          }
+          user.resetToken = token;
+          user.resetTokenExpiration = Date.now() + 3600000;
+          return user.save();
+        })
+        .then(result => {
+          message = 'User requested reset email!';
+          console.log('Sending email for \'reset email\' to: ' + req.body.email);
+          const msg = {
+            to: req.body.email,
+            from: 'Insta Reset <reset@insta.com>',
+            subject: 'Email reset',
+            html: `
             <p>You requested an email reset</p>
             <p>Click this <a href="http://localhost:3000/resetE/${token}">link</a> to set a new email.</p>
           `,
-        };
-        sgMail.send(msg);
-        // mailgun.messages().send(msg, function (error, body) {
-        //   console.log(body);
-        // });
-        res.status(200).json({
-          message: message,
-          userId: result._id
+          };
+          sgMail.send(msg);
+          // mailgun.messages().send(msg, function (error, body) {
+          //   console.log(body);
+          // });
+          res.status(200).json({
+            message: message,
+            userId: result._id
+          });
+        })
+        .catch(err => {
+          const error = new Error(err);
+          error.httpStatusCode = 500;
+          return next(error);
         });
-      })
-      .catch(err => {
-        const error = new Error(err);
-        error.httpStatusCode = 500;
-        return next(error);
-      });
     }
     // User.findOne({
     //     email: req.body.email
@@ -335,8 +335,7 @@ exports.postNewCredential = async (req, res, next) => {
   const type = req.query.type;
 
   console.log('/new-credentials -> ' + type);
-  console.log(resetToken);
-  
+
   let resetUser;
   let message = '';
 
@@ -385,7 +384,7 @@ exports.postNewCredential = async (req, res, next) => {
       throw error;
     }
     resetUser = user;
-    if(type==='password'){
+    if (type === 'password') {
       const newPassword = req.body.password;
       const hashedPassword1 = await bcrypt.hash(newPassword, 12);
       resetUser.password = hashedPassword1;
@@ -393,7 +392,7 @@ exports.postNewCredential = async (req, res, next) => {
       resetUser.resetTokenExpiration = undefined;
       await resetUser.save();
       message = 'User password reseted!';
-    } else if (type==='email'){
+    } else if (type === 'email') {
       const newEmail = req.body.email;
       resetUser.email = newEmail;
       resetUser.resetToken = undefined;

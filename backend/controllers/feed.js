@@ -16,12 +16,16 @@ exports.getPosts = async (req, res, next) => {
   const perPage = Number.MAX_SAFE_INTEGER; //Add number for pagination
   const userId = req.query.userId;
 
+  let followingUsers = [];
+
   try {
 
     const user = await User.findById(userId);
-    const followingUsers = user.following;
-    followingUsers.push(user);
 
+    if(user.following){
+      followingUsers = user.following;
+    }
+    followingUsers.push(user);
     const totalItems = await Post.find({creator: { $in: followingUsers }}).countDocuments();
     const posts = await Post.find({creator: { $in: followingUsers }})
       .populate('creator')
@@ -31,10 +35,6 @@ exports.getPosts = async (req, res, next) => {
       })
       .skip((currentPage - 1) * perPage)
       .limit(perPage);
-
-    // for (let post of posts){
-      // console.log(posts);
-    // }
 
     res.status(200).json({
       message: 'Fetched posts successfully.',

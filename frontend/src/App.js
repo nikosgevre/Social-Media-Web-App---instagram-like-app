@@ -194,7 +194,7 @@ class App extends Component {
   newCredentialsHandler = (event, authData) => {
     event.preventDefault();
     this.setState({ authLoading: false });
-    console.log(authData.type);
+    // console.log(authData.type);
     const formData = new FormData();
     if(authData.type==='password'){
       formData.append('password', authData.password);

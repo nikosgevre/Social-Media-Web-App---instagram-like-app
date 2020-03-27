@@ -22,13 +22,13 @@ const USER_FORM = {
     value: '',
     valid: false,
     touched: false,
-    validators: [required, length({ min: 0 })]
+    validators: [required, length({ min: 1 })]
   },
   status: {
     value: '',
     valid: false,
     touched: false,
-    validators: [required, length({ min: 0 })]
+    validators: [required, length({ min: 1 })]
   }
 };
 
@@ -93,9 +93,6 @@ class ProfileEdit extends Component {
       for (const inputName in updatedForm) {
         formIsValid = formIsValid && updatedForm[inputName].valid;
       }
-    //   for (const inputStatus in updatedForm) {
-    //     formIsValid = formIsValid && updatedForm[inputStatus].valid;
-    //   }
       return {
         userForm: updatedForm,
         formIsValid: formIsValid
@@ -172,7 +169,7 @@ class ProfileEdit extends Component {
             &nbsp;
             <Input
               id="name"
-              label="userame  |"
+              label="userame  :"
               control="textarea"
               rows="1"
               onChange={this.userInputChangeHandler}
@@ -184,10 +181,9 @@ class ProfileEdit extends Component {
             &nbsp;
             <Input
               id="status"
-              label="status  |"
+              label="status  :"
               control="textarea"
               rows="1"
-              cols="50"
               onChange={this.userInputChangeHandler}
               onBlur={this.inputBlurHandler.bind(this, 'status')}
               valid={this.state.userForm['status'].valid}
