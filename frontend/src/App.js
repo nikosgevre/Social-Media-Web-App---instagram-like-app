@@ -164,7 +164,8 @@ class App extends Component {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        email: authData.email
+        email: authData.email,
+        userId: this.state.userId
       })
     })
       .then(res => {
@@ -201,8 +202,8 @@ class App extends Component {
       formData.append('resetToken', authData.passwordToken);
     } else if(authData.type==='email'){
       formData.append('email', authData.email);
-      formData.append('resetToken', authData.emailToken);
       formData.append('userId', authData.userId);
+      formData.append('resetToken', authData.emailToken);
     }
     // formData.append('userId', authData.userId);
     // for (var pair of formData.entries()) {
@@ -299,6 +300,18 @@ class App extends Component {
             />
           )}
         />
+        <Route
+            path="/resetE/:token"
+            exact
+            render={props => (
+              <NewEmailPage
+                {...props}
+                token={this.state.token}
+                onSetNewEmail={this.newCredentialsHandler}
+                loading={this.state.authLoading}
+              />
+            )}
+          />
         {/* <Redirect to="/" /> */}
       </Switch>
     );

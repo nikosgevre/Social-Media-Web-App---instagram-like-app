@@ -40,7 +40,7 @@ class NewPassword extends Component {
       this.setState({
         // user: resData.user,
         userId: resData.userId,
-        emailToken: resData.emailToken
+        emailToken: resData.resetToken
       });
     })
     .catch(err => {
@@ -88,7 +88,7 @@ class NewPassword extends Component {
   };
 
   render() {
-    // console.log(this.state.passwordToken);
+    console.log(this.state.emailToken);
     return (
       <Auth>
         <form

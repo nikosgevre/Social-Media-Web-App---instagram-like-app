@@ -6,11 +6,11 @@ const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const io = require('../socket');
 
-// const sgMail = require('@sendgrid/mail');
-// sgMail.setApiKey('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');
-var api_key = '5a291b4754975ddf416c6545207ab46e-ed4dc7c4-20997f90';
-var domain = 'sandboxb2cd8dcd1f7b4568b8805e1bcaa77e4c.mailgun.org';
-var mailgun = require('mailgun-js')({apiKey: api_key, domain: domain});
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey('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');
+// var api_key = '5a291b4754975ddf416c6545207ab46e-ed4dc7c4-20997f90';
+// var domain = 'sandboxb2cd8dcd1f7b4568b8805e1bcaa77e4c.mailgun.org';
+// var mailgun = require('mailgun-js')({apiKey: api_key, domain: domain});
 
 const User = require('../models/user');
 
@@ -37,14 +37,14 @@ exports.signup = async (req, res, next) => {
     console.log('Sending email for welcome to: ' + user.email);
     const msg = {
       to: user.email,
-      from: 'Insta Welcome <welcome@insta.mailgun.org>',
+      from: 'Insta Welcome <welcome@insta.com>',
       subject: 'Welcome!',
       html: '<strong>Welcome to my app' + user.name + '!</strong>',
     };
-    // sgMail.send(msg);
-    mailgun.messages().send(msg, function (error, body) {
-      console.log(body);
-    });
+    sgMail.send(msg);
+    // mailgun.messages().send(msg, function (error, body) {
+    //   console.log(body);
+    // });
 
     const result = await user.save();
 
@@ -146,18 +146,25 @@ exports.updateUserStatus = async (req, res, next) => {
   }
 };
 
-exports.postReset = (req, res, next) => {
+exports.postReset = async (req, res, next) => {
   const type = req.query.type;
+  const userId = req.body.userId;
+  console.log(userId);
   let message = '';
+
   console.log('/reset -> ' + type);
+
+  // const user = await User.findById(userId);
+
   crypto.randomBytes(32, (err, buffer) => {
     if (err) {
       console.log(err);
       // return res.redirect('/reset');
     }
     const token = buffer.toString('hex');
-    // if(type)
-    User.findOne({
+
+    if(type==='password'){
+      User.findOne({
         email: req.body.email
       })
       .then(user => {
@@ -171,38 +178,21 @@ exports.postReset = (req, res, next) => {
         return user.save();
       })
       .then(result => {
-        if (type === 'password') {
-          message = 'User requested reset password!';
-          console.log('Sending email for \'reset password\' to: ' + req.body.email);
-          const msg = {
-            to: req.body.email,
-            from: 'Insta Reset <reset@insta.mailgun.org>',
-            subject: 'Password reset',
-            html: `
-              <p>You requested a password reset</p>
-              <p>Click this <a href="http://localhost:3000/resetP/${token}">link</a> to set a new password.</p>
-            `,
-          };
-          mailgun.messages().send(msg, function (error, body) {
-            console.log(body);
-          });
-        } else if (type === 'email') {
-          message = 'User requested reset email!';
-          console.log('Sending email for \'reset email\' to: ' + req.body.email);
-          const msg = {
-            to: req.body.email,
-            from: 'Insta Reset <reset@insta.mailgun.org>',
-            subject: 'Email reset',
-            html: `
-              <p>You requested an email reset</p>
-              <p>Click this <a href="https://localhost:3000/resetE/${token}">link</a> to reset your email.</p>
-            `,
-          };
-          mailgun.messages().send(msg, function (error, body) {
-            console.log(body);
-          });
-        }
-        // console.log(result._id);
+        message = 'User requested reset password!';
+        console.log('Sending email for \'reset password\' to: ' + req.body.email);
+        const msg = {
+          to: req.body.email,
+          from: 'Insta Reset <reset@insta.com>',
+          subject: 'Password reset',
+          html: `
+            <p>You requested a password reset</p>
+            <p>Click this <a href="http://localhost:3000/resetP/${token}">link</a> to set a new password.</p>
+          `,
+        };
+        sgMail.send(msg);
+        // mailgun.messages().send(msg, function (error, body) {
+        //   console.log(body);
+        // });
         res.status(200).json({
           message: message,
           userId: result._id
@@ -213,6 +203,100 @@ exports.postReset = (req, res, next) => {
         error.httpStatusCode = 500;
         return next(error);
       });
+    } else if(type==='email'){
+      User.findById(userId).then(user => {
+        if (!user) {
+          const error = new Error('A user with this id could not be found.');
+          error.statusCode = 401;
+          throw error;
+        }
+        user.resetToken = token;
+        user.resetTokenExpiration = Date.now() + 3600000;
+        return user.save();
+      })
+      .then(result => {
+        message = 'User requested reset email!';
+        console.log('Sending email for \'reset email\' to: ' + req.body.email);
+        const msg = {
+          to: req.body.email,
+          from: 'Insta Reset <reset@insta.com>',
+          subject: 'Email reset',
+          html: `
+            <p>You requested an email reset</p>
+            <p>Click this <a href="http://localhost:3000/resetE/${token}">link</a> to set a new email.</p>
+          `,
+        };
+        sgMail.send(msg);
+        // mailgun.messages().send(msg, function (error, body) {
+        //   console.log(body);
+        // });
+        res.status(200).json({
+          message: message,
+          userId: result._id
+        });
+      })
+      .catch(err => {
+        const error = new Error(err);
+        error.httpStatusCode = 500;
+        return next(error);
+      });
+    }
+    // User.findOne({
+    //     email: req.body.email
+    //   })
+    //   .then(user => {
+    //     if (!user) {
+    //       const error = new Error('A user with this email could not be found.');
+    //       error.statusCode = 401;
+    //       throw error;
+    //     }
+    //     user.resetToken = token;
+    //     user.resetTokenExpiration = Date.now() + 3600000;
+    //     return user.save();
+    //   })
+    //   .then(result => {
+    //     if (type === 'password') {
+    //       message = 'User requested reset password!';
+    //       console.log('Sending email for \'reset password\' to: ' + req.body.email);
+    //       const msg = {
+    //         to: req.body.email,
+    //         from: 'Insta Reset <reset@insta.mailgun.org>',
+    //         subject: 'Password reset',
+    //         html: `
+    //           <p>You requested a password reset</p>
+    //           <p>Click this <a href="http://localhost:3000/resetP/${token}">link</a> to set a new password.</p>
+    //         `,
+    //       };
+    //       mailgun.messages().send(msg, function (error, body) {
+    //         console.log(body);
+    //       });
+    //     } else if (type === 'email') {
+    //       message = 'User requested reset email!';
+    //       console.log('Sending email for \'reset email\' to: ' + req.body.email);
+    //       const msg = {
+    //         to: req.body.email,
+    //         from: 'Insta Reset <reset@insta.mailgun.org>',
+    //         subject: 'Email reset',
+    //         html: `
+    //           <p>You requested an email reset</p>
+    //           <p>Click this <a href="https://localhost:3000/resetE/${token}">link</a> to reset your email.</p>
+    //         `,
+    //       };
+    //       mailgun.messages().send(msg, function (error, body) {
+    //         console.log(body);
+    //       });
+    //     }
+    //     // console.log(result._id);
+    //     res.status(200).json({
+    //       message: message,
+    //       userId: result._id
+    //     });
+    //   })
+    //   .catch(err => {
+    //     const error = new Error(err);
+    //     error.httpStatusCode = 500;
+    //     return next(error);
+    //   });
   });
 };
 
@@ -251,6 +335,7 @@ exports.postNewCredential = async (req, res, next) => {
   const type = req.query.type;
 
   console.log('/new-credentials -> ' + type);
+  console.log(resetToken);
   
   let resetUser;
   let message = '';
