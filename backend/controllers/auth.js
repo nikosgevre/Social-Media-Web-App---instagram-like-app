@@ -8,9 +8,6 @@ const io = require('../socket');
 
 const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey('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');
-// var api_key = '5a291b4754975ddf416c6545207ab46e-ed4dc7c4-20997f90';
-// var domain = 'sandboxb2cd8dcd1f7b4568b8805e1bcaa77e4c.mailgun.org';
-// var mailgun = require('mailgun-js')({apiKey: api_key, domain: domain});
 
 const User = require('../models/user');
 

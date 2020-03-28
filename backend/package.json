@@ -1,7 +1,7 @@
 {
-  "name": "nodejs-complete-guide",
+  "name": "nodejs-insta_web_app",
   "version": "1.0.0",
-  "description": "",
+  "description": "instagram like social network web app",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -9,9 +9,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://git-codecommit.us-east-1.amazonaws.com/v1/repos/udemy-course-nodejs-complete"
+    "url": "https://github.com/nikosgevre/thesis.git"
   },
-  "author": "",
+  "author": "Nikos Gkevrekis",
   "license": "ISC",
   "dependencies": {
     "@sendgrid/mail": "^6.5.4",
