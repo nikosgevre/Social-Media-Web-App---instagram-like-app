@@ -340,18 +340,14 @@ class App extends Component {
             )}
           />
           <Route
-            path="/profile/:userId"
-            // exact
+            path="/chat"
+            exact
             render={props => (
-              <ProfilePage 
-                {...props} 
-                userId={this.state.userId} 
-                token={this.state.token} 
-              />
+              <FeedPage userId={this.state.userId} token={this.state.token} />
             )}
           />
           <Route
-            path="/chat"
+            path="/profile/:userId"
             // exact
             render={props => (
               <ProfilePage 
