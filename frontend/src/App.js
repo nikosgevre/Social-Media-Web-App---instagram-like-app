@@ -17,6 +17,7 @@ import PasswordResetPage from './pages/Auth/Reset/ResetPassword/Reset';
 import NewPasswordPage from './pages/Auth/Reset/ResetPassword/NewPassword';
 import EmailResetPage from './pages/Auth/Reset/ResetEmail/Reset';
 import NewEmailPage from './pages/Auth/Reset/ResetEmail/NewEmail';
+import ChatPage from './pages/Chat/Chat';
 // import styles from './App.module.css';
 
 class App extends Component {
@@ -343,7 +344,7 @@ class App extends Component {
             path="/chat"
             exact
             render={props => (
-              <FeedPage userId={this.state.userId} token={this.state.token} />
+              <ChatPage {...props} userId={this.state.userId} token={this.state.token} />
             )}
           />
           <Route

@@ -48,7 +48,7 @@ class Post extends Component {
     })
     .then(res => {
       if (res.status !== 200) {
-        throw new Error('Failed to fetch status');
+        throw new Error('Failed to fetch post');
       }
       return res.json();
     })

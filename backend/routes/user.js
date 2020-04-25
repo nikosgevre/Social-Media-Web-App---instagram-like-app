@@ -7,7 +7,7 @@ const isAuth = require('../middleware/is-auth');
 const router = express.Router();
 
 // GET /feed/posts
-router.get('/getusers', isAuth, userController.getUsers);
+router.get('/getUsers', isAuth, userController.getUsers);
 
 // POST follow handler backend
 router.post('/userFollow', isAuth, userController.userFollow);
