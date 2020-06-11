@@ -1,0 +1,123 @@
+.msg {
+    margin: 0.5rem 0;
+    border: 1px solid #000000;
+    border-radius: 5px;
+    /* padding: 0.5rem; */
+    background-color: #6071d3;
+    /* width: 20; */
+  }
+
+  .fromTrueUser {
+    margin: 0.5rem 0;
+    border: 1px solid #000000;
+    border-radius: 15px;
+    /* padding: 0.5rem; */
+    background-color: #6071d3;
+    /* width: 20; */
+    padding: 0.5rem;
+    width: 10rem;
+    margin-left: auto;
+    margin-right: 0.5;
+    background-color: #6071d3;
+  }
+  .fromFriend {
+    margin: 0.5rem 0;
+    border: 1px solid #000000;
+    border-radius: 15px;
+    /* padding: 0.5rem; */
+    background-color: #6071d3;
+    /* width: 20; */
+    padding: 0.5rem;
+    width: 10rem;
+    margin-left: 0.5;
+    margin-right: auto;
+    background-color: #cfcfcf;
+  }
+  
+  /* .msg--fromTrueUser {
+    margin-left: auto;
+    margin-right: 0.5;
+    background-color: #6071d3;
+  }
+  .msg--fromFriend {
+    margin-left: 0.5;
+    margin-right: auto;
+    background-color: #cfcfcf;
+  }
+  .msg.msg--fromTrueUser {
+    margin-left: auto;
+    margin-right: 0.5;
+    background-color: #6071d3;
+  }
+  .msg.msg--fromFriend {
+    margin-left: 0.5;
+    margin-right: auto;
+    background-color: #cfcfcf;
+  } */
+
+  .time {
+    font-size: smaller;
+  }
+
+  .MsgCaption {
+    padding: 16px 16px;
+    /* font-size: ; */
+    /* font-size: x-large; */
+    /* font-size: large; */
+  }
+  .MsgCaption strong {
+    font-family: 'PT Sans', sans-serif;
+    font-weight: bold;
+  }
+  .msg__actions {
+    text-align: right;
+  }
+
+  /* .post {
+    margin: 0.5rem 0;
+    border: 1px solid #000000;
+    border-radius: 5px;
+    background-color: #6071d3;
+  }
+  .post {
+    margin: 0.5rem 0;
+    border: 1px solid #000000;
+    border-radius: 5px;
+    background-color: #6071d3;
+  } */
+  
+  @media (min-width: 768px) {
+    .msg {
+      padding: 0.5rem;
+      width: 20rem;
+    }
+    .fromTrueUser {
+      margin: 0.5rem 0;
+      border: 1px solid #6071d3;
+      border-radius: 15px;
+      /* padding: 0.5rem; */
+      background-color: #6071d3;
+      /* width: 20; */
+      padding: 0.5rem;
+      width: 20rem;
+      margin-left: auto;
+      margin-right: 0.5;
+      background-color: #6071d3;
+      text-align: right;
+    }
+    .fromFriend {
+      margin: 0.5rem 0;
+      border: 1px solid #cfcfcf;
+      border-radius: 15px;
+      /* padding: 0.5rem; */
+      background-color: #cfcfcf;
+      /* width: 20; */
+      padding: 0.5rem;
+      width: 20rem;
+      margin-left: 0.5;
+      margin-right: auto;
+      background-color: #cfcfcf;
+      text-align: left;
+    }
+  }
+  

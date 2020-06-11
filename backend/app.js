@@ -8,6 +8,7 @@ const multer = require('multer');
 const feedRoutes = require('./routes/feed');
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/user');
+const chatRoutes = require('./routes/chat');
 
 const app = express();
 
@@ -56,6 +57,7 @@ app.use((req, res, next) => {
 
 app.use('/user', userRoutes);
 app.use('/feed', feedRoutes);
+app.use('/chat', chatRoutes);
 app.use('/auth', authRoutes);
 
 app.use((error, req, res, next) => {

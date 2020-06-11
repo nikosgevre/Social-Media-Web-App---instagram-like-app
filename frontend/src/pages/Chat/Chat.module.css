@@ -11,9 +11,9 @@
   max-height: 100%;
 } */
 
-.test {
+.test1 {
   display: inline-block;
-  height: 83.5vh;
+  /* height: 83.5vh; */
   /* height: 100%; */
   width: 35%;
   padding-right: 1rem;
