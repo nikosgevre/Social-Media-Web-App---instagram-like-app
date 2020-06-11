@@ -13,8 +13,10 @@
 } */
 
 .test1 {
-  display: inline-block;
-  /* height: 83.5vh; */
+  display: block;
+  float: left;
+  height: 80vh;
+  /* height: 100%; */
   /* height: 100%; */
   /* position: fixed; */
   /* object-position: top; */
@@ -23,16 +25,32 @@
   padding-right: 1rem;
   padding-left: 1rem;
   border-right: 1px solid #000000;
+  /* overflow-y: scroll; */
 }
 .test2 {
-  display: inline-block;
-  /* width: 100vh; */
+  display: block;
+  float: right;
   width: 65%;
   padding-right: 1rem;
   padding-left: 1rem;
   text-align: center;
-  /* border-right: 1px solid #000000; */
-  /* position: relative; */
+
+  height: 80vh;
+  /* height: 100%; */
+
+  overflow-y: scroll;
+
+
+
+  /* display:flex; 
+  flex-direction:column-reverse; */
+  /* scroll-snap-align: end; */
+  /* overscroll-behavior-y: contain;
+  scroll-snap-type: y mandatory;
+  scroll-snap-align: end; */
+  /* overflow:auto; 
+  display:flex; 
+  flex-direction:column-reverse; */
 }
 
 .PostUser {

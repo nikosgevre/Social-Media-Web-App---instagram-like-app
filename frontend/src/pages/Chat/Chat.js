@@ -205,7 +205,7 @@ class Chat extends Component {
 
     return (
       <Fragment>
-        <div style={{textAlign: "center", fontSize: "large"}}><strong>Messages</strong></div>
+        <div style={{textAlign: "center"}}><strong>Messages</strong></div>
         <hr></hr>
         <div className={styles.container}>
           <div className = {styles.test1}>
