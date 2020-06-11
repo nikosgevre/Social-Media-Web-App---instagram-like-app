@@ -169,3 +169,39 @@ exports.getMessage = async (req, res, next) => {
     next(err);
   }
 };
+
+// delete message controller
+exports.deleteMessage = async (req, res, next) => {
+  const msgId = req.params.msgId;
+  try {
+    // the post to be deleted
+    const msg = await Message.findById(msgId);
+    if (!msg) {
+      const error = new Error('Could not find message.');
+      error.statusCode = 404;
+      throw error;
+    }
+    if (msg.from.toString() !== req.userId) {
+      const error = new Error('Not authorized!');
+      error.statusCode = 403;
+      throw error;
+    }
+
+    // delete the message
+    await Message.findByIdAndDelete(msgId);
+
+    // emit the changes to the requested route
+    io.getIO().emit('chat', {
+      action: 'delete',
+      message: msgId
+    });
+    res.status(200).json({
+      message: 'Deleted message.'
+    });
+  } catch (err) {
+    if (!err.statusCode) {
+      err.statusCode = 500;
+    }
+    next(err);
+  }
+};

@@ -62,7 +62,8 @@ class ChatUsers extends Component {
             <img src={this.state.userImage} alt={this.props.author} />
           </div>
           <div className={styles.PostUserNickname}>
-            <NavLink className={styles.Navlink} to={'/profile/' + this.props.user._id} user={this.props.user}>{this.props.user.name}</NavLink>
+            {/* <NavLink className={styles.Navlink} to={'/profile/' + this.props.user._id} user={this.props.user}>{this.props.user.name}</NavLink> */}
+            <div className={styles.Navlink}>{this.props.user.name}</div>
           </div>
         </div>
       </header>

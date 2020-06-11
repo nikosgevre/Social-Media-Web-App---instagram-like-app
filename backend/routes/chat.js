@@ -38,6 +38,9 @@ router.put(
 // GET view post details
 router.get('/message/:msgId', isAuth, chatController.getMessage);
 
+// DELETE delete message
+router.delete('/message/:msgId', isAuth, chatController.deleteMessage);
+
 // // GET /feed/userPosts
 // router.get('/userPosts', isAuth, feedController.getUserSpecificPosts);
 

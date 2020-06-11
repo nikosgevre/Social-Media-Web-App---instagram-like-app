@@ -35,6 +35,8 @@ class Chat extends Component {
     socket.on('chat', data => {
       if (data.action === 'create') {
         this.loadMessages(this.state.clickedUser);
+      } else if (data.action === 'delete') {
+        this.loadMessages(this.state.clickedUser);
       }
     });
   };
@@ -139,8 +141,8 @@ class Chat extends Component {
     this.setState({ message: value });
   };
 
-  // part of updating user status handler
-  messageUpdateHandler = event => {
+  // send message handler
+  messageSendHandler = event => {
     event.preventDefault();
     fetch('http://localhost:8080/chat/message?from=' + this.state.trueUser._id + '&to=' + this.state.clickedUser._id, {
       method: 'POST',
@@ -162,6 +164,30 @@ class Chat extends Component {
       console.log(resData);
     })
     .catch(this.catchError);
+  };
+
+  // delete message handler
+  deleteMessageHandler = msgId => {
+    this.setState({ msgloading: true });
+    fetch('http://localhost:8080/chat/message/' + msgId, {
+      method: 'DELETE',
+      headers: {
+        Authorization: 'Bearer ' + this.props.token
+      }
+    })
+      .then(res => {
+        if (res.status !== 200 && res.status !== 201) {
+          throw new Error('Deleting the message failed!');
+        }
+        return res.json();
+      })
+      .then(resData => {
+        console.log(resData);
+      })
+      .catch(err => {
+        console.log(err);
+        this.setState({ msgloading: false });
+      });
   };
 
   render() {
@@ -211,12 +237,13 @@ class Chat extends Component {
                       trueUser={this.state.trueUser._id}
                       date={new Date(msg.createdAt).toLocaleString('en-US')}
                       content={msg.content}
+                      onDelete={this.deleteMessageHandler.bind(this, msg._id)}
                     />
                   ))}
                 </div>
               )}
               <section className={styles.feed__status}>
-                <form onSubmit={this.messageUpdateHandler}>
+                <form onSubmit={this.messageSendHandler}>
                   <Input
                     type="text"
                     placeholder="Message"

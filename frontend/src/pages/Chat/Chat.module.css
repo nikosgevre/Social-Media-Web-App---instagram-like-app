@@ -9,12 +9,16 @@
 /* .container {
   height: 100vh;
   max-height: 100%;
+  position: fixed;
 } */
 
 .test1 {
   display: inline-block;
   /* height: 83.5vh; */
   /* height: 100%; */
+  /* position: fixed; */
+  /* object-position: top; */
+  /* position: relative; */
   width: 35%;
   padding-right: 1rem;
   padding-left: 1rem;
@@ -28,6 +32,7 @@
   padding-left: 1rem;
   text-align: center;
   /* border-right: 1px solid #000000; */
+  /* position: relative; */
 }
 
 .PostUser {
