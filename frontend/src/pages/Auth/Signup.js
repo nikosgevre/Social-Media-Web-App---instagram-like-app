@@ -197,7 +197,7 @@ class Signup extends Component {
             <div className={btStyles["col-md-2"]}>
             </div>
 
-            <div className={btStyles["col-md-5"]}>
+            {/* <div className={btStyles["col-md-5"]}>
               <form onSubmit={e => this.props.onLogin(e, {
                     email: this.state.loginForm.email.value,
                     password: this.state.loginForm.password.value
@@ -238,7 +238,7 @@ class Signup extends Component {
                   </div>
                 </fieldset>
               </form>
-            </div>
+            </div> */}
 
           </div>
         </div>
