@@ -11,7 +11,7 @@ Each user has his own profile page. The user can upload images and videos and al
 * ExpressJs 
 * mongoose
 #### Frontend frameworks
-* ReactJs (react hooks, redux)
+* ReactJs 
 #### Database
 * MongoDb (NoSQL)
 
