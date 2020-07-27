@@ -12,7 +12,7 @@ const chatRoutes = require('./routes/chat');
 
 const app = express();
 
-const MongoAPI = 'mongodb+srv://nikosgevre:gkevrekis3007@cluster0-bkjt6.mongodb.net/thesis';
+const MongoAPI = '';
 
 const fileStorage = multer.diskStorage({
   destination: (req, file, cb) => {
