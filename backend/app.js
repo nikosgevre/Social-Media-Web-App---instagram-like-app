@@ -30,6 +30,10 @@ const fileFilter = (req, file, cb) => {
     file.mimetype === 'image/jpeg'
   ) {
     cb(null, true);
+  } else if (
+    file.mimetype === 'video/mp4' 
+  ) {
+    cb(null, true);
   } else {
     cb(null, false);
   }

@@ -422,6 +422,8 @@ class Post extends Component {
 
   render () {
 
+    // console.log('yo ' + this.state.post.mimetype);
+
     // sort comments based on most likes
     this.state.comments.sort((a, b) => parseFloat(b.likes.length) - parseFloat(a.likes.length));
 
@@ -525,7 +527,15 @@ class Post extends Component {
 
         <div className={styles.PostImage}>
           <div className={styles.PostImageBg}>
-            <img alt={this.props.content} src={this.state.image} />
+            {this.state.post.mimetype === 'video/mp4' ? (
+               <video width="380" height="240" controls>
+                  <source src={this.state.image} type="video/mp4" />
+                </video> 
+            ): 
+            (
+              <img alt={this.props.content} src={this.state.image} />
+            )}
+            
           </div>
         </div>
 
