@@ -598,7 +598,7 @@ class SinglePost extends Component {
                 </video> 
             ): 
             (
-              <img alt={this.props.content} src={this.state.image} />
+              <Image contain imageUrl={this.state.image} />
             )}
           {likesAndComments}
           <h2 className={styles.singlePost}>{this.state.content}</h2>
