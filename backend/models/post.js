@@ -10,6 +10,9 @@ const postSchema = new Schema({
     type: String,
     required: true
   },
+  mimetype: {
+    type: String
+  },
   content: {
     type: String,
     required: true

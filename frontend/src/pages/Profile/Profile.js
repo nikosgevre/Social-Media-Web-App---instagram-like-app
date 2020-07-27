@@ -323,6 +323,8 @@ class Profile extends Component {
       )
     }
 
+    // console.log(this.state.posts)
+
     return (
       <Fragment>
         <style dangerouslySetInnerHTML={{__html: `
@@ -362,16 +364,24 @@ class Profile extends Component {
           </div>
           <div>
             {followButton}
-            
           </div>
-          <div className={` ${styles.gallery} `}>
-            <div>
+          <div className={` ${styles.gallery} `} >
+            {this.state.posts.length>0 && (
+              <div>
+                <DropdownButton id="dropdown-basic-button" title="Sort" style={{justifyContent: "center"}}>
+                  <Dropdown.Item onClick={()=>this.sortPosts('popular')}>Most Popular  |  </Dropdown.Item>
+                  <Dropdown.Item onClick={()=>this.sortPosts('Mrecent')}>Most Recent  |  </Dropdown.Item>
+                  <Dropdown.Item onClick={()=>this.sortPosts('Lrecent')}>Least Recent </Dropdown.Item>
+                </DropdownButton>
+              </div>
+            )}
+            {/* <div>
               <DropdownButton id="dropdown-basic-button" title="Sort">
                 <Dropdown.Item onClick={()=>this.sortPosts('popular')}>Most Popular  |  </Dropdown.Item>
                 <Dropdown.Item onClick={()=>this.sortPosts('Mrecent')}>Most Recent  |  </Dropdown.Item>
                 <Dropdown.Item onClick={()=>this.sortPosts('Lrecent')}>Least Recent</Dropdown.Item>
               </DropdownButton>
-            </div>
+            </div> */}
             {this.state.postsLoading && (
               <div style={{ textAlign: 'center', marginTop: '2rem' }}>
                 <Loader />

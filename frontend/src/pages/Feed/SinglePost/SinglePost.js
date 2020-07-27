@@ -589,9 +589,17 @@ class SinglePost extends Component {
             Created by <NavLink className={styles.Navlink} to={'/profile/' + this.state.creator._id} user={this.state.creator}>{this.state.creator.name}</NavLink> on {this.state.date}
             
           </h2>
-          <div className={styles.singlePost__image}>
+          {/* <div className={styles.singlePost__image}>
             <Image contain imageUrl={this.state.image} />
-          </div>
+          </div> */}
+          {this.state.post.mimetype === 'video/mp4' ? (
+               <video width="380" height="240" controls>
+                  <source src={this.state.image} type="video/mp4" />
+                </video> 
+            ): 
+            (
+              <img alt={this.props.content} src={this.state.image} />
+            )}
           {likesAndComments}
           <h2 className={styles.singlePost}>{this.state.content}</h2>
           

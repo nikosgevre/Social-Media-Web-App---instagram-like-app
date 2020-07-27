@@ -120,14 +120,16 @@
   color: #0034a3;
   margin: 0 auto;
   position: absolute;
-  left: 38% !important;
+  justify-content: center;
+  /* left: 38% !important; */
 }
 .button.button--unfollow {
   border-color: #0034a3;
   color: #0034a3;
   margin: 0 auto;
   position: absolute;
-  left: 36% !important;
+  justify-content: center;
+  /* left: 36% !important; */
 }
 
 .button--unfollow:hover,

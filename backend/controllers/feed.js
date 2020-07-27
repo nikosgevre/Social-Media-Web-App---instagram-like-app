@@ -165,6 +165,8 @@ exports.createPost = async (req, res, next) => {
     throw error;
   }
   // create the post
+  // console.log(req.file.mimetype);
+  const type = req.file.mimetype;
   const imageUrl = req.file.path;
   const title = req.body.title;
   const content = req.body.content;
@@ -172,6 +174,7 @@ exports.createPost = async (req, res, next) => {
     title: title,
     content: content,
     imageUrl: imageUrl,
+    mimetype: type,
     creator: req.userId
   });
   try {
