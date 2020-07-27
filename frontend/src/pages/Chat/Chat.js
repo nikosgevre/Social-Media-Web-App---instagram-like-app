@@ -139,6 +139,7 @@ class Chat extends Component {
   // part of updating user status handler
   messageInputChangeHandler = (input, value) => {
     this.setState({ message: value });
+    
   };
 
   // send message handler
