@@ -7,7 +7,7 @@ const jwt = require('jsonwebtoken');
 const io = require('../socket');
 
 const sgMail = require('@sendgrid/mail');
-sgMail.setApiKey('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');
+sgMail.setApiKey('');
 
 const User = require('../models/user');
 
