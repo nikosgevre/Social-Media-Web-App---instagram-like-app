@@ -89,7 +89,7 @@ exports.login = async (req, res, next) => {
         email: loadedUser.email,
         userId: loadedUser._id.toString()
       },
-      '%Gkevrekis3007.', {
+      '', {
         expiresIn: '1h'
       }
     );
