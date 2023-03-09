@@ -50,7 +50,7 @@ Each user has his own profile page. The user can upload images and videos and al
 
 ***
 
-#### Author: Nikos Gkevrekis AEM:1611
+#### Author: Nikolaos Gkevrekis
 
 ***
 #### Requirments
